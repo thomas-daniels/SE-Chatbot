@@ -105,6 +105,9 @@ class WordAssociationBot:
         
         h = HTMLParser()
         content = h.unescape(message.content)
+        content = re.sub("\(.+?\)", "", content)
+        content = re.sub("\s+", " ", content)
+        content = content.strip()
         parts = content.split(" ")
         if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith("@")):
             return
