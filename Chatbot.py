@@ -16,7 +16,7 @@ class WordAssociationBot:
     client = None
     commands = {}
     owner_commands = {}
-    owner_id = 88521 # change this into your ID
+    owner_id = 229438 # change this into your ID
     owner_name = "ProgramFOX" # change this into your name
     enabled = True
     running = True
@@ -76,11 +76,14 @@ class WordAssociationBot:
                 else:
                     print s
             
-    def reply_word(self, word, message, wait):
+    def reply_word(self, word, message, wait, orig_word):
         if wait and self.waiting_time > 0:
             time.sleep(self.waiting_time)
         if word == self.current_word_to_reply:
-            message.reply(word);
+            if word is not None:
+                message.reply(word);
+            else:
+                self.room.send_message("No associated word found for %s" % orig_word)
 
     def on_event(self, event, client):
         should_return = False
@@ -122,7 +125,7 @@ class WordAssociationBot:
             #self.room.send_message(":%s %s" % (message._message_id, GetAssociatedWord(c)))
             word_to_reply = GetAssociatedWord(c)
             self.current_word_to_reply = word_to_reply
-            thread.start_new_thread(self.reply_word, (word_to_reply, message, True))
+            thread.start_new_thread(self.reply_word, (word_to_reply, message, True, c))
     
 
     def command(self, cmd, msg, event):

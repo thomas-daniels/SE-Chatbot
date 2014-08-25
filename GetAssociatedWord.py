@@ -8,7 +8,7 @@ def GetAssociatedWord(w):
     _list = soup.find_all("ul")
     # print found
     if _list is None or len(_list) < 3:
-        return "No associated word found."
+        return None
     else:
         #return list.contents[0].contents[0]
         return _list[2].contents[0].contents[0].contents[0].lower()
