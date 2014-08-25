@@ -1,3 +1,4 @@
 SecretSpells.py
 .project
 .pydevproject
+*.pyc

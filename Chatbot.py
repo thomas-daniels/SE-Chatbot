@@ -47,6 +47,8 @@ class WordAssociationBot:
 
         self.client = chatexchange.client.Client(site)
         self.client.login(email, password)
+        
+        self.spellManager.c = self.client
     
         self.room = self.client.get_room(room_number)
         self.room.join()
@@ -62,7 +64,7 @@ class WordAssociationBot:
                 if command_out != False and command_out is not None:
                     print command_out
                 if inputted[1] == "+":
-                    self.room.send_message("@%s %s" % (self.owner_name, command_out))
+                    self.room.send_message("%s" % command_out)
                     
     def scheduled_empty_queue(self):
         while self.running:
