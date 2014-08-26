@@ -28,9 +28,6 @@ class WordAssociationBot:
     waiting_time = -1
     current_word_to_reply = ""
     translation_languages = [ "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi" ]
-    current_translation_languages_order = None
-    translation_count = -1
-    curr_translation = -1
     end_lang = None
     translation_chain_going_on = False
     spellManager = SecretSpells()
@@ -127,7 +124,6 @@ class WordAssociationBot:
         if parts[0].startswith(">>"):
             cmd_args = content[2:]
             if (not cmd_args.startswith("translat")) and re.compile("[^a-zA-Z0-9 -]").search(cmd_args):
-                #self.room.send_message(":%s Command contains invalid characters" % message._message_id)
                 message.reply("Command contains invalid characters")
             else:
                 output = self.command(cmd_args, message, event)
@@ -141,20 +137,9 @@ class WordAssociationBot:
             c = parts[1]
             if re.compile("[^a-zA-Z0-9-]").search(c):
                 return
-            #self.room.send_message(":%s %s" % (message._message_id, GetAssociatedWord(c)))
             word_to_reply = GetAssociatedWord(c)
             self.current_word_to_reply = word_to_reply
             thread.start_new_thread(self.reply_word, (word_to_reply, message, True, c))
-        """elif event.user.id == -2 and self.current_translation_languages_order is not None:
-            if self.curr_lang >= self.translation_count:
-                self.room.send_message("translate %s: %s" % (self.end_lang, message.content))
-                self.end_lang = None
-                self.curr_lang = -1
-                self.current_translation_languages_order = None
-                self.translation_count = -1
-            else:
-                self.room.send_message("translate %s: %s" % (self.current_translation_languages_order[self.curr_lang], message.content))
-                self.curr_lang += 1"""
     
 
     def command(self, cmd, msg, event):
@@ -178,7 +163,6 @@ class WordAssociationBot:
     
     def command_time(self, args, msg, event):
         if len(args) > 0:
-            #self.room.send_message(":%s Time command executed: %s" % (msg_id, args[0]))
             try:
                 new_time = int(args[0])
                 if new_time > -1:
@@ -192,7 +176,6 @@ class WordAssociationBot:
             except ValueError:
                 return "Given argument is not a valid integer."
         else:
-            # self.room.send_message("%s Command does not have enough arguments" % msg_id)
             return "Command does not have enough arguments."
                 
     def command_stop(self, args, msg, event):
@@ -258,19 +241,9 @@ class WordAssociationBot:
             return "Invalid arguments."
         if translation_count < 1:
             return "Invalid arguments."
-        #if self.current_translation_languages_order is None:
         if not self.translation_chain_going_on:
-            #self.current_translation_languages_order = list(self.translation_languages)
             if not args[1] in self.translation_languages or not args[2] in self.translation_languages:
                 return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
-            #mul = int(math.ceil(self.translation_count / float(len(self.translation_languages))))
-            #self.current_translation_languages_order = self.current_translation_languages_order * mul
-            #random.shuffle(self.current_translation_languages_order)
-            #self.current_translation_languages_order = self.current_translation_languages_order[:self.translation_count]
-            #self.avoid_consecutive_duplicates()
-            #self.room.send_message("translate %s: %s" % (self.current_translation_languages_order[0], args[0]))
-            #self.curr_lang = 1
-            #self.end_lang = args[1]
             self.translation_chain_going_on = True
             thread.start_new_thread(self.translationchain, (args[3], args[1], args[2], translation_count))
             return "Translation chain started. Translation made by [Google Translate](https://translate.google.com)"
@@ -301,44 +274,9 @@ class WordAssociationBot:
     
     def translate(self, text, start_lang, end_lang):
         translate_url = "https://translate.google.com/translate_a/single?client=t&sl=%s&tl=%s&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&prev=btn&srcrom=1&ssel=0&tsel=0&q=%s" % (start_lang, end_lang, urllib.quote_plus(text.encode("utf-8")))
-        #r = requests.get("https://translate.google.com/#%s/%s/%s" % (start_lang, end_lang, text))
-        #r = requests.post("https://translate.google.com/translate_t", post_data)
         r = requests.get(translate_url)
-        #soup = BeautifulSoup(r.text)
-        #result = soup.find("span", { "id": "result_box" }).text
         result = r.text.split(",", 1)[0][4:][:-1]
-        #result = re.match('\[\[\["(.+)",', content).group(1)
         return result
-        
-    '''def avoid_consecutive_duplicates(self):
-        max_ = len(self.current_translation_languages_order) - 1
-        i = 0
-        while self.has_consecutive_duplicates(self.current_translation_languages_order):
-            while i < len(self.current_translation_languages_order):
-                if i != max_:
-                    next_ = i + 1
-                    next_next = -1
-                    if i == max_ - 1:
-                        next_next = 0
-                    else:
-                        next_next = i + 2
-                    a = self.current_translation_languages_order[i]
-                    b = self.current_translation_languages_order[next_]
-                    c = self.current_translation_languages_order[next_next]
-                    if a == b:
-                        self.current_translation_languages_order[next_] = c
-                        self.current_translation_languages_order[next_next] = b
-                i += 1
-            
-    def has_consecutive_duplicates(self, l):
-        i = 0
-        max_ = len(l) - 1
-        while i < len(l):
-            if i != max_:
-                if l[i] == l[i + 1]:
-                    return True
-            i += 1
-        return False'''
         
 
 if __name__ == '__main__':
