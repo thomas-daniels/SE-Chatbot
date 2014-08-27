@@ -14,6 +14,7 @@ import math
 from bs4 import BeautifulSoup
 import requests
 import urllib
+import json
 
 class WordAssociationBot:
 
@@ -27,7 +28,9 @@ class WordAssociationBot:
     running = True
     waiting_time = -1
     current_word_to_reply = ""
-    translation_languages = [ "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi" ]
+    translation_languages = [ "auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
+                              "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
+                              "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu" ]
     end_lang = None
     translation_chain_going_on = False
     spellManager = SecretSpells()
@@ -246,10 +249,46 @@ class WordAssociationBot:
                 return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
             self.translation_chain_going_on = True
             thread.start_new_thread(self.translationchain, (args[3], args[1], args[2], translation_count))
-            return "Translation chain started. Translation made by [Google Translate](https://translate.google.com)"
+            return "Translation chain started. Translation made by [Google Translate](https://translate.google.com). It might take some time before messages in the chain are posted due to rate limiting."
         else:
             return "There is already a translation chain going on."
         
+    # rate limiting functions made by Sam
+    def ratelimitingseconds(self, seconds):
+        limit = 0.0
+        a = len(seconds) - 1
+        b = 0
+        throttled = False
+        for i in reversed(range(1, len(seconds))):
+            limit = self.rate_limit_helper_function(a - i)
+
+            if seconds[a] - seconds[i] < limit and not throttled:
+                throttled = True
+                b = limit - (seconds[a] - seconds[i])
+                continue
+
+            if b - (seconds[a] - seconds[i]) < 0:
+                throttled = True
+                a = i
+
+            if seconds[a] - seconds[i] > limit and not throttled:
+                throttled = False
+
+            if seconds[a] - seconds[i] > limit * 2:
+                a = i
+                throttled = False
+
+        limit = self.rate_limit_helper_function(a)
+        
+        return limit - (seconds[a] - seconds[0])
+    
+    def rate_limit_helper_function(self, x):
+        if x < 1:
+            x = 1
+        return min((4.1484 * math.log(x) + 1.02242), 20)
+        
+    seconds_list = []
+    t = -1
     def translationchain(self, text, start_lang, end_lang, translation_count):
         i = 0
         curr_lang = start_lang
@@ -266,18 +305,62 @@ class WordAssociationBot:
                     break
             result = self.translate(curr_text, curr_lang, next_lang)
             curr_text = result
+            #time.sleep(4.15 * math.log((i + 2) % 100) + 1.02)
+            if self.t != -1:
+                time_now = time.time()
+                self.seconds_list.insert(0, int(time_now - self.t))
+                time.sleep(self.ratelimitingseconds(self.seconds_list))
             self.room.send_message("Translate %s-%s: %s" % (curr_lang, next_lang, result))
+            self.t = time.time()
             i += 1
         final_result = self.translate(curr_text, next_lang, end_lang)
+        #time.sleep(4.15 * math.log((i + 2) % 100) + 1.02)
+        time_now = time.time()
+        self.seconds_list.append(int(time_now - self.t))
         self.room.send_message("Final translation result (%s-%s): %s" % (next_lang, end_lang, final_result))
         self.translation_chain_going_on = False
     
     def translate(self, text, start_lang, end_lang):
         translate_url = "https://translate.google.com/translate_a/single?client=t&sl=%s&tl=%s&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&prev=btn&srcrom=1&ssel=0&tsel=0&q=%s" % (start_lang, end_lang, urllib.quote_plus(text.encode("utf-8")))
         r = requests.get(translate_url)
-        result = r.text.split(",", 1)[0][4:][:-1]
-        return result
-        
+        unparsed_json = r.text.split("],[\"\",,", 1)[0].split("]],,", 1)[0][3:]
+        #print unparsed_json
+        #parsed_json = json.loads(unparsed_json)
+        #result_parts = []
+        #for json_arr in parsed_json:
+        #    result_parts.append(json_arr[0])
+        #return " ".join(result_parts)
+        return self.parse(unparsed_json)
+    
+    def parse(self, json):
+        is_open = False
+        is_backslash = False
+        is_translation = True
+        all_str = []
+        curr_str = []
+        for c in json:
+            if c != '"' and not is_open:
+                continue
+            elif c == '"' and not is_open:
+                is_open = True
+            elif c == '\\':
+                is_backslash = not is_backslash
+                if is_translation:
+                    curr_str.append(c)
+            elif c == '"' and is_open and not is_backslash:
+                is_open = False
+                if is_translation:
+                    s = "".join(curr_str).replace("\\\\", "\\").replace("\\\"", "\"")
+                    all_str.append(s)
+                curr_str = []
+                is_backslash = False
+                is_translation = not is_translation
+            else:
+                is_backslash = False
+                if is_translation:
+                    curr_str.append(c)
+        return " ".join(all_str)
+            
 
 if __name__ == '__main__':
     bot = WordAssociationBot()
