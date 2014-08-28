@@ -1,7 +1,7 @@
 SecretSpells.py
 earnedSpells.txt
-config.txt
 .project
 .pydevproject
 *.pyc
 client.log
+config.txt

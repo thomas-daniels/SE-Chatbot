@@ -17,6 +17,7 @@ import urllib
 import json
 import logging
 import logging.handlers
+import os.path
 
 class WordAssociationBot:
 
@@ -59,9 +60,14 @@ class WordAssociationBot:
         email = raw_input("Email address: ")
         password = getpass.getpass("Password: ")
         
-        f = open("config.txt", "r")
-        self.waiting_time = int(f.read());
-        f.close()
+        if os.path.isfile("config.txt"):
+            f = open("config.txt", "r")
+            self.waiting_time = int(f.read());
+            f.close()
+        else:
+            f = open("config.txt", "w")
+            f.write("20")
+            f.close()
 
         self.client = chatexchange.client.Client(site)
         self.client.login(email, password)
