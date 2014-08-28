@@ -5,3 +5,4 @@ earnedSpells.txt
 *.pyc
 client.log
 config.txt
+linkedWords.txt

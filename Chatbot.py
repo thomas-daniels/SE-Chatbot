@@ -38,6 +38,7 @@ class WordAssociationBot:
     end_lang = None
     translation_chain_going_on = False
     spellManager = SecretSpells()
+    links = []
     
     def main(self):
         self.setup_logging()
@@ -45,7 +46,9 @@ class WordAssociationBot:
             'time': self.command_time,
             'viewspells': self.command_viewspells,
             'translationchain': self.command_translationchain,
-            'translate': self.command_translate
+            'translate': self.command_translate,
+            'link': self.command_link,
+            'reply': self.command_reply
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -68,6 +71,10 @@ class WordAssociationBot:
             f = open("config.txt", "w")
             f.write("20")
             f.close()
+            
+        if os.path.isfile("linkedWords.txt"):
+            with open("linkedWords.txt", "r") as f:
+                self.links = pickle.load(f)
 
         self.client = chatexchange.client.Client(site)
         self.client.login(email, password)
@@ -118,14 +125,20 @@ class WordAssociationBot:
                 else:
                     print s
             
-    def reply_word(self, word, message, wait, orig_word):
+    def reply_word(self, word, message, wait, orig_word, word_found):
         if wait and self.waiting_time > 0:
             time.sleep(self.waiting_time)
         if word == self.current_word_to_reply:
-            if word is not None:
-                message.reply(word);
+            #if word is not None:
+            #    message.reply(word);
+            #else:
+            #    self.room.send_message("No associated word found for %s" % orig_word)
+            if word is None and not word_found:
+                self.room.send_message("No associated word found for %s." % orig_word)
+            elif word is None and word_found:
+                self.room.send_message("Associated words found for %s, but all of them have been posted in the latest 10 messages." % orig_word)
             else:
-                self.room.send_message("No associated word found for %s" % orig_word)
+                message.reply(word)
 
     def on_event(self, event, client):
         should_return = False
@@ -170,12 +183,26 @@ class WordAssociationBot:
             c = parts[1]
             if re.compile("[^a-zA-Z0-9-]").search(c):
                 return
-            self.add_word_to_latest_words(c)
-            word_to_reply = GetAssociatedWord(c, self.latest_words)
+            self.find_associated_word_and_reply(c, message)
+            
+    def find_associated_word_and_reply(self, word, message):
+            self.add_word_to_latest_words(word)
+            word_to_reply = GetAssociatedWord(word, self.latest_words)
+            word_found = True if word_to_reply is not None else False
+            if word_to_reply is None:
+                found_links = self.find_links(word)
+                valid_found_links = []
+                if len(found_links) > 0:
+                    word_found = True
+                for link in found_links:
+                    if not link in self.latest_words:
+                        valid_found_links.append(link)
+                if len(valid_found_links) > 0:
+                    word_to_reply = random.choice(valid_found_links)
             if word_to_reply is not None:
                 self.add_word_to_latest_words(word_to_reply)
             self.current_word_to_reply = word_to_reply
-            thread.start_new_thread(self.reply_word, (word_to_reply, message, True, c))
+            thread.start_new_thread(self.reply_word, (word_to_reply, message, True, word, word_found))
             
     def add_word_to_latest_words(self, word):
         self.latest_words.insert(0, word)
@@ -275,6 +302,52 @@ class WordAssociationBot:
                 self.room.send_message(s)
             else:
                 print s
+                
+    def command_link(self, args, msg, event):
+        if len(args) != 2:
+            return "2 arguments expected, %i given." % len(args)
+        if self.links_contain((args[0], args[1])):
+            return "Link is already added."
+        self.links.append((args[0], args[1]))
+        with open("linkedWords.txt", "w") as f:
+            pickle.dump(self.links, f)
+        return "Link added."
+    
+    def command_reply(self, args, msg, event):
+        if len(args) < 1:
+            return "Not enough arguments."
+        msg_id_to_reply_to = -1
+        try:
+            msg_id_to_reply_to = int(args[0])
+        except ValueError:
+            return "Invalid arguments."
+        msg_to_reply_to = self.client.get_message(msg_id_to_reply_to)
+        content = msg_to_reply_to.content_source
+        parts = content.split(" ")
+        msg_does_not_qualify = "Message does not qualify as a message that belongs to the word association game."
+        if len(parts) != 2:
+            return msg_does_not_qualify
+        if not parts[0].startswith("@"):
+            return msg_does_not_qualify
+        if re.compile("[^a-zA-Z0-9-]").search(parts[1]):
+            return "Word contains invalid characters."
+        self.find_associated_word_and_reply(parts[1], msg_to_reply_to)
+        return None
+    
+    def links_contain(self, item):
+        for link in self.links:
+            if item[0] in link and item[1] in link:
+                return True
+        return False
+    
+    def find_links(self, item):
+        results = []
+        for link in self.links:
+            if item in link:
+                i = link.index(item)
+                associated_index = 0 if i == 1 else 1
+                results.append(link[associated_index])
+        return results
 
     def command_translationchain(self, args, msg, event):
         translation_count = -1
