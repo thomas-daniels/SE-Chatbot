@@ -327,7 +327,7 @@ class WordAssociationBot:
         msg_does_not_qualify = "Message does not qualify as a message that belongs to the word association game."
         if len(parts) != 2:
             return msg_does_not_qualify
-        if not parts[0].startswith("@"):
+        if not re.compile("^:([0-9]+)$").search(parts[0]):
             return msg_does_not_qualify
         if re.compile("[^a-zA-Z0-9-]").search(parts[1]):
             return "Word contains invalid characters."
