@@ -30,6 +30,7 @@ class WordAssociationBot:
     running = True
     waiting_time = -1
     current_word_to_reply = ""
+    latest_words = []
     translation_languages = [ "auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
                               "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
                               "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu" ]
@@ -163,9 +164,17 @@ class WordAssociationBot:
             c = parts[1]
             if re.compile("[^a-zA-Z0-9-]").search(c):
                 return
-            word_to_reply = GetAssociatedWord(c)
+            self.add_word_to_latest_words(c)
+            word_to_reply = GetAssociatedWord(c, self.latest_words)
+            if word_to_reply is not None:
+                self.add_word_to_latest_words(word_to_reply)
             self.current_word_to_reply = word_to_reply
             thread.start_new_thread(self.reply_word, (word_to_reply, message, True, c))
+            
+    def add_word_to_latest_words(self, word):
+        self.latest_words.insert(0, word)
+        if len(self.latest_words) > 10:
+            self.latest_words.pop()
     
 
     def command(self, cmd, msg, event):
