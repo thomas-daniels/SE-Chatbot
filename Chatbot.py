@@ -15,6 +15,8 @@ from bs4 import BeautifulSoup
 import requests
 import urllib
 import json
+import logging
+import logging.handlers
 
 class WordAssociationBot:
 
@@ -34,7 +36,9 @@ class WordAssociationBot:
     end_lang = None
     translation_chain_going_on = False
     spellManager = SecretSpells()
+    
     def main(self):
+        self.setup_logging()
         self.commands = { 
             'time': self.command_time,
             'viewspells': self.command_viewspells,
@@ -77,6 +81,24 @@ class WordAssociationBot:
                     print command_out
                 if inputted[1] == "+":
                     self.room.send_message("%s" % command_out)
+                    
+    
+    def setup_logging(self):
+        logger = logging.getLogger(__name__)
+        logging.basicConfig(level=logging.INFO)
+        logger.setLevel(logging.DEBUG)
+
+        # In addition to the basic stderr logging configured globally
+        # above, we'll use a log file for chatexchange.client.
+        wrapper_logger = logging.getLogger('chatexchange.client')
+        wrapper_handler = logging.handlers.TimedRotatingFileHandler(
+           filename='client.log',
+            when='midnight', delay=True, utc=True, backupCount=7,
+        )
+        wrapper_handler.setFormatter(logging.Formatter(
+            "%(asctime)s: %(levelname)s: %(threadName)s: %(message)s"
+        ))
+        wrapper_logger.addHandler(wrapper_handler)
                     
     def scheduled_empty_queue(self):
         while self.running:
@@ -252,43 +274,7 @@ class WordAssociationBot:
             return "Translation chain started. Translation made by [Google Translate](https://translate.google.com). It might take some time before messages in the chain are posted due to rate limiting."
         else:
             return "There is already a translation chain going on."
-        
-    # rate limiting functions made by Sam
-    def ratelimitingseconds(self, seconds):
-        limit = 0.0
-        a = len(seconds) - 1
-        b = 0
-        throttled = False
-        for i in reversed(range(1, len(seconds))):
-            limit = self.rate_limit_helper_function(a - i)
 
-            if seconds[a] - seconds[i] < limit and not throttled:
-                throttled = True
-                b = limit - (seconds[a] - seconds[i])
-                continue
-
-            if b - (seconds[a] - seconds[i]) < 0:
-                throttled = True
-                a = i
-
-            if seconds[a] - seconds[i] > limit and not throttled:
-                throttled = False
-
-            if seconds[a] - seconds[i] > limit * 2:
-                a = i
-                throttled = False
-
-        limit = self.rate_limit_helper_function(a)
-        
-        return limit - (seconds[a] - seconds[0])
-    
-    def rate_limit_helper_function(self, x):
-        if x < 1:
-            x = 1
-        return min((4.1484 * math.log(x) + 1.02242), 20)
-        
-    seconds_list = []
-    t = -1
     def translationchain(self, text, start_lang, end_lang, translation_count):
         i = 0
         curr_lang = start_lang
@@ -305,18 +291,9 @@ class WordAssociationBot:
                     break
             result = self.translate(curr_text, curr_lang, next_lang)
             curr_text = result
-            #time.sleep(4.15 * math.log((i + 2) % 100) + 1.02)
-            if self.t != -1:
-                time_now = time.time()
-                self.seconds_list.insert(0, int(time_now - self.t))
-                time.sleep(self.ratelimitingseconds(self.seconds_list))
             self.room.send_message("Translate %s-%s: %s" % (curr_lang, next_lang, result))
-            self.t = time.time()
             i += 1
         final_result = self.translate(curr_text, next_lang, end_lang)
-        #time.sleep(4.15 * math.log((i + 2) % 100) + 1.02)
-        time_now = time.time()
-        self.seconds_list.append(int(time_now - self.t))
         self.room.send_message("Final translation result (%s-%s): %s" % (next_lang, end_lang, final_result))
         self.translation_chain_going_on = False
     
