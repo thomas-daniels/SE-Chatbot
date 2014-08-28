@@ -42,7 +42,8 @@ class WordAssociationBot:
         self.commands = { 
             'time': self.command_time,
             'viewspells': self.command_viewspells,
-            'translationchain': self.command_translationchain
+            'translationchain': self.command_translationchain,
+            'translate': self.command_translate
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -175,6 +176,10 @@ class WordAssociationBot:
             to_translate = " ".join(args[3:])
             args = args[:3]
             args.append(to_translate)
+        elif cmd_name == "translate":
+            to_translate = " ".join(args[2:])
+            args = args[:2]
+            args.append(to_translate)
         if cmd_name in self.commands:
             return self.commands[cmd_name](args, msg, event)
 
@@ -271,9 +276,16 @@ class WordAssociationBot:
                 return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
             self.translation_chain_going_on = True
             thread.start_new_thread(self.translationchain, (args[3], args[1], args[2], translation_count))
-            return "Translation chain started. Translation made by [Google Translate](https://translate.google.com). It might take some time before messages in the chain are posted due to rate limiting."
+            return "Translation chain started. Translation made by [Google Translate](https://translate.google.com). Some messages in the chain might not be posted due to a reason I don't know."
         else:
             return "There is already a translation chain going on."
+        
+    def command_translate(self, args, msg, event):
+        if len(args) < 3:
+            return "Not enough arguments."
+        if not args[0] in self.translation_languages or not args[1] in self.translation_languages:
+            return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
+        return self.translate(args[2], args[0], args[1])
 
     def translationchain(self, text, start_lang, end_lang, translation_count):
         i = 0
@@ -281,7 +293,11 @@ class WordAssociationBot:
         next_lang = None
         curr_text = text
         choices = list(self.translation_languages)
-        choices.remove(end_lang)
+        if start_lang == end_lang:
+            choices.remove(start_lang)
+        else:
+            choices.remove(start_lang)
+            choices.remove(end_lang)
         while i < translation_count - 1:
             if next_lang is not None:
                 curr_lang = next_lang
@@ -300,7 +316,7 @@ class WordAssociationBot:
     def translate(self, text, start_lang, end_lang):
         translate_url = "https://translate.google.com/translate_a/single?client=t&sl=%s&tl=%s&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&prev=btn&srcrom=1&ssel=0&tsel=0&q=%s" % (start_lang, end_lang, urllib.quote_plus(text.encode("utf-8")))
         r = requests.get(translate_url)
-        unparsed_json = r.text.split("],[\"\",,", 1)[0].split("]],,", 1)[0][3:]
+        unparsed_json = r.text.split("],[\"\",,", 1)[0].split("]]", 1)[0][3:]
         #print unparsed_json
         #parsed_json = json.loads(unparsed_json)
         #result_parts = []

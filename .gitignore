@@ -4,3 +4,4 @@ config.txt
 .project
 .pydevproject
 *.pyc
+client.log
