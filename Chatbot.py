@@ -162,12 +162,12 @@ class WordAssociationBot:
             return
         
         h = HTMLParser()
-        content = h.unescape(message.content)
+        content = h.unescape(message.content_source)
         content = re.sub("\(.+?\)", "", content)
         content = re.sub("\s+", " ", content)
         content = content.strip()
         parts = content.split(" ")
-        if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith("@")) and (event.user.id != -2):
+        if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith(":")) and (event.user.id != -2):
             return
         
         if parts[0].startswith(">>"):
@@ -182,7 +182,7 @@ class WordAssociationBot:
                         self.room.send_message(output[:500])
                     else:
                         message.reply(output)
-        elif parts[0].startswith("@"):
+        elif parts[0].startswith(":") and re.compile("^:([0-9]+)$").search(parts[0]):
             c = parts[1]
             if re.compile("[^a-zA-Z0-9-]").search(c):
                 return
