@@ -338,9 +338,9 @@ class WordAssociationBot:
     def command_link(self, args, msg, event):
         if len(args) != 2:
             return "2 arguments expected, %i given." % len(args)
-        if self.links_contain((args[0], args[1])):
+        if self.links_contain((args[0].replace("_", " "), args[1].replace("_", " "))):
             return "Link is already added."
-        self.links.append((args[0], args[1]))
+        self.links.append((args[0].replace("_", " "), args[1].replace("_", " ")))
         with open("linkedWords.txt", "w") as f:
             pickle.dump(self.links, f)
         return "Link added."
