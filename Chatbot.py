@@ -172,7 +172,7 @@ class WordAssociationBot:
         
         if parts[0].startswith(">>"):
             cmd_args = content[2:]
-            if (not cmd_args.startswith("translat")) and re.compile("[^a-zA-Z0-9 -]").search(cmd_args):
+            if (not cmd_args.startswith("translat")) and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters")
             else:
                 output = self.command(cmd_args, message, event)
