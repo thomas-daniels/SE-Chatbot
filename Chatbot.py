@@ -18,6 +18,7 @@ import json
 import logging
 import logging.handlers
 import os.path
+import sys
 
 class WordAssociationBot:
 
@@ -48,7 +49,9 @@ class WordAssociationBot:
             'translationchain': self.command_translationchain,
             'translate': self.command_translate,
             'link': self.command_link,
-            'reply': self.command_reply
+            'reply': self.command_reply,
+            'random': self.command_random,
+            'randomint': self.command_randomint
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -302,6 +305,35 @@ class WordAssociationBot:
                 self.room.send_message(s)
             else:
                 print s
+    
+    def command_random(self, args, msg, event):
+        return str(random.random())
+    
+    def command_randomint(self, args, msg, event):
+        if len(args) == 0:
+            return str(random.randint(-sys.maxint - 1, sys.maxint))
+        if len(args) == 1:
+            max_ = -1
+            try:
+                max_ = int(args[0])
+            except ValueError:
+                return "Invalid arguments."
+            min_ = -sys.maxint - 1
+            if min_ > max_:
+                return "Min cannot be greater than max."
+            return str(random.randint(min_, max_))
+        if len(args) == 2:
+            min_ = -1
+            max_ = -1
+            try:
+                min_ = int(args[0])
+                max_ = int(args[1])
+            except ValueError:
+                return "Invalid arguments."
+            if min_ > max_:
+                return "Min cannot be greater than max."
+            return str(random.randint(min_, max_))
+        return "Too many arguments."
                 
     def command_link(self, args, msg, event):
         if len(args) != 2:
@@ -336,15 +368,18 @@ class WordAssociationBot:
     
     def links_contain(self, item):
         for link in self.links:
-            if item[0] in link and item[1] in link:
+            lowercase_link = (link[0].lower(), link[1].lower())
+            if item[0].lower() in lowercase_link and item[1].lower() in lowercase_link:
                 return True
         return False
     
     def find_links(self, item):
         results = []
         for link in self.links:
-            if item in link:
-                i = link.index(item)
+            lowercase_link = (link[0].lower(), link[1].lower())
+            lowercase_item = item.lower()
+            if lowercase_item in lowercase_link:
+                i = lowercase_link.index(lowercase_item)
                 associated_index = 0 if i == 1 else 1
                 results.append(link[associated_index])
         return results
