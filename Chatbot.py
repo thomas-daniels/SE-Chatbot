@@ -49,6 +49,7 @@ class WordAssociationBot:
             'translationchain': self.command_translationchain,
             'translate': self.command_translate,
             'link': self.command_link,
+            'removelink': self.command_removelink,
             'reply': self.command_reply,
             'random': self.command_random,
             'randomint': self.command_randomint,
@@ -370,6 +371,11 @@ class WordAssociationBot:
         self.find_associated_word_and_reply(parts[1], msg_to_reply_to)
         return None
     
+    def command_removelink(self, args, msg, event):
+        if len(args) < 2:
+            return "Not enough arguments."
+        return self.remove_link(args[0], args[1])
+    
     def links_contain(self, item):
         for link in self.links:
             lowercase_link = (link[0].lower(), link[1].lower())
@@ -387,6 +393,16 @@ class WordAssociationBot:
                 associated_index = 0 if i == 1 else 1
                 results.append(link[associated_index])
         return results
+    
+    def remove_link(self, item0, item1):
+        for i, link in enumerate(self.links):
+            lowercase_link = (link[0].lower(), link[1].lower())
+            if item0.lower() in lowercase_link and item1.lower() in lowercase_link:
+                self.links.pop(i)
+                with open("linkedWords.txt", "w") as f:
+                    pickle.dump(self.links, f)
+                return "Link removed."
+        return "No link found."
 
     def command_translationchain(self, args, msg, event):
         translation_count = -1
