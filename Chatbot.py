@@ -51,7 +51,8 @@ class WordAssociationBot:
             'link': self.command_link,
             'reply': self.command_reply,
             'random': self.command_random,
-            'randomint': self.command_randomint
+            'randomint': self.command_randomint,
+            'randomchoice': self.command_randomchoice
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -334,6 +335,9 @@ class WordAssociationBot:
                 return "Min cannot be greater than max."
             return str(random.randint(min_, max_))
         return "Too many arguments."
+    
+    def command_randomchoice(self, args, msg, event):
+        return random.choice(args)
                 
     def command_link(self, args, msg, event):
         if len(args) != 2:

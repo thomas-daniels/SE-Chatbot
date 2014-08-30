@@ -4,5 +4,6 @@ earnedSpells.txt
 .pydevproject
 *.pyc
 client.log
+client.log.*
 config.txt
 linkedWords.txt
