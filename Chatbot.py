@@ -38,6 +38,7 @@ class WordAssociationBot:
                               "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu" ]
     end_lang = None
     translation_chain_going_on = False
+    translation_switch_going_on = False
     spellManager = SecretSpells()
     links = []
     
@@ -47,6 +48,7 @@ class WordAssociationBot:
             'time': self.command_time,
             'viewspells': self.command_viewspells,
             'translationchain': self.command_translationchain,
+            'translationswitch': self.command_translationswitch,
             'translate': self.command_translate,
             'link': self.command_link,
             'removelink': self.command_removelink,
@@ -219,7 +221,7 @@ class WordAssociationBot:
         cmd_args = cmd.split(' ')
         cmd_name = cmd_args[0]
         args = cmd_args[1:]
-        if cmd_name == "translationchain":
+        if cmd_name == "translationchain" or cmd_name == "translationswitch":
             to_translate = " ".join(args[3:])
             args = args[:3]
             args.append(to_translate)
@@ -423,6 +425,26 @@ class WordAssociationBot:
         else:
             return "There is already a translation chain going on."
         
+    def command_translationswitch(self, args, msg, event):
+        if self.translation_switch_going_on:
+            return "There is already a translation switch going on."
+        translation_count = -1
+        if len(args) < 4:
+            return "Not enough arguments."
+        try:
+            translation_count = int(args[0])
+        except ValueError:
+            return "Invalid arguments."
+        if translation_count < 2:
+            return "Invalid arguments."
+        if (translation_count % 2) == 1:
+            return "Translation count has to be an even number."
+        if not args[1] in self.translation_languages or not args[2] in self.translation_languages:
+            return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
+        self.translation_switch_going_on = True
+        thread.start_new_thread(self.translationswitch, (args[3], args[1], args[2], translation_count))
+        return "Translation switch started. Translation made by [Google Translate](https://translate.google.com). Some messages in the switch might not be posted due to a reason I don't know."
+        
     def command_translate(self, args, msg, event):
         if len(args) < 3:
             return "Not enough arguments."
@@ -455,6 +477,20 @@ class WordAssociationBot:
         final_result = self.translate(curr_text, next_lang, end_lang)
         self.room.send_message("Final translation result (%s-%s): %s" % (next_lang, end_lang, final_result))
         self.translation_chain_going_on = False
+        
+    def translationswitch(self, text, lang1, lang2, translation_count):
+        i = 1
+        curr_text = text
+        while i <= translation_count:
+            if (i % 2) == 0:
+                lang_order = (lang2, lang1)
+            else:
+                lang_order = (lang1, lang2)
+            curr_text = self.translate(curr_text, lang_order[0], lang_order[1])
+            msg_text = "Translate %s-%s: %s" if i != translation_count else "Final result (%s-%s): %s"
+            self.room.send_message(msg_text % (lang_order + (curr_text,)))
+            i += 1
+        self.translation_switch_going_on = False
     
     def translate(self, text, start_lang, end_lang):
         translate_url = "https://translate.google.com/translate_a/single?client=t&sl=%s&tl=%s&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&prev=btn&srcrom=1&ssel=0&tsel=0&q=%s" % (start_lang, end_lang, urllib.quote_plus(text.encode("utf-8")))
