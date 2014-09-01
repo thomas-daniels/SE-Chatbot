@@ -90,6 +90,7 @@ class WordAssociationBot:
     
         self.room = self.client.get_room(room_number)
         self.room.join()
+        self.room.send_message("Bot started with waiting time set to %i seconds" % self.waiting_time)
         self.room.watch(self.on_event)
             
         thread.start_new_thread(self.scheduled_empty_queue, ())
