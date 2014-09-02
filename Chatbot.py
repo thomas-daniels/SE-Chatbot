@@ -31,7 +31,7 @@ class WordAssociationBot:
     enabled = True
     running = True
     waiting_time = -1
-    current_word_to_reply = ""
+    current_word_to_reply_to = ""
     latest_words = []
     translation_languages = [ "auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
                               "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
@@ -104,6 +104,8 @@ class WordAssociationBot:
                     print command_out
                 if inputted[1] == "+":
                     self.room.send_message("%s" % command_out)
+            else:
+                self.room.send_message(inputted)
                     
     
     def setup_logging(self):
@@ -133,20 +135,26 @@ class WordAssociationBot:
                 else:
                     print s
             
-    def reply_word(self, word, message, wait, orig_word, word_found):
+    def reply_word(self, message, wait, orig_word):
+        self.current_word_to_reply_to = orig_word
         if wait and self.waiting_time > 0:
             time.sleep(self.waiting_time)
-        if word == self.current_word_to_reply:
+        if self.current_word_to_reply_to != orig_word:
+            return
+        word_tuple = self.find_associated_word(orig_word, message)
+        word = word_tuple[0]
+        word_found = word_tuple[1]
+        #if word == self.current_word_to_reply:
             #if word is not None:
             #    message.reply(word);
             #else:
             #    self.room.send_message("No associated word found for %s" % orig_word)
-            if word is None and not word_found:
-                self.room.send_message("No associated word found for %s." % orig_word)
-            elif word is None and word_found:
-                self.room.send_message("Associated words found for %s, but all of them have been posted in the latest 10 messages." % orig_word)
-            else:
-                message.reply(word)
+        if word is None and not word_found:
+            self.room.send_message("No associated word found for %s." % orig_word)
+        elif word is None and word_found:
+            self.room.send_message("Associated words found for %s, but all of them have been posted in the latest 10 messages." % orig_word)
+        else:
+            message.reply(word)
 
     def on_event(self, event, client):
         should_return = False
@@ -191,9 +199,9 @@ class WordAssociationBot:
             c = parts[1]
             if re.compile("[^a-zA-Z0-9-]").search(c):
                 return
-            self.find_associated_word_and_reply(c, message)
+            thread.start_new_thread(self.reply_word, (message, True, c))
             
-    def find_associated_word_and_reply(self, word, message):
+    def find_associated_word(self, word, message):
             self.add_word_to_latest_words(word)
             word_to_reply = GetAssociatedWord(word, self.latest_words)
             word_found = True if word_to_reply is not None else False
@@ -209,8 +217,8 @@ class WordAssociationBot:
                     word_to_reply = random.choice(valid_found_links)
             if word_to_reply is not None:
                 self.add_word_to_latest_words(word_to_reply)
-            self.current_word_to_reply = word_to_reply
-            thread.start_new_thread(self.reply_word, (word_to_reply, message, True, word, word_found))
+            return (word_to_reply, word_found)
+            #thread.start_new_thread(self.reply_word, (word_to_reply, message, True, word, word_found))
             
     def add_word_to_latest_words(self, word):
         self.latest_words.insert(0, word)
