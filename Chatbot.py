@@ -379,7 +379,7 @@ class WordAssociationBot:
             return msg_does_not_qualify
         if re.compile("[^a-zA-Z0-9-]").search(parts[1]):
             return "Word contains invalid characters."
-        self.find_associated_word_and_reply(parts[1], msg_to_reply_to)
+        self.reply_word(msg_to_reply_to, False, parts[1])
         return None
     
     def command_removelink(self, args, msg, event):
