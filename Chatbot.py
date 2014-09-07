@@ -342,7 +342,11 @@ class WordAssociationBot:
             user_id = int(args[0])
         except ValueError:
             return "Invalid arguments."
-        return self.spellManager.view_spells(user_id)
+        try:
+            spells = self.spellManager.view_spells(user_id)
+            return spells
+        except:
+            return "An error occurred."
     
     def command_emptyqueue(self, args, msg, event):
         awarded = self.spellManager.empty_queue()
