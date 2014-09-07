@@ -42,6 +42,8 @@ class WordAssociationBot:
     translation_switch_going_on = False
     spellManager = SecretSpells()
     links = []
+    banned = {}
+    site = ""
     
     def main(self):
         self.setup_logging()
@@ -65,7 +67,9 @@ class WordAssociationBot:
             'disable': self.command_disable,
             'enable': self.command_enable,
             'award': self.command_award,
-            'emptyqueue': self.command_emptyqueue      
+            'emptyqueue': self.command_emptyqueue,
+            'ban': self.command_ban,
+            'unban': self.command_unban 
         }
         self.spellManager.init()
         in_den = raw_input("Does the bot run in Shadow's Den? (y/n) ").lower()
@@ -76,7 +80,7 @@ class WordAssociationBot:
         else:
             self.in_shadows_den = False
             print("Invalid input; assumed 'no'")
-        site = raw_input("Site: ")
+        self.site = raw_input("Site: ")
         room_number = int(raw_input("Room number: "))
         email = raw_input("Email address: ")
         password = getpass.getpass("Password: ")
@@ -93,8 +97,11 @@ class WordAssociationBot:
         if os.path.isfile("linkedWords.txt"):
             with open("linkedWords.txt", "r") as f:
                 self.links = pickle.load(f)
+        if os.path.isfile("bannedUsers.txt"):
+            with open("bannedUsers.txt", "r") as f:
+                self.banned = pickle.load(f)
 
-        self.client = chatexchange.client.Client(site)
+        self.client = chatexchange.client.Client(self.site)
         self.client.login(email, password)
         
         self.spellManager.c = self.client
@@ -206,6 +213,9 @@ class WordAssociationBot:
             return
         
         if parts[0].startswith(">>"):
+            if self.site in self.banned:
+                if event.user.id in self.banned[self.site]:
+                    return
             cmd_args = content[2:]
             if (not cmd_args.startswith("translat")) and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters")
@@ -370,6 +380,39 @@ class WordAssociationBot:
     
     def command_randomchoice(self, args, msg, event):
         return random.choice(args)
+    
+    def command_ban(self, args, msg, event):
+        banned_user = -1
+        try:
+            banned_user = int(args[0])
+        except ValueError:
+            return "Invalid arguments."
+        if not self.site in self.banned:
+            self.banned[self.site] = []
+        if not banned_user in self.banned[self.site]:
+            self.banned[self.site].append(banned_user)
+        else:
+            return "Already banned."
+        with open("bannedUsers.txt", "w") as f:
+            pickle.dump(self.banned, f)
+        user_name = self.client.get_user(banned_user).name.replace(" ", "")
+        return "User @%s has been banned from using the commands." % user_name
+            
+    def command_unban(self, args, msg, event):
+        banned_user = -1
+        try:
+            banned_user = int(args[0])
+        except ValueError:
+            return "Invalid arguments."
+        if not self.site in self.banned:
+            return "Not banned."
+        if not banned_user in self.banned[self.site]:
+            return "Not banned."
+        self.banned[self.site].remove(banned_user)
+        with open("bannedUsers.txt", "w") as f:
+            pickle.dump(self.banned, f)
+        user_name = self.client.get_user(banned_user).name.replace(" ", "")
+        return "User @%s has been unbanned." % user_name
                 
     def command_link(self, args, msg, event):
         if len(args) != 2:
@@ -477,6 +520,8 @@ class WordAssociationBot:
     def command_translate(self, args, msg, event):
         if len(args) < 3:
             return "Not enough arguments."
+        if args[0] == args[1]:
+            return "There's no point in having the same input language as output language."
         if not args[0] in self.translation_languages or not args[1] in self.translation_languages:
             return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
         return self.translate(args[2], args[0], args[1])

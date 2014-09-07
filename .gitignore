@@ -7,3 +7,4 @@ client.log
 client.log.*
 config.txt
 linkedWords.txt
+bannedUsers.txt
