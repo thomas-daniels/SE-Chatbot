@@ -53,7 +53,8 @@ class WordAssociationBot:
             'translate': self.command_translate,
             'random': self.command_random,
             'randomint': self.command_randomint,
-            'randomchoice': self.command_randomchoice
+            'randomchoice': self.command_randomchoice,
+            'shuffle': self.command_shuffle
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
@@ -379,7 +380,16 @@ class WordAssociationBot:
         return "Too many arguments."
     
     def command_randomchoice(self, args, msg, event):
+        if len(args) < 1:
+            return "Not enough arguments."
         return random.choice(args)
+    
+    def command_shuffle(self, args, msg, event):
+        if len(args) < 1:
+            return "Not enough arguments."
+        list_to_shuffle = list(args)
+        random.shuffle(list_to_shuffle)
+        return " ".join(list_to_shuffle)
     
     def command_ban(self, args, msg, event):
         banned_user = -1
