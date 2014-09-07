@@ -54,7 +54,9 @@ class WordAssociationBot:
             'random': self.command_random,
             'randomint': self.command_randomint,
             'randomchoice': self.command_randomchoice,
-            'shuffle': self.command_shuffle
+            'shuffle': self.command_shuffle,
+            'listcommands': self.command_listcommands,
+            'help': self.command_help
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
@@ -423,6 +425,15 @@ class WordAssociationBot:
             pickle.dump(self.banned, f)
         user_name = self.client.get_user(banned_user).name.replace(" ", "")
         return "User @%s has been unbanned." % user_name
+    
+    def command_listcommands(self, args, msg, event):
+        command_keys = self.commands.keys()
+        if self.in_shadows_den:
+            command_keys += self.shadows_den_specific_commands.keys()
+        return "Commands: %s" % (", ".join(command_keys),)
+    
+    def command_help(self, args, msg, event):
+        return "I'm FOX 9000, ProgramFOX's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running >>listcommands"
                 
     def command_link(self, args, msg, event):
         if len(args) != 2:
