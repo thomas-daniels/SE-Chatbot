@@ -444,6 +444,9 @@ class WordAssociationBot:
             return "Invalid arguments."
         msg_to_reply_to = self.client.get_message(msg_id_to_reply_to)
         content = msg_to_reply_to.content_source
+        content = re.sub("\(.+?\)", "", content)
+        content = re.sub("\s+", " ", content)
+        content = content.strip()
         parts = content.split(" ")
         msg_does_not_qualify = "Message does not qualify as a message that belongs to the word association game."
         if len(parts) != 2:
