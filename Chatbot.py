@@ -33,6 +33,7 @@ class WordAssociationBot:
     waiting_time = -1
     current_word_to_reply_to = ""
     latest_words = []
+    in_shadows_den = False
     translation_languages = [ "auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
                               "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
                               "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu" ]
@@ -45,17 +46,19 @@ class WordAssociationBot:
     def main(self):
         self.setup_logging()
         self.commands = { 
-            'time': self.command_time,
-            'viewspells': self.command_viewspells,
             'translationchain': self.command_translationchain,
             'translationswitch': self.command_translationswitch,
             'translate': self.command_translate,
-            'link': self.command_link,
-            'removelink': self.command_removelink,
-            'reply': self.command_reply,
             'random': self.command_random,
             'randomint': self.command_randomint,
             'randomchoice': self.command_randomchoice
+        }
+        self.shadows_den_specific_commands = {
+            'time': self.command_time,
+            'viewspells': self.command_viewspells,
+            'link': self.command_link,
+            'removelink': self.command_removelink,
+            'reply': self.command_reply
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -65,6 +68,14 @@ class WordAssociationBot:
             'emptyqueue': self.command_emptyqueue      
         }
         self.spellManager.init()
+        in_den = raw_input("Does the bot run in Shadow's Den? (y/n) ").lower()
+        if in_den == "y":
+            self.in_shadows_den = True
+        elif in_den == "n":
+            self.in_shadows_den = False
+        else:
+            self.in_shadows_den = False
+            print("Invalid input; assumed 'no'")
         site = raw_input("Site: ")
         room_number = int(raw_input("Room number: "))
         email = raw_input("Email address: ")
@@ -90,7 +101,8 @@ class WordAssociationBot:
     
         self.room = self.client.get_room(room_number)
         self.room.join()
-        self.room.send_message("Bot started with waiting time set to %i seconds" % self.waiting_time)
+        bot_message = "Bot started with waiting time set to %i seconds" % self.waiting_time if self.in_shadows_den else "Bot started"
+        self.room.send_message(bot_message)
         self.room.watch(self.on_event)
             
         thread.start_new_thread(self.scheduled_empty_queue, ())
@@ -164,7 +176,7 @@ class WordAssociationBot:
             should_return = False
         if not self.running:
             should_return = True
-        if not isinstance(event, chatexchange.events.MessagePosted):
+        if not isinstance(event, chatexchange.events.MessagePosted) and not isinstance(event, chatexchange.events.MessageReply):
             should_return = True
         if should_return:
             return
@@ -182,6 +194,13 @@ class WordAssociationBot:
         parts = content.split(" ")
         if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith(":")) and (event.user.id != -2):
             return
+
+        if isinstance(event, chatexchange.events.MessageReply) and self.in_shadows_den and parts[0].startswith(":") and re.compile("^:([0-9]+)$").search(parts[0]):
+            c = parts[1]
+            if re.compile("[^a-zA-Z0-9-]").search(c):
+                return
+            thread.start_new_thread(self.reply_word, (message, True, c))
+            return
         
         if parts[0].startswith(">>"):
             cmd_args = content[2:]
@@ -195,11 +214,6 @@ class WordAssociationBot:
                         self.room.send_message(output[:500])
                     else:
                         message.reply(output)
-        elif parts[0].startswith(":") and re.compile("^:([0-9]+)$").search(parts[0]):
-            c = parts[1]
-            if re.compile("[^a-zA-Z0-9-]").search(c):
-                return
-            thread.start_new_thread(self.reply_word, (message, True, c))
             
     def find_associated_word(self, word, message):
             self.add_word_to_latest_words(word)
@@ -238,8 +252,11 @@ class WordAssociationBot:
             to_translate = " ".join(args[2:])
             args = args[:2]
             args.append(to_translate)
-        if cmd_name in self.commands:
-            return self.commands[cmd_name](args, msg, event)
+        commands_to_use = self.commands.copy()
+        if self.in_shadows_den:
+            commands_to_use.update(self.shadows_den_specific_commands)
+        if cmd_name in commands_to_use:
+            return commands_to_use[cmd_name](args, msg, event)
 
         elif cmd_name in self.owner_commands:
             if msg is None or event.user.id == self.owner_id:
