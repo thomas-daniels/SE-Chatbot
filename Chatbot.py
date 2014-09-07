@@ -108,7 +108,7 @@ class WordAssociationBot:
     
         self.room = self.client.get_room(room_number)
         self.room.join()
-        bot_message = "Bot started with waiting time set to %i seconds" % self.waiting_time if self.in_shadows_den else "Bot started"
+        bot_message = "Bot started with waiting time set to %i seconds." % self.waiting_time if self.in_shadows_den else "Bot started."
         self.room.send_message(bot_message)
         self.room.watch(self.on_event)
             
@@ -218,7 +218,7 @@ class WordAssociationBot:
                     return
             cmd_args = content[2:]
             if (not cmd_args.startswith("translat")) and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
-                message.reply("Command contains invalid characters")
+                message.reply("Command contains invalid characters.")
             else:
                 output = self.command(cmd_args, message, event)
                 if output != False and output is not None:
@@ -275,9 +275,9 @@ class WordAssociationBot:
             if msg is None or event.user.id == self.owner_id:
                 return self.owner_commands[cmd_name](args, msg, event)
             else:
-                return "You don't have the privilege to execute this command"
+                return "You don't have the privilege to execute this command."
         else:
-            return "Command not found"
+            return "Command not found."
     
     def command_time(self, args, msg, event):
         if len(args) > 0:
