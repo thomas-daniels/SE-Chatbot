@@ -169,6 +169,8 @@ class WordAssociationBot:
             message.reply(word)
 
     def on_event(self, event, client):
+        if self.in_shadows_den:
+            self.spellManager.check_spells(event)
         should_return = False
         if not self.enabled:
             should_return = True
@@ -176,7 +178,7 @@ class WordAssociationBot:
             should_return = False
         if not self.running:
             should_return = True
-        if not isinstance(event, chatexchange.events.MessagePosted) and not isinstance(event, chatexchange.events.MessageReply):
+        if not isinstance(event, chatexchange.events.MessagePosted):
             should_return = True
         if should_return:
             return
@@ -188,14 +190,15 @@ class WordAssociationBot:
         
         h = HTMLParser()
         content = h.unescape(message.content_source)
-        content = re.sub("\(.+?\)", "", content)
+        if not content.startswith(">>translat"):
+            content = re.sub("\(.+?\)", "", content)
         content = re.sub("\s+", " ", content)
         content = content.strip()
         parts = content.split(" ")
         if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith(":")) and (event.user.id != -2):
             return
 
-        if isinstance(event, chatexchange.events.MessageReply) and self.in_shadows_den and parts[0].startswith(":") and re.compile("^:([0-9]+)$").search(parts[0]):
+        if self.in_shadows_den and parts[0].startswith(":") and re.compile("^:([0-9]+)$").search(parts[0]):
             c = parts[1]
             if re.compile("[^a-zA-Z0-9-]").search(c):
                 return
