@@ -23,31 +23,28 @@ from SpellManager import SpellManager
 import pickle
 
 class WordAssociationBot:
-
-    room = None
-    client = None
-    commands = {}
-    owner_commands = {}
-    owner_id = 229438 # change this into your ID
-    owner_name = "ProgramFOX" # change this into your name
-    enabled = True
-    running = True
-    waiting_time = -1
-    current_word_to_reply_to = ""
-    latest_words = []
-    in_shadows_den = False
-    translation_languages = [ "auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
-                              "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
-                              "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu" ]
-    end_lang = None
-    translation_chain_going_on = False
-    translation_switch_going_on = False
-    spell_manager = SpellManager()
-    links = []
-    banned = {}
-    site = ""
     
     def main(self):
+        self.room = None
+        self.client = None
+        self.owner_id = 229438 # change this into your ID
+        self.owner_name = "ProgramFOX" # change this into your name
+        self.enabled = True
+        self.running = True
+        self.waiting_time = -1
+        self.current_word_to_reply_to = ""
+        self.latest_words = []
+        self.in_shadows_den = False
+        self.translation_languages = [ "auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
+                                       "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
+                                       "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu" ]
+        self.end_lang = None
+        self.translation_chain_going_on = False
+        self.translation_switch_going_on = False
+        self.spell_manager = SpellManager()
+        self.links = []
+        self.banned = {}
+        self.site = ""
         self.setup_logging()
         self.commands = { 
             'translationchain': self.command_translationchain,
