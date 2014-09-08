@@ -19,6 +19,8 @@ import logging
 import logging.handlers
 import os.path
 import sys
+from SpellManager import SpellManager
+import pickle
 
 class WordAssociationBot:
 
@@ -40,7 +42,7 @@ class WordAssociationBot:
     end_lang = None
     translation_chain_going_on = False
     translation_switch_going_on = False
-    spellManager = SecretSpells()
+    spell_manager = SpellManager()
     links = []
     banned = {}
     site = ""
@@ -74,7 +76,7 @@ class WordAssociationBot:
             'ban': self.command_ban,
             'unban': self.command_unban 
         }
-        self.spellManager.init()
+        self.spell_manager.init()
         in_den = raw_input("Does the bot run in Shadow's Den? (y/n) ").lower()
         if in_den == "y":
             self.in_shadows_den = True
@@ -107,7 +109,7 @@ class WordAssociationBot:
         self.client = chatexchange.client.Client(self.site)
         self.client.login(email, password)
         
-        self.spellManager.c = self.client
+        self.spell_manager.c = self.client
     
         self.room = self.client.get_room(room_number)
         self.room.join()
@@ -150,7 +152,7 @@ class WordAssociationBot:
     def scheduled_empty_queue(self):
         while self.running:
             time.sleep(15 * 60)
-            awarded = self.spellManager.empty_queue()
+            awarded = self.spell_manager.empty_queue()
             for s in awarded:
                 if self.room is not None:
                     self.room.send_message(s)
@@ -180,7 +182,7 @@ class WordAssociationBot:
 
     def on_event(self, event, client):
         if self.in_shadows_den:
-            self.spellManager.check_spells(event)
+            self.spell_manager.check_spells(event)
         should_return = False
         if not self.enabled:
             should_return = True
@@ -332,7 +334,7 @@ class WordAssociationBot:
             add_to_queue = True
         else:
             return "Invalid arguments."
-        return self.spellManager.award(spell_id, user_id, add_to_queue)
+        return self.spell_manager.award(spell_id, user_id, add_to_queue)
         
     def command_viewspells(self, args, msg, event):
         if len(args) < 1:
@@ -343,13 +345,13 @@ class WordAssociationBot:
         except ValueError:
             return "Invalid arguments."
         try:
-            spells = self.spellManager.view_spells(user_id)
+            spells = self.spell_manager.view_spells(user_id)
             return spells
         except:
             return "An error occurred."
     
     def command_emptyqueue(self, args, msg, event):
-        awarded = self.spellManager.empty_queue()
+        awarded = self.spell_manager.empty_queue()
         for s in awarded:
             if self.room is not None:
                 self.room.send_message(s)
