@@ -3,14 +3,14 @@ import os.path
 from SecretSpells import SecretSpells
 
 class SpellManager:
-    
-    spellQueue = {}
-    earnedSpells = {}
-    c = None
-    secret_spells = None
+
     def init(self):
-        secret_spells = SecretSpells()
-        secret_spells.init()
+        self.spellQueue = {}
+        self.earnedSpells = {}
+        self.c = None
+        self.secret_spells = None
+        self.secret_spells = SecretSpells()
+        self.secret_spells.init()
         if os.path.isfile("earnedSpells.txt"):
             self.load()
             
