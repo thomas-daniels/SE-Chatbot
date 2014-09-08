@@ -506,6 +506,8 @@ class WordAssociationBot:
         return "No link found."
 
     def command_translationchain(self, args, msg, event):
+        if event.user.id != self.owner_id:
+            return "The `translationchain` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
         translation_count = -1
         if len(args) < 4:
             return "Not enough arguments."
@@ -525,6 +527,8 @@ class WordAssociationBot:
             return "There is already a translation chain going on."
         
     def command_translationswitch(self, args, msg, event):
+        if event.user.id != self.owner_id:
+            return "The `translationswitch` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
         if self.translation_switch_going_on:
             return "There is already a translation switch going on."
         translation_count = -1
