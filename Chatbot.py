@@ -204,8 +204,9 @@ class WordAssociationBot:
         h = HTMLParser()
         content = h.unescape(message.content_source)
         if not content.startswith(">>translat"):
-            content = re.sub("\(.+?\)", "", content)
-        content = re.sub("\s+", " ", content)
+            content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
+            content = re.sub(r"\(.+?\)", "", content)
+        content = re.sub(r"\s+", " ", content)
         content = content.strip()
         parts = content.split(" ")
         if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith(":")) and (event.user.id != -2):
@@ -467,8 +468,9 @@ class WordAssociationBot:
                 return "'recent' has a value of -1, which is not a valid message ID. Please provide an explicit ID."
         msg_to_reply_to = chatexchange.messages.Message(msg_id_to_reply_to, self.client)
         content = msg_to_reply_to.content_source
-        content = re.sub("\(.+?\)", "", content)
-        content = re.sub("\s+", " ", content)
+        content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
+        content = re.sub(r"\(.+?\)", "", content)
+        content = re.sub(r"\s+", " ", content)
         content = content.strip()
         parts = content.split(" ")
         msg_does_not_qualify = "Message does not qualify as a message that belongs to the word association game."
