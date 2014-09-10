@@ -237,8 +237,9 @@ class WordAssociationBot:
             
     def find_associated_word(self, word, message):
             self.add_word_to_latest_words(word)
-            word_to_reply = GetAssociatedWord(word, self.latest_words)
-            word_found = True if word_to_reply is not None else False
+            get_word = GetAssociatedWord(word, self.latest_words)
+            word_to_reply = get_word[0]
+            word_found = get_word[1]
             if word_to_reply is None:
                 found_links = self.find_links(word)
                 valid_found_links = []
