@@ -5,17 +5,12 @@ import chatexchange.events
 import getpass
 import re
 from GetAssociatedWord import GetAssociatedWord
-from SecretSpells import *
 from HTMLParser import HTMLParser
 import thread
 import time
 import random
-import math
-from bs4 import BeautifulSoup
 import requests
 import urllib
-import json
-import logging
 import logging.handlers
 import os.path
 import sys
