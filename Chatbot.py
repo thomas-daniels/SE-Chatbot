@@ -46,6 +46,7 @@ class WordAssociationBot:
         self.banned = {}
         self.site = ""
         self.setup_logging()
+        self.msg_id_no_reply_found = -1
         self.commands = { 
             'translationchain': self.command_translationchain,
             'translationswitch': self.command_translationswitch,
@@ -172,9 +173,12 @@ class WordAssociationBot:
             #    self.room.send_message("No associated word found for %s" % orig_word)
         if word is None and not word_found:
             self.room.send_message("No associated word found for %s." % orig_word)
+            self.msg_id_no_reply_found = message.id
         elif word is None and word_found:
             self.room.send_message("Associated words found for %s, but all of them have been posted in the latest 10 messages." % orig_word)
+            self.msg_id_no_reply_found = -1
         else:
+            self.msg_id_no_reply_found = -1
             message.reply(word)
 
     def on_event(self, event, client):
@@ -455,8 +459,13 @@ class WordAssociationBot:
         try:
             msg_id_to_reply_to = int(args[0])
         except ValueError:
-            return "Invalid arguments."
-        msg_to_reply_to = self.client.get_message(msg_id_to_reply_to)
+            if args[0] == "recent":
+                msg_id_to_reply_to = self.msg_id_no_reply_found
+            else:
+                return "Invalid arguments."
+            if msg_id_to_reply_to == -1:
+                return "'recent' has a value of -1, which is not a valid message ID. Please provide an explicit ID."
+        msg_to_reply_to = chatexchange.messages.Message(msg_id_to_reply_to, self.client)
         content = msg_to_reply_to.content_source
         content = re.sub("\(.+?\)", "", content)
         content = re.sub("\s+", " ", content)
@@ -471,7 +480,7 @@ class WordAssociationBot:
             return "Word contains invalid characters."
         self.reply_word(msg_to_reply_to, False, parts[1])
         return None
-    
+
     def command_removelink(self, args, msg, event):
         if len(args) < 2:
             return "Not enough arguments."
