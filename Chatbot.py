@@ -361,7 +361,7 @@ class WordAssociationBot:
     
     def command_randomint(self, args, msg, event):
         if len(args) == 0:
-            return str(random.randint(-sys.maxint - 1, sys.maxint))
+            return str(random.randint(0, sys.maxint))
         if len(args) == 1:
             max_ = -1
             try:
