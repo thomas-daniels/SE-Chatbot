@@ -108,7 +108,7 @@ class WordAssociationBot:
         self.room.join()
         bot_message = "Bot started with waiting time set to %i seconds." % self.waiting_time if self.in_shadows_den else "Bot started."
         self.room.send_message(bot_message)
-        self.room.watch_socket(self.on_event)
+        self.room.watch(self.on_event)
             
         thread.start_new_thread(self.scheduled_empty_queue, ())
         
