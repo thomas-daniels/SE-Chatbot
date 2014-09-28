@@ -43,15 +43,15 @@ class WordAssociationBot:
         self.setup_logging()
         self.msg_id_no_reply_found = -1
         self.commands = { 
-            'translationchain': self.command_translationchain,
-            'translationswitch': self.command_translationswitch,
             'translate': self.command_translate,
             'random': self.command_random,
             'randomint': self.command_randomint,
             'randomchoice': self.command_randomchoice,
             'shuffle': self.command_shuffle,
             'listcommands': self.command_listcommands,
-            'help': self.command_help
+            'help': self.command_help,
+            'xkcdrandomnumber': self.command_xkcdrandomnumber,
+            'xkcd': self.command_xkcd
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
@@ -67,7 +67,9 @@ class WordAssociationBot:
             'award': self.command_award,
             'emptyqueue': self.command_emptyqueue,
             'ban': self.command_ban,
-            'unban': self.command_unban 
+            'unban': self.command_unban,
+            'translationchain': self.command_translationchain,
+            'translationswitch': self.command_translationswitch
         }
         self.spell_manager.init()
         in_den = raw_input("Does the bot run in Shadow's Den? (y/n) ").lower()
@@ -429,6 +431,19 @@ class WordAssociationBot:
             pickle.dump(self.banned, f)
         user_name = self.client.get_user(banned_user).name.replace(" ", "")
         return "User @%s has been unbanned." % user_name
+    
+    def command_xkcdrandomnumber(self, args, msg, event):
+        return "[4 // Chosen by fair dice roll. Guaranteed to be random.](http://xkcd.com/221/)"
+    
+    def command_xkcd(self, args, msg, event):
+        if len(args) < 1:
+            return "Not enough arguments."
+        id_ = -1
+        try:
+            id_ = int(args[0])
+        except:
+            return "Invalid arguments."
+        return "http://xkcd.com/%i/" % id_
     
     def command_listcommands(self, args, msg, event):
         command_keys = self.commands.keys()
