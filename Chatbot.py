@@ -16,6 +16,7 @@ import os.path
 import sys
 from SpellManager import SpellManager
 import pickle
+from CommandHelp import CommandHelp
 
 class WordAssociationBot:
     
@@ -370,7 +371,7 @@ class WordAssociationBot:
                 max_ = int(args[0])
             except ValueError:
                 return "Invalid arguments."
-            min_ = -sys.maxint - 1
+            min_ = 0
             if min_ > max_:
                 return "Min cannot be greater than max."
             return str(random.randint(min_, max_))
@@ -452,7 +453,14 @@ class WordAssociationBot:
         return "Commands: %s" % (", ".join(command_keys),)
     
     def command_help(self, args, msg, event):
-        return "I'm FOX 9000, ProgramFOX's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running >>listcommands"
+        if len(args) == 0:
+            return "I'm FOX 9000, ProgramFOX's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command."
+        else:
+            command_to_look_up = args[0]
+            if command_to_look_up in CommandHelp:
+                return CommandHelp[command_to_look_up]
+            else:
+                return "Command not found."
                 
     def command_link(self, args, msg, event):
         if len(args) != 2:
