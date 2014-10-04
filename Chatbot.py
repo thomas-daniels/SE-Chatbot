@@ -164,11 +164,6 @@ class WordAssociationBot:
         word_tuple = self.find_associated_word(orig_word, message)
         word = word_tuple[0]
         word_found = word_tuple[1]
-        #if word == self.current_word_to_reply:
-            #if word is not None:
-            #    message.reply(word);
-            #else:
-            #    self.room.send_message("No associated word found for %s" % orig_word)
         if word is None and not word_found:
             self.room.send_message("No associated word found for %s." % orig_word)
             self.msg_id_no_reply_found = message.id
@@ -251,7 +246,6 @@ class WordAssociationBot:
             if word_to_reply is not None:
                 self.add_word_to_latest_words(word_to_reply)
             return (word_to_reply, word_found)
-            #thread.start_new_thread(self.reply_word, (word_to_reply, message, True, word, word_found))
             
     def add_word_to_latest_words(self, word):
         self.latest_words.insert(0, word)
@@ -631,12 +625,6 @@ class WordAssociationBot:
         translate_url = "https://translate.google.com/translate_a/single?client=t&sl=%s&tl=%s&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&prev=btn&srcrom=1&ssel=0&tsel=0&q=%s" % (start_lang, end_lang, urllib.quote_plus(text.encode("utf-8")))
         r = requests.get(translate_url)
         unparsed_json = r.text.split("],[\"\",,", 1)[0].split("]]", 1)[0][3:]
-        #print unparsed_json
-        #parsed_json = json.loads(unparsed_json)
-        #result_parts = []
-        #for json_arr in parsed_json:
-        #    result_parts.append(json_arr[0])
-        #return " ".join(result_parts)
         return self.parse(unparsed_json)
     
     def parse(self, json):
