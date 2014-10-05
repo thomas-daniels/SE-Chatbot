@@ -17,14 +17,25 @@ import sys
 from SpellManager import SpellManager
 import pickle
 from CommandHelp import CommandHelp
+from Config import Config
 
 class WordAssociationBot:
     
-    def main(self):
+    def main(self, config_data, additional_general_config):
         self.room = None
         self.client = None
-        self.owner_id = 229438 # change this into your ID
-        self.owner_name = "ProgramFOX" # change this into your name
+        if "owners" in Config.General:
+            self.owners = Config.General["owners"]
+        else:
+            sys.exit("Error: no owners found. Please update Config.py.")
+        if "owner_name" in Config.General:
+            self.owner_name = Config.General["owner_name"]
+        else:
+            sys.exit("Error: no owner name found. Please update Config.py.")
+        if "chatbot_name" in Config.General:
+            self.chatbot_name = Config.General["chatbot_name"]
+        else:
+            sys.exit("Error: no chatbot name found. Please update Config.py.")
         self.enabled = True
         self.running = True
         self.waiting_time = -1
@@ -73,20 +84,51 @@ class WordAssociationBot:
             'translationswitch': self.command_translationswitch
         }
         self.spell_manager.init()
-        in_den = raw_input("Does the bot run in Shadow's Den? (y/n) ").lower()
-        if in_den == "y":
-            self.in_shadows_den = True
-        elif in_den == "n":
-            self.in_shadows_den = False
+        if "in_shadows_den" in config_data:
+            self.in_shadows_den = config_data["in_shadows_den"]
+            print("In Shadow's Den: %s" % self.in_shadows_den)
         else:
-            self.in_shadows_den = False
-            print("Invalid input; assumed 'no'")
-        self.site = raw_input("Site: ")
-        room_number = int(raw_input("Room number: "))
-        email = raw_input("Email address: ")
-        password = getpass.getpass("Password: ")
+            in_den = raw_input("Does the bot run in Shadow's Den? (y/n) ").lower()
+            if in_den == "y":
+                self.in_shadows_den = True
+            elif in_den == "n":
+                self.in_shadows_den = False
+            else:
+                self.in_shadows_den = False
+                print("Invalid input; assumed 'no'")
+        if "site" in config_data:
+            self.site = config_data["site"]
+            print("Site: %s" % self.site)
+        else:
+            self.site = raw_input("Site: ")
+        self.owner_ids = []
+        for o in self.owners:
+            if self.site in o:
+                self.owner_ids.append(o[self.site])
+        if len(self.owner_ids) < 1:
+            sys.exit("Error: no owners found for this site: %s." % self.site)
+        room_number = -1
+        if "room" in config_data:
+            room_number = config_data["room"]
+            print("Room number: %i" % room_number)
+        else:
+            room_number = int(raw_input("Room number: "))
+        email = ""
+        if "email" in Config.General:
+            email = Config.General["email"]
+        elif "email" in additional_general_config:
+            email = additional_general_config["email"]
+        else:
+            email = raw_input("Email address: ")
+        password = ""
+        if "password" in Config.General: # I would not recommend to store the password in Config.py
+            password = Config.General["password"]
+        elif "password" in additional_general_config:
+            password = additional_general_config["password"]
+        else:
+            password = getpass.getpass("Password: ")
         
-        if os.path.isfile("config.txt"):
+        if os.path.isfile("config.txt"): # config.txt is for values that can change at runtime, Config.py is for static data
             f = open("config.txt", "r")
             self.waiting_time = int(f.read());
             f.close()
@@ -180,7 +222,7 @@ class WordAssociationBot:
         should_return = False
         if not self.enabled:
             should_return = True
-        if (not self.enabled) and event.user.id == self.owner_id and event.message.content.startswith("&gt;&gt;"):
+        if (not self.enabled) and event.user.id in self.owner_ids and event.message.content.startswith("&gt;&gt;"):
             should_return = False
         if not self.running:
             should_return = True
@@ -272,7 +314,7 @@ class WordAssociationBot:
             return commands_to_use[cmd_name](args, msg, event)
 
         elif cmd_name in self.owner_commands:
-            if msg is None or event.user.id == self.owner_id:
+            if msg is None or event.user.id in self.owner_ids:
                 return self.owner_commands[cmd_name](args, msg, event)
             else:
                 return "You don't have the privilege to execute this command."
@@ -448,7 +490,7 @@ class WordAssociationBot:
     
     def command_help(self, args, msg, event):
         if len(args) == 0:
-            return "I'm FOX 9000, ProgramFOX's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command."
+            return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (self.owner_name, self.chatbot_name)
         else:
             command_to_look_up = args[0]
             if command_to_look_up in CommandHelp:
@@ -530,7 +572,7 @@ class WordAssociationBot:
         return "No link found."
 
     def command_translationchain(self, args, msg, event):
-        if event.user.id != self.owner_id:
+        if not event.user.id in self.owner_ids:
             return "The `translationchain` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
         translation_count = -1
         if len(args) < 4:
@@ -551,7 +593,7 @@ class WordAssociationBot:
             return "There is already a translation chain going on."
         
     def command_translationswitch(self, args, msg, event):
-        if event.user.id != self.owner_id:
+        if not event.user.id in self.owner_id:
             return "The `translationswitch` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
         if self.translation_switch_going_on:
             return "There is already a translation switch going on."
@@ -659,4 +701,37 @@ class WordAssociationBot:
 
 if __name__ == '__main__':
     bot = WordAssociationBot()
-    bot.main()
+    config_data = {}
+    additional_general_config = {}
+    args_length = len(sys.argv)
+    if "-c" in sys.argv:
+        config_index = sys.argv.index("-c") + 1
+        if args_length <= config_index:
+            sys.exit("Error: no configuration name provided after the -c argument.")
+        config_name = sys.argv[config_index]
+        if config_name in Config.Configurations:
+            config_data = Config.Configurations[config_name]
+        else:
+            sys.exit("Error: configuration not found.")
+    if "-s" in sys.argv:
+        site_index = sys.argv.index("-s") + 1
+        if args_length <= site_index:
+            sys.exit("Error: no site provided after the -s argument.")
+        config_data["site"] = sys.argv[site_index]
+    if "-r" in sys.argv:
+        room_index = sys.argv.index("-r") + 1
+        if args_length <= room_index:
+            sys.exit("Error: no room number provided after the -r argument.")
+        config_data["room"] = int(sys.argv[room_index])
+    if "-e" in sys.argv:
+        email_index = sys.argv.index("-e") + 1
+        if args_length <= email_index:
+            sys.exit("Error: no email address provided after the -e argument.")
+        additional_general_config["email"] = sys.argv[email_index]
+    if "-p" in sys.argv:
+        password_index = sys.argv.index("-p") + 1
+        if args_length <= password_index:
+            sys.exit("Error: no password provided after the -p argument.")
+        additional_general_config["password"] = sys.argv[password_index]
+    
+    bot.main(config_data, additional_general_config)

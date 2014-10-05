@@ -7,4 +7,4 @@ Setup
 =========
 Before you can use the bot, you need to install some dependencies such as ChatExchange and BeautifulSoup4.
 
-You'll also need to rename `SecretSpellsTemplate.py` to `SecretSpells.py`. Spells are a Shadow's Den feature, but as they are secret, I only post a template here, not the real spells.
+You'll also need to rename `ConfigTemplate.py` to `Config.py` and `SecretSpellsTemplate.py` to `SecretSpells.py`. Spells are a Shadow's Den feature, but as they are secret, I only post a template here, not the real spells.
