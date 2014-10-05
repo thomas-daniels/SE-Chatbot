@@ -52,7 +52,7 @@ class WordAssociationBot:
         self.links = []
         self.banned = {}
         self.site = ""
-        self.setup_logging()
+        #self.setup_logging() # if you want to have logging, un-comment this line
         self.msg_id_no_reply_found = -1
         self.commands = { 
             'translate': self.command_translate,
@@ -164,13 +164,13 @@ class WordAssociationBot:
                 command_out = self.command(command_in, None, None)
                 if command_out != False and command_out is not None:
                     print command_out
-                if inputted[1] == "+":
-                    self.room.send_message("%s" % command_out)
+                    if inputted[1] == "+":
+                        self.room.send_message("%s" % command_out)
             else:
                 self.room.send_message(inputted)
                     
     
-    def setup_logging(self):
+    def setup_logging(self): # logging method taken from ChatExchange/examples/chat.py
         logger = logging.getLogger(__name__)
         logging.basicConfig(level=logging.INFO)
         logger.setLevel(logging.DEBUG)
