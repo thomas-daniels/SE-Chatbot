@@ -486,6 +486,7 @@ class WordAssociationBot:
         command_keys = self.commands.keys()
         if self.in_shadows_den:
             command_keys += self.shadows_den_specific_commands.keys()
+        command_keys.sort()
         return "Commands: %s" % (", ".join(command_keys),)
     
     def command_help(self, args, msg, event):
