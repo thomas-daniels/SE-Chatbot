@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import chatexchange.client
-import chatexchange.events
+from ChatExchange.chatexchange.client import *
+from ChatExchange.chatexchange.events import *
 import getpass
 import re
 from GetAssociatedWord import GetAssociatedWord
@@ -144,7 +144,7 @@ class WordAssociationBot:
             with open("bannedUsers.txt", "r") as f:
                 self.banned = pickle.load(f)
 
-        self.client = chatexchange.client.Client(self.site)
+        self.client = Client(self.site)
         self.client.login(email, password)
         
         self.spell_manager.c = self.client
@@ -226,7 +226,7 @@ class WordAssociationBot:
             should_return = False
         if not self.running:
             should_return = True
-        if not isinstance(event, chatexchange.events.MessagePosted):
+        if not isinstance(event, MessagePosted):
             should_return = True
         if should_return:
             return
@@ -491,7 +491,7 @@ class WordAssociationBot:
     
     def command_help(self, args, msg, event):
         if len(args) == 0:
-            return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (self.owner_name, self.chatbot_name)
+            return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (self.chatbot_name, self.owner_name)
         else:
             command_to_look_up = args[0]
             if command_to_look_up in CommandHelp:
@@ -522,7 +522,7 @@ class WordAssociationBot:
                 return "Invalid arguments."
             if msg_id_to_reply_to == -1:
                 return "'recent' has a value of -1, which is not a valid message ID. Please provide an explicit ID."
-        msg_to_reply_to = chatexchange.messages.Message(msg_id_to_reply_to, self.client)
+        msg_to_reply_to = Message(msg_id_to_reply_to, self.client)
         content = msg_to_reply_to.content_source
         content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
         content = re.sub(r"\(.+?\)", "", content)
