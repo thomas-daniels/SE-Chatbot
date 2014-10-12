@@ -29,6 +29,8 @@ class WordAssociationBot:
             self.owners = Config.General["owners"]
         else:
             sys.exit("Error: no owners found. Please update Config.py.")
+        if "privileged_users" in config_data:
+            self.privileged_users = config_data["privileged_users"]
         if "owner_name" in Config.General:
             self.owner_name = Config.General["owner_name"]
         else:
@@ -84,6 +86,9 @@ class WordAssociationBot:
             'translationchain': self.command_translationchain,
             'translationswitch': self.command_translationswitch
         }
+        self.privileged_commands = {
+            'delete': self.command_delete
+        }
         self.spell_manager.init()
         if "in_shadows_den" in config_data:
             self.in_shadows_den = config_data["in_shadows_den"]
@@ -103,11 +108,15 @@ class WordAssociationBot:
         else:
             self.site = raw_input("Site: ")
         self.owner_ids = []
+        self.privileged_user_ids = []
         for o in self.owners:
             if self.site in o:
                 self.owner_ids.append(o[self.site])
         if len(self.owner_ids) < 1:
             sys.exit("Error: no owners found for this site: %s." % self.site)
+        for p in self.privileged_users:
+            if self.site in p:
+                self.privileged_user_ids.append(p[self.site])
         room_number = -1
         if "room" in config_data:
             room_number = config_data["room"]
@@ -319,6 +328,11 @@ class WordAssociationBot:
                 return self.owner_commands[cmd_name](args, msg, event)
             else:
                 return "You don't have the privilege to execute this command."
+        elif cmd_name in self.privileged_commands:
+            if msg is None or event.user.id in self.privileged_user_ids or event.user.id in self.owner_ids:
+                return self.privileged_commands[cmd_name](args, msg, event)
+            else:
+                return "You don't have the privilege to execute this command."
         else:
             return "Command not found."
     
@@ -499,6 +513,20 @@ class WordAssociationBot:
                 return CommandHelp[command_to_look_up]
             else:
                 return "Command not found."
+            
+    def command_delete(self, args, msg, event):
+        if len(args) == 0:
+            return "Not enough arguments."
+        message_id = -1
+        try:
+            message_id = int(args[0])
+        except:
+            return "Invalid arguments."
+        message_to_delete = Message(message_id, self.client)
+        try:
+            message_to_delete.delete()
+        except:
+            pass
                 
     def command_link(self, args, msg, event):
         if len(args) != 2:

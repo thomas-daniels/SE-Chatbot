@@ -13,7 +13,8 @@ class Config:
         #"ConfigurationNameHere": {
         #    "in_shadows_den": False,
         #    "site": "Site name here (without the `chat.` prefix",
-        #    "room": room id here
+        #    "room": room id here,
+        #    "privileged_users": same syntax as "owners" above. This configuration value is for users who can run privileged commands (such as `delete`).
         #}
     }
 
