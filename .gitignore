@@ -9,3 +9,4 @@ client.log.*
 config.txt
 linkedWords.txt
 bannedUsers.txt
+.settings/
