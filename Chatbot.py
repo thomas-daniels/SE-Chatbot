@@ -73,7 +73,8 @@ class WordAssociationBot:
             'viewspells': self.command_viewspells,
             'link': self.command_link,
             'removelink': self.command_removelink,
-            'reply': self.command_reply
+            'reply': self.command_reply,
+            'showtime': self.command_showtime
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -352,6 +353,9 @@ class WordAssociationBot:
                 return "Given argument is not a valid integer."
         else:
             return "Command does not have enough arguments."
+
+    def command_showtime(self, args, msg, event):
+        return "Waiting time: %i seconds." % self.waiting_time
                 
     def command_stop(self, args, msg, event):
         self.enabled = False
