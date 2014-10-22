@@ -249,6 +249,7 @@ class WordAssociationBot:
         
         h = HTMLParser()
         content = h.unescape(message.content_source)
+        content = re.sub(r"^>>\s+", ">>", content)
         if not content.startswith(">>translat"):
             content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
             content = re.sub(r"\(.+?\)", "", content)
