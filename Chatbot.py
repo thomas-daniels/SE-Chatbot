@@ -25,6 +25,7 @@ class WordAssociationBot:
     def main(self, config_data, additional_general_config):
         self.room = None
         self.client = None
+        self.privileged_users = []
         if "owners" in Config.General:
             self.owners = Config.General["owners"]
         else:
@@ -66,7 +67,8 @@ class WordAssociationBot:
             'listcommands': self.command_listcommands,
             'help': self.command_help,
             'xkcdrandomnumber': self.command_xkcdrandomnumber,
-            'xkcd': self.command_xkcd
+            'xkcd': self.command_xkcd,
+            'alive': self.command_alive
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
@@ -354,6 +356,9 @@ class WordAssociationBot:
                 return "Given argument is not a valid integer."
         else:
             return "Command does not have enough arguments."
+
+    def command_alive(self, args, msg, event):
+        return "Yes, I'm alive."
 
     def command_showtime(self, args, msg, event):
         return "Waiting time: %i seconds." % self.waiting_time
