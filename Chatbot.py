@@ -76,7 +76,8 @@ class WordAssociationBot:
             'link': self.command_link,
             'removelink': self.command_removelink,
             'reply': self.command_reply,
-            'showtime': self.command_showtime
+            'showtime': self.command_showtime,
+            'islink': self.command_islink
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -547,6 +548,14 @@ class WordAssociationBot:
         with open("linkedWords.txt", "w") as f:
             pickle.dump(self.links, f)
         return "Link added."
+
+    def command_islink(self, args, msg, event):
+        if len(args) != 2:
+            return "2 arguments expected, %i given" % len(args)
+        if self.links_contain((args[0].replace("_", " "), args[1].replace("_", " "))):
+            return "Yes, that's a manually added link."
+        else:
+            return "No, that's not a link."
     
     def command_reply(self, args, msg, event):
         if len(args) < 1:
@@ -581,7 +590,7 @@ class WordAssociationBot:
     def command_removelink(self, args, msg, event):
         if len(args) < 2:
             return "Not enough arguments."
-        return self.remove_link(args[0], args[1])
+        return self.remove_link(args[0].replace("_", " "), args[1].replace("_", " "))
     
     def links_contain(self, item):
         for link in self.links:
