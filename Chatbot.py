@@ -19,6 +19,7 @@ from SpellManager import SpellManager
 import pickle
 from CommandHelp import CommandHelp
 from Config import Config
+from datetime import datetime
 
 class WordAssociationBot:
     
@@ -68,7 +69,8 @@ class WordAssociationBot:
             'help': self.command_help,
             'xkcdrandomnumber': self.command_xkcdrandomnumber,
             'xkcd': self.command_xkcd,
-            'alive': self.command_alive
+            'alive': self.command_alive,
+            'utc': self.command_utc
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
@@ -360,6 +362,9 @@ class WordAssociationBot:
 
     def command_alive(self, args, msg, event):
         return "Yes, I'm alive."
+
+    def command_utc(self, args, msg, event):
+        return datetime.utcnow().ctime()
 
     def command_showtime(self, args, msg, event):
         return "Waiting time: %i seconds." % self.waiting_time
