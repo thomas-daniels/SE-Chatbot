@@ -263,6 +263,14 @@ class WordAssociationBot:
         parts = content.split(" ")
         if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith(":")) and (event.user.id != -2):
             return
+        
+        if len(parts) == 2 and parts[1] == "!delete!" and parts[0].startswith(":"):
+            try:
+                if event.user.id in self.privileged_user_ids or event.user.id in self.owner_ids:
+                    msg_id_to_delete = int(parts[0][1:])
+                    self.client.get_message(msg_id_to_delete).delete()
+            except:
+                pass
 
         if self.in_shadows_den and parts[0].startswith(":") and re.compile("^:([0-9]+)$").search(parts[0]):
             c = parts[1]
