@@ -64,7 +64,9 @@ class SpellManager:
 
     def check_spells(self, event):
         for m in self.secret_spells.spellMethods:
-            m(event)
+            checked_spell = m(event)
+            if checked_spell != False:
+                self.append_to_queue(checked_spell[0], checked_spell[1])
     
     def append_to_queue(self, user, spell):
         if not user in self.spellQueue:
@@ -78,5 +80,6 @@ class SpellManager:
             for key, value in self.spellQueue[user].iteritems():
                 if value == True:
                     ret.append(self.award(key, user, False))
+                    self.spellQueue[user].pop(key, None)
         return ret
         
