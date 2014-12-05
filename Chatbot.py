@@ -355,6 +355,8 @@ class WordAssociationBot:
         if len(args) > 0:
             try:
                 new_time = int(args[0])
+                if new_time > 50000:
+                    return "Waiting time cannot be greater than 50000 seconds."
                 if new_time > -1:
                     self.waiting_time = new_time
                     f = open("config.txt", "w")
