@@ -248,12 +248,14 @@ class WordAssociationBot:
             return
         
         message = event.message
-
-        if event.user.id == self.client.get_me().id:
-            return
-        
         h = HTMLParser()
         content = h.unescape(message.content_source)
+
+        if event.user.id == self.client.get_me().id:
+            if self.in_shadows_den and re.compile(r"^:\d+ [a-zA-Z0-9-]+$").search(content):
+                self.current_word_to_reply_to = content.split(" ")[1]
+            return
+
         content = re.sub(r"^>>\s+", ">>", content)
         if not content.startswith(">>translat"):
             content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
@@ -355,8 +357,8 @@ class WordAssociationBot:
         if len(args) > 0:
             try:
                 new_time = int(args[0])
-                if new_time > 50000:
-                    return "Waiting time cannot be greater than 50000 seconds."
+                if new_time > 600:
+                    return "Waiting time cannot be greater than 10 minutes (= 600 seconds)."
                 if new_time > -1:
                     self.waiting_time = new_time
                     f = open("config.txt", "w")
