@@ -485,6 +485,11 @@ class WordAssociationBot:
             banned_user = int(args[0])
         except ValueError:
             return "Invalid arguments."
+        user_name = ""
+        try:
+            user_name = self.client.get_user(banned_user).name.replace(" ", "")
+        except:
+            return "Could not fetch user; please check whether the user exists."
         if not self.site in self.banned:
             self.banned[self.site] = []
         if not banned_user in self.banned[self.site]:
@@ -493,7 +498,6 @@ class WordAssociationBot:
             return "Already banned."
         with open("bannedUsers.txt", "w") as f:
             pickle.dump(self.banned, f)
-        user_name = self.client.get_user(banned_user).name.replace(" ", "")
         return "User @%s has been banned from using the commands." % user_name
             
     def command_unban(self, args, msg, event):
@@ -502,6 +506,11 @@ class WordAssociationBot:
             banned_user = int(args[0])
         except ValueError:
             return "Invalid arguments."
+        user_name = ""
+        try:
+            user_name = self.client.get_user(banned_user).name.replace(" ", "")
+        except:
+            return "Could not fetch user; please check whether the user exists."
         if not self.site in self.banned:
             return "Not banned."
         if not banned_user in self.banned[self.site]:
@@ -509,7 +518,6 @@ class WordAssociationBot:
         self.banned[self.site].remove(banned_user)
         with open("bannedUsers.txt", "w") as f:
             pickle.dump(self.banned, f)
-        user_name = self.client.get_user(banned_user).name.replace(" ", "")
         return "User @%s has been unbanned." % user_name
     
     def command_xkcdrandomnumber(self, args, msg, event):
