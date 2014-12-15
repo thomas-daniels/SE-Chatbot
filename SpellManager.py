@@ -76,10 +76,13 @@ class SpellManager:
     
     def empty_queue(self):
         ret = []
+        toBePopped = []
         for user in self.spellQueue.iterkeys():
             for key, value in self.spellQueue[user].iteritems():
                 if value == True:
                     ret.append(self.award(key, user, False))
-                    self.spellQueue[user].pop(key, None)
+                    toBePopped.push((user, key))
+        for popThis in toBePopped:
+            self.spellQueue[popThis[0]].pop(popThis[1], None)
         return ret
         
