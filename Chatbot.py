@@ -90,7 +90,8 @@ class WordAssociationBot:
             'ban': self.command_ban,
             'unban': self.command_unban,
             'translationchain': self.command_translationchain,
-            'translationswitch': self.command_translationswitch
+            'translationswitch': self.command_translationswitch,
+            'removespell': self.command_removespell
         }
         self.privileged_commands = {
             'delete': self.command_delete
@@ -415,6 +416,10 @@ class WordAssociationBot:
         else:
             return "Invalid arguments."
         return self.spell_manager.award(spell_id, user_id, add_to_queue)
+    
+    def command_removespell(self, args, msg, event):
+        self.spell_manager.remove(int(args[1]), int(args[0]))
+        return "Spell removed (un-awarded)."
         
     def command_viewspells(self, args, msg, event):
         if len(args) < 1:
