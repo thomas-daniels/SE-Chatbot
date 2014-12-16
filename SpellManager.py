@@ -81,7 +81,7 @@ class SpellManager:
             for key, value in self.spellQueue[user].iteritems():
                 if value == True:
                     ret.append(self.award(key, user, False))
-                    toBePopped.push((user, key))
+                    toBePopped.append((user, key))
         for popThis in toBePopped:
             self.spellQueue[popThis[0]].pop(popThis[1], None)
         return ret
