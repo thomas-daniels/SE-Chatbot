@@ -81,7 +81,8 @@ class WordAssociationBot:
             'reply': self.command_reply,
             'showtime': self.command_showtime,
             'islink': self.command_islink,
-            'latestword': self.command_latestword
+            'latestword': self.command_latestword,
+            'setlatestword': self.command_setlatestword
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -382,10 +383,20 @@ class WordAssociationBot:
 
     def command_latestword(self, args, msg, event):
         lwi = self.latest_word_id
-        if lwi != 1:
+        if lwi != -1:
             return "http://chat.meta.stackexchange.com/transcript/message/%s#%s" % (lwi, lwi)
         else:
             return "I don't know."
+
+    def command_setlatestword(self, args, msg, event):
+        if len(args) != 1:
+            return "1 argument expected, %i given" % (len(args),)
+        try:
+            new_lwi = int(args[0])
+            self.latest_word_id = new_lwi
+            return "Latest word set."
+        except ValueError:
+            return "Given argument is not an integer."
 
     def command_utc(self, args, msg, event):
         return datetime.utcnow().ctime()
