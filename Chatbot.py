@@ -318,7 +318,7 @@ class WordAssociationBot:
             return (word_to_reply, word_found)
             
     def add_word_to_latest_words(self, word):
-        self.latest_words.insert(0, word)
+        self.latest_words.insert(0, word.lower())
         if len(self.latest_words) > 10:
             self.latest_words.pop()
     
