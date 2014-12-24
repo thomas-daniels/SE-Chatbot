@@ -44,6 +44,7 @@ class WordAssociationBot:
         self.enabled = True
         self.running = True
         self.waiting_time = -1
+        self.latest_word_id = -1
         self.current_word_to_reply_to = ""
         self.latest_words = []
         self.in_shadows_den = False
@@ -79,7 +80,8 @@ class WordAssociationBot:
             'removelink': self.command_removelink,
             'reply': self.command_reply,
             'showtime': self.command_showtime,
-            'islink': self.command_islink
+            'islink': self.command_islink,
+            'latestword': self.command_latestword
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -255,6 +257,7 @@ class WordAssociationBot:
         if event.user.id == self.client.get_me().id:
             if self.in_shadows_den and re.compile(r"^:\d+ [a-zA-Z0-9-]+$").search(content):
                 self.current_word_to_reply_to = content.split(" ")[1]
+                self.latest_word_id = message.id
             return
 
         content = re.sub(r"^>>\s+", ">>", content)
@@ -279,6 +282,7 @@ class WordAssociationBot:
             c = parts[1]
             if re.compile("[^a-zA-Z0-9-]").search(c):
                 return
+            self.latest_word_id = message.id
             thread.start_new_thread(self.reply_word, (message, True, c))
             return
         
@@ -375,6 +379,13 @@ class WordAssociationBot:
 
     def command_alive(self, args, msg, event):
         return "Yes, I'm alive."
+
+    def command_latestword(self, args, msg, event):
+        lwi = self.latest_word_id
+        if lwi != 1:
+            return "http://chat.meta.stackexchange.com/transcript/message/%s#%s" % (lwi, lwi)
+        else:
+            return "I don't know."
 
     def command_utc(self, args, msg, event):
         return datetime.utcnow().ctime()
