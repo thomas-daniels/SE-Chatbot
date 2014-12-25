@@ -30,7 +30,7 @@ CommandHelp = {
     "translationswitch": "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com), consisting of two languages. Syntax: `>>translationswitch steps_number lang1 lang2 Text to translate.`",
     "award": "Owner-only command, and specific for Shadow's Den. Awards a spell to a user. `-n` awards it immediately, `-q` adds it to the spell queue. Syntax: `>>award spell_id user_id -n|-q`",
     "emptyqueue": "Owner-only command, and specific for Shadow's Den. Empties the spell queue by awarding all spells in it. Syntax: `>>emptyqueue`",
-    "removespell": "Owner-only command, and specific to Shadow's Den. Removes (un-awards) a spell. Syntax: `>>removespell spell_id user_id",
+    "removespell": "Owner-only command, and specific to Shadow's Den. Removes (un-awards) a spell. Syntax: `>>removespell spell_id user_id`",
 
     "delete": "Only for privileged users. Deletes a message of the bot. Syntax: `>>delete msg_id` or `<reply> !delete!`"
 }
