@@ -8,12 +8,18 @@ CommandHelp = {
     "help": "Shows information about the chat bot, or about a specific command. Syntax: `>>help [ command ]`",
     "xkcdrandomnumber": "Returns a random number, based on an xkcd comic. Syntax: `>>xkcdrandomnumber`",
     "xkcd": "Shows the specified xkcd comic. Syntax: `>>xkcd comic_id`",
+    "alive": "A command to see whether the bot is there. Syntax: `>>alive`",
+    "utc": "Shows the current UTC time. Syntax: `>>utc`",
 
     "time": "A command specific for Shadow's Den. Changes how long the bot has to wait before replying. Syntax: `>>time time_in_seconds`",
     "viewspells": "A command specific for Shadow's Den. Shows the awarded spells of a specific user. Syntax: `>>viewspells user_id`",
     "link": "A command specific for Shadow's Den. Links a word to another word. Syntax: `>>link word1 word2`",
     "removelink": "A command specific for Shadow's Den. Removes a link between words. Syntax: `>>removelink word1 word2`",
     "reply": "A command specific for Shadow's Den. Replies to a specific message. Syntax: `>>reply message_id`",
+    "showtime": "A command specific for Shadow's Den. Shows the waiting time. Syntax: `>>showtime`",
+    "islink": "A command specific for Shadow's Den. Checks whether two words are linked. Syntax: `>>islink word1 word2`",
+    "latestword": "A command specific for Shadow's Den. Shows the latest word. Syntax: `>>latestword`",
+    "setlatestword": "A command specific for Shadow's Den. Sets the latest word. Syntax: `>>setlatestword msg_id`",
 
     "stop": "Owner-only command. Stops the bot. Syntax: `>>stop`",
     "disable": "Owner-only command. Disables the bot. Syntax: `>>disable`",
@@ -23,5 +29,8 @@ CommandHelp = {
     "translationchain": "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com). Syntax: `>>translationchain steps_number input_lang output_lang Text to translate.`",
     "translationswitch": "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com), consisting of two languages. Syntax: `>>translationswitch steps_number lang1 lang2 Text to translate.`",
     "award": "Owner-only command, and specific for Shadow's Den. Awards a spell to a user. `-n` awards it immediately, `-q` adds it to the spell queue. Syntax: `>>award spell_id user_id -n|-q`",
-    "emptyqueue": "Owner-only command, and specific for Shadow's Den. Empties the spell queue by awarding all spells in it. Syntax: `>>emptyqueue`"
+    "emptyqueue": "Owner-only command, and specific for Shadow's Den. Empties the spell queue by awarding all spells in it. Syntax: `>>emptyqueue`",
+    "removespell": "Owner-only command, and specific to Shadow's Den. Removes (un-awards) a spell. Syntax: `>>removespell spell_id user_id",
+
+    "delete": "Only for privileged users. Deletes a message of the bot. Syntax: `>>delete msg_id` or `<reply> !delete!`"
 }
