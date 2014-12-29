@@ -82,7 +82,9 @@ class WordAssociationBot:
             'showtime': self.command_showtime,
             'islink': self.command_islink,
             'latestword': self.command_latestword,
-            'setlatestword': self.command_setlatestword
+            'setlatestword': self.command_setlatestword,
+            'continue': self.command_continue,
+            'retry': self.command_retry
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -608,7 +610,7 @@ class WordAssociationBot:
             return "Yes, that's a manually added link."
         else:
             return "No, that's not a link."
-    
+
     def command_reply(self, args, msg, event):
         if len(args) < 1:
             return "Not enough arguments."
@@ -638,6 +640,15 @@ class WordAssociationBot:
             return "Word contains invalid characters."
         self.reply_word(msg_to_reply_to, False, parts[1])
         return None
+
+    def command_continue(self, args, msg, event):
+        if len(args) != 2:
+            return "2 arguments expected, %i given." % (len(args),)
+        self.command_link(args, None, None)
+        return self.command_reply([ "recent" ], None, None)
+
+    def command_retry(self, args, msg, event):
+        return self.command_reply([ "recent" ], None, None)
 
     def command_removelink(self, args, msg, event):
         if len(args) < 2:
