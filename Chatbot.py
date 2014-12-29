@@ -181,6 +181,8 @@ class WordAssociationBot:
         
         while self.running:
             inputted = raw_input("<< ")
+            if inputted.strip() == "":
+                continue
             if inputted.startswith("$") and len(inputted) > 2:
                 command_in = inputted[2:]
                 command_out = self.command(command_in, None, None)
