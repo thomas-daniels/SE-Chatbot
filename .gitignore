@@ -10,3 +10,4 @@ config.txt
 linkedWords.txt
 bannedUsers.txt
 .settings/
+.idea/

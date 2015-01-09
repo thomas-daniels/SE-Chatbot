@@ -19,7 +19,7 @@ from SpellManager import SpellManager
 import pickle
 from CommandHelp import CommandHelp
 from Config import Config
-from datetime import datetime
+import Commands
 
 class WordAssociationBot:
     
@@ -62,16 +62,16 @@ class WordAssociationBot:
         self.msg_id_no_reply_found = -1
         self.commands = { 
             'translate': self.command_translate,
-            'random': self.command_random,
-            'randomint': self.command_randomint,
-            'randomchoice': self.command_randomchoice,
-            'shuffle': self.command_shuffle,
+            'random': Commands.command_random,
+            'randomint': Commands.command_randomint,
+            'randomchoice': Commands.command_randomchoice,
+            'shuffle': Commands.command_shuffle,
             'listcommands': self.command_listcommands,
             'help': self.command_help,
-            'xkcdrandomnumber': self.command_xkcdrandomnumber,
-            'xkcd': self.command_xkcd,
-            'alive': self.command_alive,
-            'utc': self.command_utc
+            'xkcdrandomnumber': Commands.command_xkcdrandomnumber,
+            'xkcd': Commands.command_xkcd,
+            'alive': Commands.command_alive,
+            'utc': Commands.command_utc
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
@@ -152,7 +152,7 @@ class WordAssociationBot:
         
         if os.path.isfile("config.txt"): # config.txt is for values that can change at runtime, Config.py is for static data
             f = open("config.txt", "r")
-            self.waiting_time = int(f.read());
+            self.waiting_time = int(f.read())
             f.close()
         else:
             f = open("config.txt", "w")
@@ -382,9 +382,6 @@ class WordAssociationBot:
         else:
             return "Command does not have enough arguments."
 
-    def command_alive(self, args, msg, event):
-        return "Yes, I'm alive."
-
     def command_latestword(self, args, msg, event):
         lwi = self.latest_word_id
         if lwi != -1:
@@ -401,9 +398,6 @@ class WordAssociationBot:
             return "Latest word set."
         except ValueError:
             return "Given argument is not an integer."
-
-    def command_utc(self, args, msg, event):
-        return datetime.utcnow().ctime()
 
     def command_showtime(self, args, msg, event):
         return "Waiting time: %i seconds." % self.waiting_time
@@ -469,47 +463,6 @@ class WordAssociationBot:
             else:
                 print s
     
-    def command_random(self, args, msg, event):
-        return str(random.random())
-    
-    def command_randomint(self, args, msg, event):
-        if len(args) == 0:
-            return str(random.randint(0, sys.maxint))
-        if len(args) == 1:
-            max_ = -1
-            try:
-                max_ = int(args[0])
-            except ValueError:
-                return "Invalid arguments."
-            min_ = 0
-            if min_ > max_:
-                return "Min cannot be greater than max."
-            return str(random.randint(min_, max_))
-        if len(args) == 2:
-            min_ = -1
-            max_ = -1
-            try:
-                min_ = int(args[0])
-                max_ = int(args[1])
-            except ValueError:
-                return "Invalid arguments."
-            if min_ > max_:
-                return "Min cannot be greater than max."
-            return str(random.randint(min_, max_))
-        return "Too many arguments."
-    
-    def command_randomchoice(self, args, msg, event):
-        if len(args) < 1:
-            return "Not enough arguments."
-        return random.choice(args)
-    
-    def command_shuffle(self, args, msg, event):
-        if len(args) < 1:
-            return "Not enough arguments."
-        list_to_shuffle = list(args)
-        random.shuffle(list_to_shuffle)
-        return " ".join(list_to_shuffle)
-    
     def command_ban(self, args, msg, event):
         banned_user = -1
         try:
@@ -550,19 +503,6 @@ class WordAssociationBot:
         with open("bannedUsers.txt", "w") as f:
             pickle.dump(self.banned, f)
         return "User @%s has been unbanned." % user_name
-    
-    def command_xkcdrandomnumber(self, args, msg, event):
-        return "[4 // Chosen by fair dice roll. Guaranteed to be random.](http://xkcd.com/221/)"
-    
-    def command_xkcd(self, args, msg, event):
-        if len(args) < 1:
-            return "Not enough arguments."
-        id_ = -1
-        try:
-            id_ = int(args[0])
-        except:
-            return "Invalid arguments."
-        return "http://xkcd.com/%i/" % id_
     
     def command_listcommands(self, args, msg, event):
         command_keys = self.commands.keys()
