@@ -1,7 +1,7 @@
 machine:
   python:
     version: 2.7.7
-install:
+dependencies:
   post:
     - pip install pytest
 test:
