@@ -1,0 +1,6 @@
+machine:
+  python:
+    version: 2.7.7
+test:
+  override:
+    python -m pytest tests
