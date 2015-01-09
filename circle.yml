@@ -3,4 +3,4 @@ machine:
     version: 2.7.7
 test:
   override:
-    python -m pytest tests
+    - python -m pytest tests
