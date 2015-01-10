@@ -1,6 +1,7 @@
 import Commands
 import pytest
 
+
 @pytest.mark.parametrize("command, args, expected_result", [
     (Commands.command_alive, [], "Yes, I'm alive."),
     (Commands.command_xkcd, ["1000"], "http://xkcd.com/1000/"),

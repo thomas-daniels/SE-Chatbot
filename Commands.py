@@ -53,7 +53,7 @@ def command_shuffle(args, msg, event):
     return " ".join(list_to_shuffle)
 
 
-def command_utc(self, args, msg, event):
+def command_utc(args, msg, event):
     return datetime.utcnow().ctime()
 
 
