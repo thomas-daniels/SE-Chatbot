@@ -510,7 +510,7 @@ class WordAssociationBot:
             command_keys += self.shadows_den_specific_commands.keys()
         command_keys.sort()
         return "Commands: %s" % (", ".join(command_keys),)
-    
+
     def command_help(self, args, msg, event):
         if len(args) == 0:
             return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (self.chatbot_name, self.owner_name)
@@ -520,7 +520,7 @@ class WordAssociationBot:
                 return CommandHelp[command_to_look_up]
             else:
                 return "Command not found."
-            
+
     def command_delete(self, args, msg, event):
         if len(args) == 0:
             return "Not enough arguments."
@@ -534,7 +534,7 @@ class WordAssociationBot:
             message_to_delete.delete()
         except:
             pass
-                
+
     def command_link(self, args, msg, event):
         if len(args) != 2:
             return "2 arguments expected, %i given." % len(args)
@@ -596,14 +596,14 @@ class WordAssociationBot:
         if len(args) < 2:
             return "Not enough arguments."
         return self.remove_link(args[0].replace("_", " "), args[1].replace("_", " "))
-    
+
     def links_contain(self, item):
         for link in self.links:
             lowercase_link = (link[0].lower(), link[1].lower())
             if item[0].lower() in lowercase_link and item[1].lower() in lowercase_link:
                 return True
         return False
-    
+
     def find_links(self, item):
         results = []
         for link in self.links:
@@ -614,7 +614,7 @@ class WordAssociationBot:
                 associated_index = 0 if i == 1 else 1
                 results.append(link[associated_index])
         return results
-    
+
     def remove_link(self, item0, item1):
         for i, link in enumerate(self.links):
             lowercase_link = (link[0].lower(), link[1].lower())
@@ -645,7 +645,7 @@ class WordAssociationBot:
             return "Translation chain started. Translation made by [Google Translate](https://translate.google.com). Some messages in the chain might not be posted due to a reason I don't know."
         else:
             return "There is already a translation chain going on."
-        
+
     def command_translationswitch(self, args, msg, event):
         if not event.user.id in self.owner_id:
             return "The `translationswitch` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
@@ -667,7 +667,7 @@ class WordAssociationBot:
         self.translation_switch_going_on = True
         thread.start_new_thread(self.translationswitch, (args[3], args[1], args[2], translation_count))
         return "Translation switch started. Translation made by [Google Translate](https://translate.google.com). Some messages in the switch might not be posted due to a reason I don't know."
-        
+
     def command_translate(self, args, msg, event):
         if len(args) < 3:
             return "Not enough arguments."
@@ -702,7 +702,7 @@ class WordAssociationBot:
         final_result = self.translate(curr_text, next_lang, end_lang)
         self.room.send_message("Final translation result (%s-%s): %s" % (next_lang, end_lang, final_result))
         self.translation_chain_going_on = False
-        
+
     def translationswitch(self, text, lang1, lang2, translation_count):
         i = 1
         curr_text = text
@@ -716,13 +716,13 @@ class WordAssociationBot:
             self.room.send_message(msg_text % (lang_order + (curr_text,)))
             i += 1
         self.translation_switch_going_on = False
-    
+
     def translate(self, text, start_lang, end_lang):
         translate_url = "https://translate.google.com/translate_a/single?client=t&sl=%s&tl=%s&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&prev=btn&srcrom=1&ssel=0&tsel=0&q=%s" % (start_lang, end_lang, urllib.quote_plus(text.encode("utf-8")))
         r = requests.get(translate_url)
         unparsed_json = r.text.split("],[\"\",,", 1)[0].split("]]", 1)[0][3:]
         return self.parse(unparsed_json)
-    
+
     def parse(self, json):
         is_open = False
         is_backslash = False
@@ -751,7 +751,7 @@ class WordAssociationBot:
                 if is_translation:
                     curr_str.append(c)
         return " ".join(all_str)
-            
+
 
 if __name__ == '__main__':
     bot = WordAssociationBot()
