@@ -296,7 +296,7 @@ class WordAssociationBot:
                 if event.user.id in self.banned[self.site]:
                     return
             cmd_args = content[2:]
-            if (not cmd_args.startswith("translat")) and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
+            if (not cmd_args.startswith("translat")) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
             else:
                 output = self.command(cmd_args, message, event)
