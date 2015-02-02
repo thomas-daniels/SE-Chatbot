@@ -20,6 +20,7 @@ import pickle
 from CommandHelp import CommandHelp
 from Config import Config
 import Commands
+from ExceptHook import *
 
 class WordAssociationBot:
     
@@ -754,6 +755,8 @@ class WordAssociationBot:
 
 
 if __name__ == '__main__':
+    sys.excepthook = uncaught_exception
+    install_thread_excepthook()
     bot = WordAssociationBot()
     config_data = {}
     additional_general_config = {}
