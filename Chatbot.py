@@ -409,7 +409,8 @@ class WordAssociationBot:
         if msg is not None:
             msg.reply("Bot terminated.")
         self.client.logout()
-        sys.exit(0)
+        time.sleep(5)
+        os._exit(0)
         
     def command_disable(self, args, msg, event):
         self.enabled = False
