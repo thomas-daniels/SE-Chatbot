@@ -408,6 +408,7 @@ class WordAssociationBot:
         self.running = False
         if msg is not None:
             msg.reply("Bot terminated.")
+        self.room.leave()
         self.client.logout()
         time.sleep(5)
         os._exit(0)
