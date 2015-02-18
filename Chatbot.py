@@ -519,12 +519,14 @@ class WordAssociationBot:
     def command_help(self, args, msg, event):
         if len(args) == 0:
             return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (self.chatbot_name, self.owner_name)
+        command_to_look_up = args[0]
+        if command_to_look_up in CommandHelp:
+            return CommandHelp[command_to_look_up]
+        elif command_to_look_up in self.commands or command_to_look_up in self.shadows_den_specific_commands or \
+             command_to_look_up in self.owner_commands or command_to_look_up in self.privileged_commands:
+            return "Command exists, but no help entry found."
         else:
-            command_to_look_up = args[0]
-            if command_to_look_up in CommandHelp:
-                return CommandHelp[command_to_look_up]
-            else:
-                return "Command not found."
+            return "The command you want to look up, does not exist."
 
     def command_delete(self, args, msg, event):
         if len(args) == 0:
