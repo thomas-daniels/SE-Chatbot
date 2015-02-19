@@ -218,7 +218,7 @@ class WordAssociationBot:
             time.sleep(15 * 60)
             awarded = self.spell_manager.empty_queue()
             for s in awarded:
-                if self.room is not None:
+                if self.room is not None and s != "This spell was already awarded.":
                     self.room.send_message(s)
                 else:
                     print s
