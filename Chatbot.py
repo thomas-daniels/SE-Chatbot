@@ -171,6 +171,7 @@ class WordAssociationBot:
         self.client.login(email, password)
         
         self.spell_manager.c = self.client
+        self.spell_manager.bot_user_id = self.client.get_me().id
     
         self.room = self.client.get_room(room_number)
         self.room.join()

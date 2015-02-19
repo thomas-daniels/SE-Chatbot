@@ -10,7 +10,7 @@ class SpellManager:
         self.c = None
         self.secret_spells = None
         self.secret_spells = SecretSpells()
-        self.bot_user_id = self.c.get_me().id
+        self.bot_user_id = -1
         self.secret_spells.init()
         if os.path.isfile("earnedSpells.txt"):
             self.load()
