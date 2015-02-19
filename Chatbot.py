@@ -275,7 +275,7 @@ class WordAssociationBot:
             return
 
         content = re.sub(r"^>>\s+", ">>", content)
-        if not content.startswith(">>translat"):
+        if not content.startswith(">>translat") and not content.startswith(">>addlinkexplanation"):
             content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content) # strip smilies
             content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
             content = re.sub(r"\(.+?\)", "", content)
@@ -596,9 +596,9 @@ class WordAssociationBot:
         self.removelinkexplanation((w1, w2))  # remove any older explanations
         if not self.links_contain((w1, w2)):
             return "That link does not exist."
-        if re.compile("[^a-zA-Z_%*/:.#-]").search(args[2]):
-            return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#-`."
-        self.link_explanations.append(((args[0], args[1]), args[2]))
+        if re.compile(r"[^a-zA-Z0-9_%*/:.#()\[\]-]").search(args[2]):
+            return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#()[]-`."
+        self.link_explanations.append(((w1, w2), args[2]))
         with open("linkExplanations.txt", "w") as f:
             pickle.dump(self.link_explanations, f)
         return "Explanation added."
@@ -608,6 +608,8 @@ class WordAssociationBot:
             return "2 arguments expected, %i given" % len(args)
         w1 = args[0].replace("_", " ").lower()
         w2 = args[1].replace("_", " ").lower()
+        if not self.links_contain((w1, w2)):
+            return "Words not linked."
         for exp in self.link_explanations:
             link = exp[0]
             explanation = exp[1]
