@@ -596,7 +596,7 @@ class WordAssociationBot:
         self.removelinkexplanation((w1, w2))  # remove any older explanations
         if not self.links_contain((w1, w2)):
             return "That link does not exist."
-        if re.compile(r"[^a-zA-Z0-9_%*/:.#()\[\]-]").search(args[2]):
+        if re.compile(r"[^a-zA-Z0-9_%*/:.#()\[\]?&=-]").search(args[2]):
             return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#()[]-`."
         self.link_explanations.append(((w1, w2), args[2]))
         with open("linkExplanations.txt", "w") as f:
