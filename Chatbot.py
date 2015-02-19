@@ -57,6 +57,7 @@ class WordAssociationBot:
         self.translation_switch_going_on = False
         self.spell_manager = SpellManager()
         self.links = []
+        self.link_explanations = []
         self.banned = {}
         self.site = ""
         #self.setup_logging() # if you want to have logging, un-comment this line
@@ -79,6 +80,9 @@ class WordAssociationBot:
             'viewspells': self.command_viewspells,
             'link': self.command_link,
             'removelink': self.command_removelink,
+            'addlinkexplanation': self.command_addlinkexplanation,
+            'explainlink': self.command_explainlink,
+            'removelinkexplanation': self.command_removelinkexplanation,
             'reply': self.command_reply,
             'showtime': self.command_showtime,
             'islink': self.command_islink,
@@ -166,6 +170,9 @@ class WordAssociationBot:
         if os.path.isfile("bannedUsers.txt"):
             with open("bannedUsers.txt", "r") as f:
                 self.banned = pickle.load(f)
+        if os.path.isfile("linkExplanations.txt"):
+            with open("linkExplanations.txt", "r") as f:
+                self.link_explanations = pickle.load(f)
 
         self.client = Client(self.site)
         self.client.login(email, password)
@@ -299,16 +306,22 @@ class WordAssociationBot:
                 if event.user.id in self.banned[self.site]:
                     return
             cmd_args = content[2:]
-            if (not cmd_args.startswith("translat")) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
+            if (not cmd_args.startswith("translat")) and (not cmd_args.startswith("addlinkexplanation")) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
-            else:
-                output = self.command(cmd_args, message, event)
-                if output != False and output is not None:
-                    if len(output) > 500:
-                        message.reply("Output would be longer than 500 characters (the limit), so only the first 500 characters are posted now.")
-                        self.room.send_message(output[:500])
-                    else:
-                        message.reply(output)
+                return
+            elif cmd_args.startswith("addlinkexplanation"): #and event.user.id not in self.owner_ids:
+                arg_one = cmd_args.split(" ")[1]
+                arg_two = cmd_args.split(" ")[2]
+                if re.compile("[^a-zA-Z0-9 _-]").search(arg_one) or re.compile("[^a-zA-Z0-9 _-]").search(arg_two):
+                    message.reply("Argument one and two contain invalid characters.")
+                    return
+            output = self.command(cmd_args, message, event)
+            if output != False and output is not None:
+                if len(output) > 500:
+                    message.reply("Output would be longer than 500 characters (the limit), so only the first 500 characters are posted now.")
+                    self.room.send_message(output[:500])
+                else:
+                    message.reply(output)
             
     def find_associated_word(self, word, message):
             self.add_word_to_latest_words(word)
@@ -561,6 +574,57 @@ class WordAssociationBot:
         else:
             return "No, that's not a link."
 
+    def removelinkexplanation(self, link):
+        to_remove = []
+        ret = False
+        for exp in self.link_explanations:
+            l = exp[0]
+            if (l[0] == link[0] and l[1] == link[1]) or (l[0] == link[1] and l[1] == link[0]):
+                to_remove.append(exp)
+                ret = True
+        for r in to_remove:
+            self.link_explanations.remove(r)
+        with open("linkExplanations.txt", "w") as f:
+            pickle.dump(self.link_explanations, f)
+        return ret
+
+    def command_addlinkexplanation(self, args, msg, event):
+        if len(args) != 3:
+            return "3 arguments expected, %i given" % len(args)
+        w1 = args[0].replace("_", " ").lower()
+        w2 = args[1].replace("_", " ").lower()
+        self.removelinkexplanation((w1, w2))  # remove any older explanations
+        if not self.links_contain((w1, w2)):
+            return "That link does not exist."
+        if re.compile("[^a-zA-Z_%*/:.#-]").search(args[2]):
+            return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#-`."
+        self.link_explanations.append(((args[0], args[1]), args[2]))
+        with open("linkExplanations.txt", "w") as f:
+            pickle.dump(self.link_explanations, f)
+        return "Explanation added."
+
+    def command_explainlink(self, args, msg, event):
+        if len(args) != 2:
+            return "2 arguments expected, %i given" % len(args)
+        w1 = args[0].replace("_", " ").lower()
+        w2 = args[1].replace("_", " ").lower()
+        for exp in self.link_explanations:
+            link = exp[0]
+            explanation = exp[1]
+            if (link[0] == w1 and link[1] == w2) or (link[1] == w1 and link[0] == w2):
+                return explanation
+        return "No explanation found."
+
+    def command_removelinkexplanation(self, args, msg, event):
+        if len(args) != 2:
+            return "2 argumens expected, %i given" % len(args)
+        w1 = args[0].replace("_", " ").lower()
+        w2 = args[1].replace("_", " ").lower()
+        if self.removelinkexplanation((w1, w2)):
+            return "Explanation removed."
+        else:
+            return "No explanation found to remove."
+
     def command_reply(self, args, msg, event):
         if len(args) < 1:
             return "Not enough arguments."
@@ -603,6 +667,9 @@ class WordAssociationBot:
     def command_removelink(self, args, msg, event):
         if len(args) < 2:
             return "Not enough arguments."
+        w1 = args[0].replace("_", " ")
+        w2 = args[1].replace("_", " ")
+        self.removelinkexplanation((w1, w2))
         return self.remove_link(args[0].replace("_", " "), args[1].replace("_", " "))
 
     def links_contain(self, item):
