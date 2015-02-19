@@ -667,8 +667,8 @@ class WordAssociationBot:
     def command_removelink(self, args, msg, event):
         if len(args) < 2:
             return "Not enough arguments."
-        w1 = args[0].replace("_", " ")
-        w2 = args[1].replace("_", " ")
+        w1 = args[0].replace("_", " ").lower()
+        w2 = args[1].replace("_", " ").lower()
         self.removelinkexplanation((w1, w2))
         return self.remove_link(args[0].replace("_", " "), args[1].replace("_", " "))
 
