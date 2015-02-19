@@ -243,7 +243,7 @@ class WordAssociationBot:
             message.reply(word)
 
     def on_event(self, event, client):
-        if self.in_shadows_den:
+        if self.in_shadows_den and self.enabled:
             self.spell_manager.check_spells(event)
         should_return = False
         if not self.enabled:
