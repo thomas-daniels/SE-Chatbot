@@ -10,11 +10,14 @@ class SpellManager:
         self.c = None
         self.secret_spells = None
         self.secret_spells = SecretSpells()
+        self.bot_user_id = self.c.get_me().id
         self.secret_spells.init()
         if os.path.isfile("earnedSpells.txt"):
             self.load()
             
     def award(self, spell_id, user_id, queue):
+        if user_id == self.bot_user_id:
+            return False  # don't give the bot spells
         try:
             if queue:
                 self.append_to_queue(user_id, spell_id)
