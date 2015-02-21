@@ -90,7 +90,8 @@ class WordAssociationBot:
             'setlatestword': self.command_setlatestword,
             'continue': self.command_continue,
             'retry': self.command_retry,
-            'rmword': self.command_rmword
+            'rmword': self.command_rmword,
+            'showlatest10': self.command_showlatest10
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -421,6 +422,11 @@ class WordAssociationBot:
             return "Latest word set."
         except ValueError:
             return "Given argument is not an integer."
+
+    def command_showlatest10(self, args, msg, event):
+        l = len(self.latest_words)
+        return "Latest %s %s: %s" % (l, "words" if l != 1 else "word",
+                                        ", ".join(self.latest_words))
 
     def command_rmword(self, args, msg, event):
         if len(args) != 1:
