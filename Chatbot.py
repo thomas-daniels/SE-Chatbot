@@ -89,7 +89,8 @@ class WordAssociationBot:
             'latestword': self.command_latestword,
             'setlatestword': self.command_setlatestword,
             'continue': self.command_continue,
-            'retry': self.command_retry
+            'retry': self.command_retry,
+            'rmword': self.command_rmword
         }
         self.owner_commands = {
             'stop': self.command_stop,
@@ -231,6 +232,12 @@ class WordAssociationBot:
                     print s
             
     def reply_word(self, message, wait, orig_word):
+        if orig_word in self.latest_words:
+            message.reply("That word is already said in the latest 10 words. "
+                          "Please use another. (In case I'm mistaken, "
+                          "run `>>rmword %s` and then `>>reply %s`)"
+                          % (orig_word, message.id))
+            return
         self.current_word_to_reply_to = orig_word
         if wait and self.waiting_time > 0:
             time.sleep(self.waiting_time)
@@ -414,6 +421,17 @@ class WordAssociationBot:
             return "Latest word set."
         except ValueError:
             return "Given argument is not an integer."
+
+    def command_rmword(self, args, msg, event):
+        if len(args) != 1:
+            return "1 argument expected, %i given" % (len(args),)
+        word = args[0]
+        if word in self.latest_words:
+            self.latest_words = filter(lambda l: l != word, self.latest_words)
+            return "Word removed from latest words."
+        else:
+            return "Word not in the list of latest words."
+
 
     def command_showtime(self, args, msg, event):
         return "Waiting time: %i seconds." % self.waiting_time
