@@ -332,8 +332,11 @@ class WordAssociationBot:
                     message.reply(output)
             
     def find_associated_word(self, word, message):
-            self.add_word_to_latest_words(word)
-            get_word = GetAssociatedWord(word, self.latest_words)
+            latest_words_no_save = self.latest_words[:]
+            latest_words_no_save.append(word.lower())
+            # Create a temp list. Adding the word to the list of the class
+            # should only happen if an associated word is found.
+            get_word = GetAssociatedWord(word, latest_words_no_save)
             word_to_reply = get_word[0]
             word_found = get_word[1]
             if word_to_reply is None:
@@ -347,6 +350,7 @@ class WordAssociationBot:
                 if len(valid_found_links) > 0:
                     word_to_reply = random.choice(valid_found_links)
             if word_to_reply is not None:
+                self.add_word_to_latest_words(word)
                 self.add_word_to_latest_words(word_to_reply)
             return (word_to_reply, word_found)
             
