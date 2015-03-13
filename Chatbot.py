@@ -362,7 +362,7 @@ class WordAssociationBot:
 
     def command(self, cmd, msg, event):
         cmd_args = cmd.split(' ')
-        cmd_name = cmd_args[0]
+        cmd_name = cmd_args[0].lower()
         args = cmd_args[1:]
         if cmd_name == "translationchain" or cmd_name == "translationswitch":
             to_translate = " ".join(args[3:])
