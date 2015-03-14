@@ -3,6 +3,7 @@ import requests
 import random
 import re
 
+
 def GetAssociatedWord(w, latest_words):
     r = requests.get("http://wordassociations.net/search?q=%s" % w)
     soup = BeautifulSoup(r.text)

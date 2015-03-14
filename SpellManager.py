@@ -2,6 +2,7 @@ import pickle
 import os.path
 from SecretSpells import SecretSpells
 
+
 class SpellManager:
 
     def init(self):
@@ -88,4 +89,3 @@ class SpellManager:
         for popThis in toBePopped:
             self.spellQueue[popThis[0]].pop(popThis[1], None)
         return ret
-        

@@ -22,6 +22,7 @@ from Config import Config
 import Commands
 from ExceptHook import *
 
+
 class WordAssociationBot:
     def __init__(self):
         self.room = None
@@ -207,8 +208,7 @@ class WordAssociationBot:
                         self.room.send_message("%s" % command_out)
             else:
                 self.room.send_message(inputted)
-                    
-    
+
     def setup_logging(self): # logging method taken from ChatExchange/examples/chat.py
         logger = logging.getLogger(__name__)
         logging.basicConfig(level=logging.INFO)
@@ -362,7 +362,6 @@ class WordAssociationBot:
         self.latest_words.insert(0, word.lower())
         if len(self.latest_words) > 10:
             self.latest_words.pop()
-    
 
     def command(self, cmd, msg, event):
         cmd_args = cmd.split(' ')
@@ -445,7 +444,6 @@ class WordAssociationBot:
             return "Word removed from latest words."
         else:
             return "Word not in the list of latest words."
-
 
     def command_showtime(self, args, msg, event):
         return "Waiting time: %i seconds." % self.waiting_time
