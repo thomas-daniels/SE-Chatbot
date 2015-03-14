@@ -141,20 +141,17 @@ class WordAssociationBot:
         for p in self.privileged_users:
             if self.site in p:
                 self.privileged_user_ids.append(p[self.site])
-        room_number = -1
         if "room" in config_data:
             room_number = config_data["room"]
             print("Room number: %i" % room_number)
         else:
             room_number = int(raw_input("Room number: "))
-        email = ""
         if "email" in Config.General:
             email = Config.General["email"]
         elif "email" in additional_general_config:
             email = additional_general_config["email"]
         else:
             email = raw_input("Email address: ")
-        password = ""
         if "password" in Config.General: # I would not recommend to store the password in Config.py
             password = Config.General["password"]
         elif "password" in additional_general_config:
@@ -468,9 +465,6 @@ class WordAssociationBot:
         return "Bot enabled."
     
     def command_award(self, args, msg, event):
-        spell_id = -1
-        user_id = -1
-        add_to_queue = False
         if len(args) < 3:
             return "Not enough arguments."
         try:
@@ -493,7 +487,6 @@ class WordAssociationBot:
     def command_viewspells(self, args, msg, event):
         if len(args) < 1:
             return "Not enough arguments."
-        user_id = -1
         try:
             user_id = int(args[0])
         except ValueError:
@@ -513,12 +506,10 @@ class WordAssociationBot:
                 print s
     
     def command_ban(self, args, msg, event):
-        banned_user = -1
         try:
             banned_user = int(args[0])
         except ValueError:
             return "Invalid arguments."
-        user_name = ""
         try:
             user_name = self.client.get_user(banned_user).name.replace(" ", "")
         except:
@@ -534,12 +525,10 @@ class WordAssociationBot:
         return "User @%s has been banned from using the commands." % user_name
             
     def command_unban(self, args, msg, event):
-        banned_user = -1
         try:
             banned_user = int(args[0])
         except ValueError:
             return "Invalid arguments."
-        user_name = ""
         try:
             user_name = self.client.get_user(banned_user).name.replace(" ", "")
         except:
@@ -575,7 +564,6 @@ class WordAssociationBot:
     def command_delete(self, args, msg, event):
         if len(args) == 0:
             return "Not enough arguments."
-        message_id = -1
         try:
             message_id = int(args[0])
         except:
@@ -660,7 +648,6 @@ class WordAssociationBot:
     def command_reply(self, args, msg, event):
         if len(args) < 1:
             return "Not enough arguments."
-        msg_id_to_reply_to = -1
         try:
             msg_id_to_reply_to = int(args[0])
         except ValueError:
@@ -735,7 +722,6 @@ class WordAssociationBot:
     def command_translationchain(self, args, msg, event):
         if event.user.id not in self.owner_ids:
             return "The `translationchain` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
-        translation_count = -1
         if len(args) < 4:
             return "Not enough arguments."
         try:
@@ -758,7 +744,6 @@ class WordAssociationBot:
             return "The `translationswitch` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
         if self.translation_switch_going_on:
             return "There is already a translation switch going on."
-        translation_count = -1
         if len(args) < 4:
             return "Not enough arguments."
         try:

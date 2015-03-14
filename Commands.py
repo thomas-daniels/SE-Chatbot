@@ -16,7 +16,6 @@ def command_randomint(args, msg, event):
     if len(args) == 0:
         return str(random.randint(0, sys.maxint))
     if len(args) == 1:
-        max_ = -1
         try:
             max_ = int(args[0])
         except ValueError:
@@ -26,8 +25,6 @@ def command_randomint(args, msg, event):
             return "Min cannot be greater than max."
         return str(random.randint(min_, max_))
     if len(args) == 2:
-        min_ = -1
-        max_ = -1
         try:
             min_ = int(args[0])
             max_ = int(args[1])
@@ -64,7 +61,6 @@ def command_xkcdrandomnumber(args, msg, event):
 def command_xkcd(args, msg, event):
     if len(args) < 1:
         return "Not enough arguments."
-    id_ = -1
     try:
         id_ = int(args[0])
     except:
