@@ -23,25 +23,13 @@ import Commands
 from ExceptHook import *
 
 class WordAssociationBot:
-    
-    def main(self, config_data, additional_general_config):
+    def __init__(self):
         self.room = None
         self.client = None
         self.privileged_users = []
-        if "owners" in Config.General:
-            self.owners = Config.General["owners"]
-        else:
-            sys.exit("Error: no owners found. Please update Config.py.")
-        if "privileged_users" in config_data:
-            self.privileged_users = config_data["privileged_users"]
-        if "owner_name" in Config.General:
-            self.owner_name = Config.General["owner_name"]
-        else:
-            sys.exit("Error: no owner name found. Please update Config.py.")
-        if "chatbot_name" in Config.General:
-            self.chatbot_name = Config.General["chatbot_name"]
-        else:
-            sys.exit("Error: no chatbot name found. Please update Config.py.")
+        self.owners = []
+        self.owner_name = ""
+        self.chatbot_name = ""
         self.enabled = True
         self.running = True
         self.waiting_time = -1
@@ -49,9 +37,9 @@ class WordAssociationBot:
         self.current_word_to_reply_to = ""
         self.latest_words = []
         self.in_shadows_den = False
-        self.translation_languages = [ "auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
-                                       "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
-                                       "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu" ]
+        self.translation_languages = ["auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
+                                      "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
+                                      "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu"]
         self.end_lang = None
         self.translation_chain_going_on = False
         self.translation_switch_going_on = False
@@ -60,9 +48,10 @@ class WordAssociationBot:
         self.link_explanations = []
         self.banned = {}
         self.site = ""
-        #self.setup_logging() # if you want to have logging, un-comment this line
         self.msg_id_no_reply_found = -1
-        self.commands = { 
+        self.owner_ids = []
+        self.privileged_user_ids = []
+        self.commands = {
             'translate': self.command_translate,
             'random': Commands.command_random,
             'randomint': Commands.command_randomint,
@@ -108,6 +97,23 @@ class WordAssociationBot:
         self.privileged_commands = {
             'delete': self.command_delete
         }
+
+    def main(self, config_data, additional_general_config):
+        if "owners" in Config.General:
+            self.owners = Config.General["owners"]
+        else:
+            sys.exit("Error: no owners found. Please update Config.py.")
+        if "privileged_users" in config_data:
+            self.privileged_users = config_data["privileged_users"]
+        if "owner_name" in Config.General:
+            self.owner_name = Config.General["owner_name"]
+        else:
+            sys.exit("Error: no owner name found. Please update Config.py.")
+        if "chatbot_name" in Config.General:
+            self.chatbot_name = Config.General["chatbot_name"]
+        else:
+            sys.exit("Error: no chatbot name found. Please update Config.py.")
+        # self.setup_logging() # if you want to have logging, un-comment this line
         self.spell_manager.init()
         if "in_shadows_den" in config_data:
             self.in_shadows_den = config_data["in_shadows_den"]
@@ -126,8 +132,6 @@ class WordAssociationBot:
             print("Site: %s" % self.site)
         else:
             self.site = raw_input("Site: ")
-        self.owner_ids = []
-        self.privileged_user_ids = []
         for o in self.owners:
             if self.site in o:
                 self.owner_ids.append(o[self.site])
