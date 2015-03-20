@@ -20,6 +20,8 @@ CommandHelp = {
     "islink": "A command specific for Shadow's Den. Checks whether two words are linked. Syntax: `>>islink word1 word2`",
     "latestword": "A command specific for Shadow's Den. Shows the latest word. Syntax: `>>latestword`",
     "setlatestword": "A command specific for Shadow's Den. Sets the latest word. Syntax: `>>setlatestword msg_id`",
+    "retry": "A command specific for Shadow's Den. Does the same as `>>reply recent`. Syntax: `>>retry`",
+    "continue": "A command specific for Shadow's Den. It's a shortcut for >>link + >>retry. Syntax: `>>continue word1 word2`",
 
     "stop": "Owner-only command. Stops the bot. Syntax: `>>stop`",
     "disable": "Owner-only command. Disables the bot. Syntax: `>>disable`",
