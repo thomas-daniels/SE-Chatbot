@@ -319,6 +319,10 @@ class WordAssociationBot:
                 message.reply("Command contains invalid characters.")
                 return
             elif cmd_args.startswith("addlinkexplanation"): #and event.user.id not in self.owner_ids:
+                parts = cmd_args.split(" ")
+                if len(parts) != 4:
+                    message.reply("3 arguments expected")
+                    return
                 arg_one = cmd_args.split(" ")[1]
                 arg_two = cmd_args.split(" ")[2]
                 if re.compile("[^a-zA-Z0-9 _-]").search(arg_one) or re.compile("[^a-zA-Z0-9 _-]").search(arg_two):
