@@ -270,6 +270,9 @@ class WordAssociationBot:
             should_return = True
         if not isinstance(event, MessagePosted):
             should_return = True
+        if self.site in self.banned \
+                and event.user.id in self.banned[self.site]:
+            should_return = True
         if should_return:
             return
         
@@ -311,9 +314,6 @@ class WordAssociationBot:
             return
         
         if parts[0].startswith(">>"):
-            if self.site in self.banned:
-                if event.user.id in self.banned[self.site]:
-                    return
             cmd_args = content[2:]
             if (not cmd_args.startswith("translat")) and (not cmd_args.startswith("addlinkexplanation")) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
@@ -526,7 +526,7 @@ class WordAssociationBot:
             return "Already banned."
         with open("bannedUsers.txt", "w") as f:
             pickle.dump(self.banned, f)
-        return "User @%s has been banned from using the commands." % user_name
+        return "User @%s has been banned." % user_name
             
     def command_unban(self, args, msg, event):
         try:
