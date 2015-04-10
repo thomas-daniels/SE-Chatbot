@@ -228,7 +228,8 @@ class WordAssociationBot:
             time.sleep(15 * 60)
             awarded = self.spell_manager.empty_queue()
             for s in awarded:
-                if self.room is not None and s != "This spell was already awarded.":
+                if self.room is not None and s != "This spell was already awarded."\
+                        and s is not False:
                     self.room.send_message(s)
                 else:
                     print s
@@ -526,7 +527,7 @@ class WordAssociationBot:
             return "Already banned."
         with open("bannedUsers.txt", "w") as f:
             pickle.dump(self.banned, f)
-        return "User @%s has been banned." % user_name
+        return "User @%s has been banne.d." % user_name
             
     def command_unban(self, args, msg, event):
         try:
