@@ -23,7 +23,7 @@ from Config import Config
 import Commands
 
 
-class WordAssociationBot:
+class Chatbot:
     def __init__(self):
         self.room = None
         self.client = None

@@ -1,10 +1,10 @@
-from Chatbot import WordAssociationBot
+from Chatbot import Chatbot
 from ExceptHook import *
 from Config import Config
 
 sys.excepthook = uncaught_exception
 install_thread_excepthook()
-bot = WordAssociationBot()
+bot = Chatbot()
 config_data = {}
 additional_general_config = {}
 args_length = len(sys.argv)
