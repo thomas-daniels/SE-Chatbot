@@ -271,7 +271,7 @@ class Chatbot:
             should_return = True
         if not isinstance(event, MessagePosted):
             should_return = True
-        if self.site in self.banned \
+        if isinstance(event, MessagePosted) and self.site in self.banned \
                 and event.user.id in self.banned[self.site]:
             should_return = True
         if should_return:
