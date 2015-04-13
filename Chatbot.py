@@ -263,7 +263,7 @@ class Chatbot:
         should_return = False
         if not self.enabled:
             should_return = True
-        if (not self.enabled) and event.user.id in self.owner_ids and event.message.content.startswith("&gt;&gt;"):
+        if isinstance(event, MessagePosted) and (not self.enabled) and event.user.id in self.owner_ids and event.message.content.startswith("&gt;&gt;"):
             should_return = False
         if not self.running:
             should_return = True
