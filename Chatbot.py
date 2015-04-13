@@ -664,6 +664,7 @@ class Chatbot:
                 return "'recent' has a value of -1, which is not a valid message ID. Please provide an explicit ID."
         msg_to_reply_to = Message(msg_id_to_reply_to, self.client)
         content = msg_to_reply_to.content_source
+        content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content) # strip smilies
         content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
         content = re.sub(r"\(.+?\)", "", content)
         content = re.sub(r"\s+", " ", content)
