@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from Chatbot import Chatbot
 from ExceptHook import *
 from Config import Config

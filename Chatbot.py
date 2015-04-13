@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from ChatExchange.chatexchange.client import Client
 from ChatExchange.chatexchange.events import MessagePosted
 from ChatExchange.chatexchange.messages import Message
