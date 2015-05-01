@@ -75,6 +75,7 @@ class Chatbot:
             'showtime': self.command_showtime,
             'islink': self.command_islink,
             'latestword': self.command_latestword,
+            'lastword': self.command_latestword,
             'setlatestword': self.command_setlatestword,
             'continue': self.command_continue,
             'retry': self.command_retry,
