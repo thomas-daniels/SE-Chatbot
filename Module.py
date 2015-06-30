@@ -49,18 +49,20 @@ class MetaModule: # Contains a list of Modules.
             self.modules.append(self.load_module(module))
         
     def command(self, name, args, msg, event):
+        response = False
         for module in self.modules:
             response = module.command(name, args, msg, event)
             if response:
-               break
-        return response
+                break
+        return response or "Command not found."
         
     def help(self, name):
+        response = False
         for module in self.modules:
             response = module.get_help(name)
             if response:
-               break
-        return response
+                break
+        return response or "Help entry not found."
     
     def load_module(self, file):
         module_file = __import__(file)
