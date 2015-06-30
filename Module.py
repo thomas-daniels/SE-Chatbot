@@ -65,16 +65,16 @@ class MetaModule: # Contains a list of Modules.
         return response
     
     def load_module(self, file_):
-        module_file = __import__(file_)
+        try:
+            module_file = __import__(file_)
+        except ImportError:
+            raise ModuleDoesNotExistException("Module: '" + file_ + '"Could not be found.')
         return module_file.module
     
     def list_commands(self):
         cmd_list = []
         for module in self.modules:
-            try:
-                cmd_list.extend(module.list_commands())
-            except ImportError:
-                raise ModuleDoesNotExistException("Module: '" + module + '"Could not be found.')
+            cmd_list.extend(module.list_commands())
         return cmd_list
         
 
