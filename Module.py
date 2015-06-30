@@ -2,10 +2,10 @@ import Settings
     
     
 class Command: # An executable command.
-    def __init__(self, name, execute, help='', privileged=False):
+    def __init__(self, name, execute, help_data='', privileged=False):
         self.name = name
         self.execute = execute
-        self.help = help or "Command exists, but no help entry found."
+        self.help_data = help_data or "Command exists, but no help entry found."
         self.privileged = privileged
         
     
@@ -25,10 +25,10 @@ class Module: # Contains a list of Commands.
         else:    
             return ''
 
-    def help(self, name):
+    def get_help(self, name):
         matches = self.find_commands(name)
         if matches:
-            return matches[0].help
+            return matches[0].help_data
         else:
             return ''
     
@@ -36,10 +36,10 @@ class Module: # Contains a list of Commands.
         return filter(lambda x: x.name == name, self.commands)
     
     def list_commands(self):
-        list = []
+        cmd_list = []
         for command in self.commands:
-            list.append(command.name)
-        return list
+            cmd_list.append(command.name)
+        return cmd_list
 
 
 class MetaModule: # Contains a list of Modules.
@@ -57,7 +57,7 @@ class MetaModule: # Contains a list of Modules.
         
     def help(self, name):
         for module in self.modules:
-            response = module.help(name)
+            response = module.get_help(name)
             if response:
                break
         return response
@@ -67,13 +67,13 @@ class MetaModule: # Contains a list of Modules.
         return module_file.module
     
     def list_commands(self):
-        list = []
+        cmd_list = []
         for module in self.modules:
             try:
-                list.extend(module.list_commands())
+                cmd_list.extend(module.list_commands())
             except ImportError:
                 raise ModuleDoesNotExistException("Module: '" + module + '"Could not be found.')
-        return list
+        return cmd_list
         
 
 class ModuleDoesNotExistException(Exception):
