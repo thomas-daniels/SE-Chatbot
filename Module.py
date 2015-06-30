@@ -64,8 +64,8 @@ class MetaModule: # Contains a list of Modules.
                 break
         return response
     
-    def load_module(self, file):
-        module_file = __import__(file)
+    def load_module(self, file_):
+        module_file = __import__(file_)
         return module_file.module
     
     def list_commands(self):
