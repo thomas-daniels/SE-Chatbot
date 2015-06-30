@@ -56,7 +56,7 @@ class MetaModule: # Contains a list of Modules.
                 break
         return response
         
-    def help(self, name):
+    def get_help(self, name):
         response = False
         for module in self.modules:
             response = module.get_help(name)
