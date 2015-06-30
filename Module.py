@@ -46,7 +46,7 @@ class MetaModule: # Contains a list of Modules.
     def __init__(self, modules):
         self.modules = []
         for module in modules:
-            self.modules.append(self.load_module(module))
+            self.modules.append(MetaModule.load_module(module))
         
     def command(self, name, args, msg, event):
         response = False
@@ -63,8 +63,9 @@ class MetaModule: # Contains a list of Modules.
             if response:
                 break
         return response
-    
-    def load_module(self, file_):
+
+    @staticmethod
+    def load_module(file_):
         try:
             module_file = __import__(file_)
         except ImportError:
