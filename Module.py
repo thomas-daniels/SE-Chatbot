@@ -54,7 +54,7 @@ class MetaModule: # Contains a list of Modules.
             response = module.command(name, args, msg, event)
             if response:
                 break
-        return response or "Command not found."
+        return response
         
     def help(self, name):
         response = False
@@ -62,7 +62,7 @@ class MetaModule: # Contains a list of Modules.
             response = module.get_help(name)
             if response:
                 break
-        return response or "Help entry not found."
+        return response
     
     def load_module(self, file):
         module_file = __import__(file)
