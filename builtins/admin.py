@@ -88,10 +88,16 @@ commands = [
     Command('delete', command_delete, "Only for privileged users. Deletes a message of the bot. Syntax: `>>delete msg_id` or `<reply> !delete!`", True, True)
 ]
 
+command_banned_users = { }
+
 def test_deco(func):
-    def print_deco(*args, **kwargs):
-        # print "we're in there alright."
-        return func(*args, **kwargs)
+    def print_deco(bot, cmd, msg, event, *args, **kwargs):
+        cmd_args = cmd.split(' ')
+        cmd_name = cmd_args[0].lower()
+        if cmd_name not in command_banned_users or event.user.id not in command_banned_users[cmd_name]:
+            return func(bot, cmd, msg, event, *args, **kwargs)
+        else:
+            return "You have been banned from using that command."
     return print_deco
 
 def on_bot_load(bot):
