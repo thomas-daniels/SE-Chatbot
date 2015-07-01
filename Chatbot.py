@@ -138,7 +138,7 @@ class Chatbot:
         cmd_list = self.modules.list_commands()
         for cmd in cmd_list:
             if cmd.name == cmd_name:
-                return cmd.special_arg_parsing is None
+                return cmd.special_arg_parsing is not None
         return False
 
     def do_special_arg_parsing(self, cmd_name, full_cmd):
