@@ -3,15 +3,15 @@ from datetime import datetime
 from CommandHelp import CommandHelp
 
 
-def command_alive(bot, args, msg, event):
+def command_alive(cmd, bot, args, msg, event):
     return "Yes, I'm alive."
 
 
-def command_utc(bot, args, msg, event):
+def command_utc(cmd, bot, args, msg, event):
     return datetime.utcnow().ctime()
 
 
-def command_help(bot, args, msg, event):
+def command_help(cmd, bot, args, msg, event):
     if len(args) == 0:
         return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (bot.chatbot_name, bot.owner_name)
     command_to_look_up = args[0]
