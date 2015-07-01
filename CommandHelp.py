@@ -4,12 +4,8 @@ CommandHelp = {
     "randomint": "Returns a random integer. Syntax: `>>randomint [ [ min ] max ]`",
     "randomchoice": "Randomly chooses an item from a given list. Syntax: `>>randomchoice listitem1 listitem2 listitem3 ...`",
     "shuffle": "Shuffles a list of given items. Syntax: `>>shuffle listitem1 listitem2 listitem3 ...`",
-    "listcommands": "Returns a list of all commands. Syntax: `>>listcommands`",
-    "help": "Shows information about the chat bot, or about a specific command. Syntax: `>>help [ command ]`",
     "xkcdrandomnumber": "Returns a random number, based on an xkcd comic. Syntax: `>>xkcdrandomnumber`",
     "xkcd": "Shows the specified xkcd comic. Syntax: `>>xkcd comic_id`",
-    "alive": "A command to see whether the bot is there. Syntax: `>>alive`",
-    "utc": "Shows the current UTC time. Syntax: `>>utc`",
 
     "time": "A command specific for Shadow's Den. Changes how long the bot has to wait before replying. Syntax: `>>time time_in_seconds`",
     "viewspells": "A command specific for Shadow's Den. Shows the awarded spells of a specific user. Syntax: `>>viewspells user_id`",
