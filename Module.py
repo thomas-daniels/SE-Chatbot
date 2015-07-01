@@ -2,7 +2,8 @@ import importlib
 import types
 from ConsoleCommandHandler import ConsoleCommandHandler
 
-class Command: # An executable command.
+
+class Command:  # An executable command.
     def __init__(self, name, execute, help_data='', privileged=False, owner_only=False, char_check=True,
                  special_arg_parsing=None):
         self.name = name
@@ -12,15 +13,14 @@ class Command: # An executable command.
         self.owner_only = owner_only
         self.char_check = char_check
         self.special_arg_parsing = special_arg_parsing
-        
-    
 
-class Module: # Contains a list of Commands.
+
+class Module:  # Contains a list of Commands.
     def __init__(self, commands, bot, on_event):
         self.bot = bot
         self.commands = commands
         self.on_event = on_event
-        
+
     def command(self, name, args, msg, event):
         matches = self.find_commands(name)
         if matches:
@@ -31,7 +31,7 @@ class Module: # Contains a list of Commands.
                 return command.execute(self.bot, args, msg, event)
             else:
                 return "You don't have the privilege to execute this command."
-        else:    
+        else:
             return False
 
     def get_help(self, name):
@@ -40,10 +40,10 @@ class Module: # Contains a list of Commands.
             return matches[0].help_data
         else:
             return ''
-    
+
     def find_commands(self, name):
         return filter(lambda x: x.name == name, self.commands)
-    
+
     def list_commands(self):
         cmd_list = []
         for command in self.commands:
@@ -51,17 +51,17 @@ class Module: # Contains a list of Commands.
         return cmd_list
 
 
-class MetaModule: # Contains a list of Modules.
+class MetaModule:  # Contains a list of Modules.
     def __init__(self, modules, bot, path=''):
         self.modules = []
         self.bot = bot
-        if path and not path[-1]=='.':
+        if path and not path[-1] == '.':
             self.path = path + '.'
         else:
             self.path = ''
         for module in modules:
             self.modules.append(self.load_module(module))
-        
+
     def command(self, name, args, msg, event):
         response = False
         for module in self.modules:
@@ -69,7 +69,7 @@ class MetaModule: # Contains a list of Modules.
             if response:
                 break
         return response
-        
+
     def get_help(self, name):
         response = False
         for module in self.modules:
@@ -103,7 +103,7 @@ class MetaModule: # Contains a list of Modules.
                     raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
             except AttributeError:
                 raise MalformedModuleException("Module: '" + file_ + "' does not contain a variable called either 'modules' or 'commands'.")
-    
+
     def list_commands(self):
         cmd_list = []
         for module in self.modules:
@@ -118,10 +118,11 @@ class MetaModule: # Contains a list of Modules.
             elif m.on_event is not None:
                 watchers.append(m.on_event)
         return watchers
-        
+
 
 class ModuleDoesNotExistException(Exception):
     pass
+
 
 class MalformedModuleException(Exception):
     pass

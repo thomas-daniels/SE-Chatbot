@@ -36,9 +36,9 @@ def command_ban(cmd, bot, args, msg, event):
         user_name = bot.client.get_user(banned_user).name.replace(" ", "")
     except:
         return "Could not fetch user; please check whether the user exists."
-    if not bot.site in bot.banned:
+    if bot.site not in bot.banned:
         bot.banned[bot.site] = []
-    if not banned_user in bot.banned[bot.site]:
+    if banned_user not in bot.banned[bot.site]:
         bot.banned[bot.site].append(banned_user)
     else:
         return "Already banned."
@@ -56,9 +56,9 @@ def command_unban(cmd, bot, args, msg, event):
         user_name = bot.client.get_user(banned_user).name.replace(" ", "")
     except:
         return "Could not fetch user; please check whether the user exists."
-    if not bot.site in bot.banned:
+    if bot.site not in bot.banned:
         return "Not banned."
-    if not banned_user in bot.banned[bot.site]:
+    if banned_user not in bot.banned[bot.site]:
         return "Not banned."
     bot.banned[bot.site].remove(banned_user)
     with open("bannedUsers.txt", "w") as f:

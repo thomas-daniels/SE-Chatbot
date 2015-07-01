@@ -80,7 +80,7 @@ class Chatbot:
             email = additional_general_config["email"]
         else:
             email = raw_input("Email address: ")
-        if "password" in Config.General: # I would not recommend to store the password in Config.py
+        if "password" in Config.General:  # I would not recommend to store the password in Config.py
             password = Config.General["password"]
         elif "password" in additional_general_config:
             password = additional_general_config["password"]
@@ -93,13 +93,13 @@ class Chatbot:
 
         self.client = Client(self.site)
         self.client.login(email, password)
-    
+
         self.room = self.client.get_room(room_number)
         self.room.join()
         bot_message = "Bot started."
         self.room.send_message(bot_message)
         self.room.watch_socket(self.on_event)
-        
+
         while self.running:
             inputted = raw_input("<< ")
             if inputted.strip() == "":
@@ -108,24 +108,24 @@ class Chatbot:
                 command_in = inputted[2:]
                 cmd_handler = ConsoleCommandHandler(self, inputted[1] == "+")
                 command_out = self.command(command_in, cmd_handler, None)
-                if command_out != False and command_out is not None:
+                if command_out is not False and command_out is not None:
                     cmd_handler.reply(command_out)
             else:
                 self.room.send_message(inputted)
-    
+
     def get_duplicate_commands(self):
         checked_cmds = []
         dupe_cmds = []
         all_cmds = self.modules.list_commands()
         for command in all_cmds:
-            if not command.name in checked_cmds:
+            if command.name not in checked_cmds:
                 checked_cmds.append(command.name)
             else:
-                if not command.name in dupe_cmds:
+                if command.name not in dupe_cmds:
                     dupe_cmds.append(command.name)
         return dupe_cmds
-    
-    def setup_logging(self): # logging method taken from ChatExchange/examples/chat.py
+
+    def setup_logging(self):  # logging method taken from ChatExchange/examples/chat.py
         logger = logging.getLogger(__name__)
         logging.basicConfig(level=logging.INFO)
         logger.setLevel(logging.DEBUG)
@@ -134,7 +134,7 @@ class Chatbot:
         # above, we'll use a log file for chatexchange.client.
         wrapper_logger = logging.getLogger('chatexchange.client')
         wrapper_handler = logging.handlers.TimedRotatingFileHandler(
-           filename='client.log',
+            filename='client.log',
             when='midnight', delay=True, utc=True, backupCount=7,
         )
         wrapper_handler.setFormatter(logging.Formatter(
@@ -181,7 +181,7 @@ class Chatbot:
             should_return = True
         if should_return:
             return
-        
+
         message = event.message
         h = HTMLParser()
         content = h.unescape(message.content_source)
@@ -195,7 +195,7 @@ class Chatbot:
         parts = content.split(" ")
         if not parts[0].startswith(">>") and (len(parts) != 2 or not parts[0].startswith(":")):
             return
-        
+
         if len(parts) == 2 and parts[1] == "!delete!" and parts[0].startswith(":"):
             try:
                 if event.user.id in self.privileged_user_ids or event.user.id in self.owner_ids:
@@ -203,7 +203,7 @@ class Chatbot:
                     self.client.get_message(msg_id_to_delete).delete()
             except:
                 pass
-        
+
         if parts[0].startswith(">>"):
             cmd_args = content[2:]
             if self.requires_char_check(cmd_args.split(" ")[0]) and \
@@ -211,7 +211,7 @@ class Chatbot:
                 message.reply("Command contains invalid characters.")
                 return
             output = self.command(cmd_args, message, event)
-            if output != False and output is not None:
+            if output is not False and output is not None:
                 if len(output) > 500:
                     message.reply("Output would be longer than 500 characters (the limit), so only the first 500 characters are posted now.")
                     self.room.send_message(output[:500])
