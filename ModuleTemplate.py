@@ -14,7 +14,7 @@ from Module import Command
     
 
 commands = [ # A list of all Commands in this Module.
-    # Command( <command name>, <command exec name>, <help text> (optional), <needs privilege> (= False) ),
-    # Command( <command name>, <command exec name>, <help text> (optional), <needs privilege> (= False) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False) ),
     # ...
 ] 
