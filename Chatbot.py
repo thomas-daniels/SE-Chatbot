@@ -70,13 +70,8 @@ class Chatbot:
             'showlatest10': self.command_showlatest10
         }
         self.owner_commands = {
-            'stop': self.command_stop,
-            'disable': self.command_disable,
-            'enable': self.command_enable,
             'award': self.command_award,
             'emptyqueue': self.command_emptyqueue,
-            'ban': self.command_ban,
-            'unban': self.command_unban,
             'removespell': self.command_removespell
         }
         self.privileged_commands = {
@@ -437,25 +432,6 @@ class Chatbot:
 
     def command_showtime(self, args, msg, event):
         return "Waiting time: %i seconds." % self.waiting_time
-                
-    def command_stop(self, args, msg, event):
-        self.enabled = False
-        self.running = False
-        if msg is not None:
-            msg.reply("Bot terminated.")
-            time.sleep(2)
-        self.room.leave()
-        self.client.logout()
-        time.sleep(5)
-        os._exit(0)
-        
-    def command_disable(self, args, msg, event):
-        self.enabled = False
-        return "Bot disabled, run >>enable to enable it again."
-        
-    def command_enable(self, args, msg, event):
-        self.enabled = True
-        return "Bot enabled."
     
     def command_award(self, args, msg, event):
         if len(args) < 3:
@@ -497,43 +473,6 @@ class Chatbot:
                 self.room.send_message(s)
             else:
                 print s
-    
-    def command_ban(self, args, msg, event):
-        try:
-            banned_user = int(args[0])
-        except ValueError:
-            return "Invalid arguments."
-        try:
-            user_name = self.client.get_user(banned_user).name.replace(" ", "")
-        except:
-            return "Could not fetch user; please check whether the user exists."
-        if not self.site in self.banned:
-            self.banned[self.site] = []
-        if not banned_user in self.banned[self.site]:
-            self.banned[self.site].append(banned_user)
-        else:
-            return "Already banned."
-        with open("bannedUsers.txt", "w") as f:
-            pickle.dump(self.banned, f)
-        return "User @%s has been banned." % user_name
-            
-    def command_unban(self, args, msg, event):
-        try:
-            banned_user = int(args[0])
-        except ValueError:
-            return "Invalid arguments."
-        try:
-            user_name = self.client.get_user(banned_user).name.replace(" ", "")
-        except:
-            return "Could not fetch user; please check whether the user exists."
-        if not self.site in self.banned:
-            return "Not banned."
-        if not banned_user in self.banned[self.site]:
-            return "Not banned."
-        self.banned[self.site].remove(banned_user)
-        with open("bannedUsers.txt", "w") as f:
-            pickle.dump(self.banned, f)
-        return "User @%s has been unbanned." % user_name
 
     def command_delete(self, args, msg, event):
         if len(args) == 0:
