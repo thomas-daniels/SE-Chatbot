@@ -80,10 +80,10 @@ def command_delete(self, args, msg, event):
         pass
 
 commands = [
-    Command('stop', command_stop, "", False, True),
-    Command('disable', command_disable, "", False, True),
-    Command('enable', command_enable, "", False, True),
-    Command('ban', command_ban, "", False, True),
-    Command('unban', command_unban, "", False, True),
-    Command('delete', command_delete, "", True, True)
+    Command('stop', command_stop, "Owner-only command. Stops the bot. Syntax: `>>stop`", False, True),
+    Command('disable', command_disable, "Owner-only command. Disables the bot. Syntax: `>>disable`", False, True),
+    Command('enable', command_enable, "Owner-only command. Enables the bot when it is disabled. Syntax: `>>enable`", False, True),
+    Command('ban', command_ban, "Owner-only command. Bans a user from using the bot. Syntax: `>>ban user_id`", False, True),
+    Command('unban', command_unban, "Owner-only command. Unbans a banned user. Syntax: `>>unban user_id`", False, True),
+    Command('delete', command_delete, "Only for privileged users. Deletes a message of the bot. Syntax: `>>delete msg_id` or `<reply> !delete!`", True, True)
 ]
