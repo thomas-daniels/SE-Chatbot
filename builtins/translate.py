@@ -136,8 +136,27 @@ def parse(json):
                 curr_str.append(c)
     return " ".join(all_str)
 
+
+def trans_arg_parsing(full_cmd):
+    cmd_args = full_cmd.split(' ')
+    args = cmd_args[1:]
+    to_translate = " ".join(args[2:])
+    args = args[:2]
+    args.append(to_translate)
+    return [cmd_args[0]] + args
+
+
+def transcs_arg_parsing(full_cmd):
+    cmd_args = full_cmd.split(' ')
+    args = cmd_args[1:]
+    to_translate = " ".join(args[3:])
+    args = args[:3]
+    args.append(to_translate)
+    return [cmd_args[0]] + args
+
+
 commands = [
-    Command('translate', command_translate, "Translates text using [Google Translate](https://translate.google.com). Syntax: `>>translate input_lang output_lang Text to translate.`. `input_lang` and `output_lang` are language codes such as `en`, `fr` and `auto`.", False, False, False),
-    Command('translationchain', command_translationchain, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com). Syntax: `>>translationchain steps_number input_lang output_lang Text to translate.`", False, True, False),
-    Command('translationswitch', command_translationswitch, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com), consisting of two languages. Syntax: `>>translationswitch steps_number lang1 lang2 Text to translate.`", False, True, False)
+    Command('translate', command_translate, "Translates text using [Google Translate](https://translate.google.com). Syntax: `>>translate input_lang output_lang Text to translate.`. `input_lang` and `output_lang` are language codes such as `en`, `fr` and `auto`.", False, False, False, trans_arg_parsing),
+    Command('translationchain', command_translationchain, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com). Syntax: `>>translationchain steps_number input_lang output_lang Text to translate.`", False, True, False, transcs_arg_parsing),
+    Command('translationswitch', command_translationswitch, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com), consisting of two languages. Syntax: `>>translationswitch steps_number lang1 lang2 Text to translate.`", False, True, False, transcs_arg_parsing)
 ]

@@ -134,6 +134,20 @@ class Chatbot:
                 return cmd.char_check
         return True
 
+    def requires_special_arg_parsing(self, cmd_name):
+        cmd_list = self.modules.list_commands()
+        for cmd in cmd_list:
+            if cmd.name == cmd_name:
+                return cmd.special_arg_parsing is None
+        return False
+
+    def do_special_arg_parsing(self, cmd_name, full_cmd):
+        cmd_list = self.modules.list_commands()
+        for cmd in cmd_list:
+            if cmd.name == cmd_name and cmd.special_arg_parsing is not None:
+                return cmd.special_arg_parsing(full_cmd)
+        return False
+
     def on_event(self, event, client):
         watchers = self.modules.get_event_watchers()
         for w in watchers:
@@ -193,14 +207,10 @@ class Chatbot:
         cmd_args = cmd.split(' ')
         cmd_name = cmd_args[0].lower()
         args = cmd_args[1:]
-        if cmd_name == "translationchain" or cmd_name == "translationswitch":
-            to_translate = " ".join(args[3:])
-            args = args[:3]
-            args.append(to_translate)
-        elif cmd_name == "translate":
-            to_translate = " ".join(args[2:])
-            args = args[:2]
-            args.append(to_translate)
+        if self.requires_special_arg_parsing(cmd_name):
+            cmd_args = self.do_special_arg_parsing(cmd_name, cmd)
+            if cmd_args is False:
+                return "Argument parsing failed."
         r = self.modules.command(cmd_name, args, msg, event)
         if r is not False:
             return r

@@ -2,13 +2,15 @@ import importlib
 import types
 
 class Command: # An executable command.
-    def __init__(self, name, execute, help_data='', privileged=False, owner_only=False, char_check=True):
+    def __init__(self, name, execute, help_data='', privileged=False, owner_only=False, char_check=True,
+                 special_arg_parsing=None):
         self.name = name
         self.execute = types.MethodType(execute, self)
         self.help_data = help_data or "Command exists, but no help entry found."
         self.privileged = privileged
         self.owner_only = owner_only
         self.char_check = char_check
+        self.special_arg_parsing = special_arg_parsing
         
     
 
