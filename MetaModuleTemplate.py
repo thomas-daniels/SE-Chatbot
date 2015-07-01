@@ -1,7 +1,7 @@
-from Module import MetaModule
+# The modules listed in this file can be read and loaded as a MetaModule into another MetaModule by the load_module() function
 
-module = MetaModule( [ # A list of all (Meta)Modules in this MetaModule.
+modules = [ # A list of all (Meta)Modules in this MetaModule.
     # '<module name> (filename - .py)',
     # '<module name> (filename - .py)',
     # ...
-] )
+]

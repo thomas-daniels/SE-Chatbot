@@ -68,8 +68,22 @@ class MetaModule: # Contains a list of Modules.
         try:
             module_file = __import__(file_)
         except ImportError:
-            raise ModuleDoesNotExistException("Module: '" + file_ + '"Could not be found.')
-        return module_file.module
+            raise ModuleDoesNotExistException("Module: '" + file_ + "' could not be found.")
+        try:
+            mdls = module_file.modules
+            if type(cmds) is list:
+                return MetaModule(mdls, bot)
+            else:
+                raise MalformedModuleException("Module: '" + file_ + "', 'modules' is not a list.")
+        except NameError:
+            try:
+                cmds = module_file.commands
+                if type(cmds) is list:
+                    return Module(cmds, bot)
+                else:
+                    raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
+            except NameError:
+                raise MalformedModuleException("Module: '" + file_ + "' does not contain a variable called either 'modules' or 'commands'.")
     
     def list_commands(self):
         cmd_list = []
@@ -79,4 +93,7 @@ class MetaModule: # Contains a list of Modules.
         
 
 class ModuleDoesNotExistException(Exception):
+    pass
+
+class MalformedModuleException(Exception):
     pass
