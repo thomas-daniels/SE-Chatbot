@@ -54,11 +54,7 @@ class Chatbot:
         self.privileged_user_ids = []
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
         self.commands = {
-            'translate': self.command_translate,
-            'random': Commands.command_random,
-            'randomint': Commands.command_randomint,
-            'randomchoice': Commands.command_randomchoice,
-            'shuffle': Commands.command_shuffle,
+            'translate': self.command_translate
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
