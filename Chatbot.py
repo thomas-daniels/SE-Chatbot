@@ -8,17 +8,13 @@ from HTMLParser import HTMLParser
 import thread
 import time
 import random
-import requests
-import urllib
 import logging.handlers
 import os
 import os.path
 import sys
 from SpellManager import SpellManager
 import pickle
-from CommandHelp import CommandHelp
 from Config import Config
-import Commands
 import ModuleManifest
 from Module import MetaModule
 
@@ -53,9 +49,7 @@ class Chatbot:
         self.owner_ids = []
         self.privileged_user_ids = []
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
-        self.commands = {
-            'translate': self.command_translate
-        }
+        self.commands = {}
         self.shadows_den_specific_commands = {
             'time': self.command_time,
             'viewspells': self.command_viewspells,
@@ -83,8 +77,6 @@ class Chatbot:
             'emptyqueue': self.command_emptyqueue,
             'ban': self.command_ban,
             'unban': self.command_unban,
-            'translationchain': self.command_translationchain,
-            'translationswitch': self.command_translationswitch,
             'removespell': self.command_removespell
         }
         self.privileged_commands = {
@@ -701,128 +693,3 @@ class Chatbot:
                     pickle.dump(self.links, f)
                 return "Link removed."
         return "No link found."
-
-    def command_translationchain(self, args, msg, event):
-        if event.user.id not in self.owner_ids:
-            return "The `translationchain` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
-        if len(args) < 4:
-            return "Not enough arguments."
-        try:
-            translation_count = int(args[0])
-        except ValueError:
-            return "Invalid arguments."
-        if translation_count < 1:
-            return "Invalid arguments."
-        if not self.translation_chain_going_on:
-            if not args[1] in self.translation_languages or not args[2] in self.translation_languages:
-                return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
-            self.translation_chain_going_on = True
-            thread.start_new_thread(self.translationchain, (args[3], args[1], args[2], translation_count))
-            return "Translation chain started. Translation made by [Google Translate](https://translate.google.com). Some messages in the chain might not be posted due to a reason I don't know."
-        else:
-            return "There is already a translation chain going on."
-
-    def command_translationswitch(self, args, msg, event):
-        if event.user.id not in self.owner_ids:
-            return "The `translationswitch` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
-        if self.translation_switch_going_on:
-            return "There is already a translation switch going on."
-        if len(args) < 4:
-            return "Not enough arguments."
-        try:
-            translation_count = int(args[0])
-        except ValueError:
-            return "Invalid arguments."
-        if translation_count < 2:
-            return "Invalid arguments."
-        if (translation_count % 2) == 1:
-            return "Translation count has to be an even number."
-        if not args[1] in self.translation_languages or not args[2] in self.translation_languages:
-            return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
-        self.translation_switch_going_on = True
-        thread.start_new_thread(self.translationswitch, (args[3], args[1], args[2], translation_count))
-        return "Translation switch started. Translation made by [Google Translate](https://translate.google.com). Some messages in the switch might not be posted due to a reason I don't know."
-
-    def command_translate(self, args, msg, event):
-        if len(args) < 3:
-            return "Not enough arguments."
-        if args[0] == args[1]:
-            return "There's no point in having the same input language as output language."
-        if not args[0] in self.translation_languages or not args[1] in self.translation_languages:
-            return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
-        return self.translate(args[2], args[0], args[1])
-
-    def translationchain(self, text, start_lang, end_lang, translation_count):
-        i = 0
-        curr_lang = start_lang
-        next_lang = None
-        curr_text = text
-        choices = list(self.translation_languages)
-        if start_lang == end_lang:
-            choices.remove(start_lang)
-        else:
-            choices.remove(start_lang)
-            choices.remove(end_lang)
-        while i < translation_count - 1:
-            if next_lang is not None:
-                curr_lang = next_lang
-            while True:
-                next_lang = random.choice(choices)
-                if next_lang != curr_lang:
-                    break
-            result = self.translate(curr_text, curr_lang, next_lang)
-            curr_text = result
-            self.room.send_message("Translate %s-%s: %s" % (curr_lang, next_lang, result))
-            i += 1
-        final_result = self.translate(curr_text, next_lang, end_lang)
-        self.room.send_message("Final translation result (%s-%s): %s" % (next_lang, end_lang, final_result))
-        self.translation_chain_going_on = False
-
-    def translationswitch(self, text, lang1, lang2, translation_count):
-        i = 1
-        curr_text = text
-        while i <= translation_count:
-            if (i % 2) == 0:
-                lang_order = (lang2, lang1)
-            else:
-                lang_order = (lang1, lang2)
-            curr_text = self.translate(curr_text, lang_order[0], lang_order[1])
-            msg_text = "Translate %s-%s: %s" if i != translation_count else "Final result (%s-%s): %s"
-            self.room.send_message(msg_text % (lang_order + (curr_text,)))
-            i += 1
-        self.translation_switch_going_on = False
-
-    def translate(self, text, start_lang, end_lang):
-        translate_url = "https://translate.google.com/translate_a/single?client=t&sl=%s&tl=%s&hl=en&dt=bd&dt=ex&dt=ld&dt=md&dt=qc&dt=rw&dt=rm&dt=ss&dt=t&dt=at&dt=sw&ie=UTF-8&oe=UTF-8&prev=btn&srcrom=1&ssel=0&tsel=0&q=%s" % (start_lang, end_lang, urllib.quote_plus(text.encode("utf-8")))
-        r = requests.get(translate_url)
-        unparsed_json = r.text.split("],[\"\",,", 1)[0].split("]]", 1)[0][3:]
-        return self.parse(unparsed_json)
-
-    def parse(self, json):
-        is_open = False
-        is_backslash = False
-        is_translation = True
-        all_str = []
-        curr_str = []
-        for c in json:
-            if c != '"' and not is_open:
-                continue
-            elif c == '"' and not is_open:
-                is_open = True
-            elif c == '\\':
-                is_backslash = not is_backslash
-                if is_translation:
-                    curr_str.append(c)
-            elif c == '"' and is_open and not is_backslash:
-                is_open = False
-                if is_translation:
-                    s = "".join(curr_str).replace("\\\\", "\\").replace("\\\"", "\"")
-                    all_str.append(s)
-                curr_str = []
-                is_backslash = False
-                is_translation = not is_translation
-            else:
-                is_backslash = False
-                if is_translation:
-                    curr_str.append(c)
-        return " ".join(all_str)
