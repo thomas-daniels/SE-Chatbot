@@ -47,9 +47,13 @@ class Module: # Contains a list of Commands.
 
 
 class MetaModule: # Contains a list of Modules.
-    def __init__(self, modules, bot):
+    def __init__(self, modules, bot, path=''):
         self.modules = []
         self.bot = bot
+        if path and not path[-1]=='.':
+            self.path = path + '.'
+        else:
+            self.path = ''
         for module in modules:
             self.modules.append(self.load_module(module))
         
@@ -70,6 +74,7 @@ class MetaModule: # Contains a list of Modules.
         return response
 
     def load_module(self, file_):
+        file_ = self.path + file_
         try:
             module_file = importlib.import_module(file_)
         except ImportError:
@@ -77,7 +82,7 @@ class MetaModule: # Contains a list of Modules.
         try:
             mdls = module_file.modules
             if type(mdls) is list:
-                return MetaModule(mdls, self.bot)
+                return MetaModule(mdls, self.bot, file_[:file_.rfind('.')])
             else:
                 raise MalformedModuleException("Module: '" + file_ + "', 'modules' is not a list.")
         except AttributeError:
