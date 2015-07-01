@@ -27,7 +27,7 @@ class Module: # Contains a list of Commands.
             else:
                 return "You don't have the privilege to execute this command."
         else:    
-            return ''
+            return False
 
     def get_help(self, name):
         matches = self.find_commands(name)
