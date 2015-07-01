@@ -76,7 +76,6 @@ class Chatbot:
             'removespell': self.command_removespell
         }
         self.privileged_commands = {
-            'delete': self.command_delete
         }
 
     def main(self, config_data, additional_general_config):
