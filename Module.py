@@ -12,9 +12,10 @@ class Command: # An executable command.
     
 
 class Module: # Contains a list of Commands.
-    def __init__(self, commands, bot):
+    def __init__(self, commands, bot, on_event):
         self.bot = bot
         self.commands = commands
+        self.on_event = on_event
         
     def command(self, name, args, msg, event):
         matches = self.find_commands(name)
@@ -88,8 +89,12 @@ class MetaModule: # Contains a list of Modules.
         except AttributeError:
             try:
                 cmds = module_file.commands
+                try:
+                    on_event = module_file.on_event
+                except AttributeError:
+                    on_event = None
                 if type(cmds) is list:
-                    return Module(cmds, self.bot)
+                    return Module(cmds, self.bot, on_event)
                 else:
                     raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
             except AttributeError:
@@ -100,6 +105,15 @@ class MetaModule: # Contains a list of Modules.
         for module in self.modules:
             cmd_list.extend(module.list_commands())
         return cmd_list
+
+    def get_event_watchers(self):
+        watchers = []
+        for m in self.modules:
+            if isinstance(m, MetaModule):
+                watchers.extend(m.get_event_watchers())
+            elif m.on_event is not None:
+                watchers.append(m.on_event)
+        return watchers
         
 
 class ModuleDoesNotExistException(Exception):

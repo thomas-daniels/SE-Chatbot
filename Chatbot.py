@@ -239,6 +239,9 @@ class Chatbot:
             message.reply(word)
 
     def on_event(self, event, client):
+        watchers = self.modules.get_event_watchers()
+        for w in watchers:
+            w(event, client, self)
         if self.in_shadows_den and self.enabled:
             self.spell_manager.check_spells(event)
         should_return = False
