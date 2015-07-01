@@ -1,9 +1,10 @@
 import importlib
+import types
 
 class Command: # An executable command.
     def __init__(self, name, execute, help_data='', privileged=False, owner_only=False):
         self.name = name
-        self.execute = execute
+        self.execute = types.MethodType(execute, self)
         self.help_data = help_data or "Command exists, but no help entry found."
         self.privileged = privileged
         self.owner_only = owner_only
@@ -41,7 +42,7 @@ class Module: # Contains a list of Commands.
     def list_commands(self):
         cmd_list = []
         for command in self.commands:
-            cmd_list.append(command.name)
+            cmd_list.append(command)
         return cmd_list
 
 
