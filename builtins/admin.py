@@ -66,14 +66,14 @@ def command_unban(cmd, bot, args, msg, event):
     return "User @%s has been unbanned." % user_name
 
 
-def command_delete(self, args, msg, event):
+def command_delete(cmd, bot, args, msg, event):
     if len(args) == 0:
         return "Not enough arguments."
     try:
         message_id = int(args[0])
     except:
         return "Invalid arguments."
-    message_to_delete = Message(message_id, self.client)
+    message_to_delete = Message(message_id, bot.client)
     try:
         message_to_delete.delete()
     except:
