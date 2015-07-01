@@ -91,11 +91,11 @@ commands = [
 command_banned_users = { }
 
 def test_deco(func):
-    def print_deco(bot, cmd, msg, event, *args, **kwargs):
+    def print_deco(cmd, msg, event, *args, **kwargs):
         cmd_args = cmd.split(' ')
         cmd_name = cmd_args[0].lower()
         if cmd_name not in command_banned_users or event.user.id not in command_banned_users[cmd_name]:
-            return func(bot, cmd, msg, event, *args, **kwargs)
+            return func(cmd, msg, event, *args, **kwargs)
         else:
             return "You have been banned from using that command."
     return print_deco
