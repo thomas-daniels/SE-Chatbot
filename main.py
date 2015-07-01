@@ -3,7 +3,6 @@
 from Chatbot import Chatbot
 from ExceptHook import *
 from Config import Config
-import builtins.utils
 
 sys.excepthook = uncaught_exception
 install_thread_excepthook()
