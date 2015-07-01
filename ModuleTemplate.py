@@ -4,10 +4,10 @@ from Module import Command
 
 # Logic for the commands goes here.
 #
-# def <command exec name>(args, msg, event):
+# def <command exec name>(self, args, msg, event): # self refers to the Command you assign this function to
 #     return "I'm in test1"
 #
-# def <command exec name>(args, msg, event):
+# def <command exec name>(self, args, msg, event): # self refers to the Command you assign this function to
 #     return "I'm in test1"
 #
 # ...
