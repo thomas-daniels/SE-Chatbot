@@ -17,6 +17,7 @@ import pickle
 from Config import Config
 import ModuleManifest
 from Module import MetaModule
+from nocharcheck import no_char_check
 
 
 class Chatbot:
@@ -298,7 +299,7 @@ class Chatbot:
         
         if parts[0].startswith(">>"):
             cmd_args = content[2:]
-            if (not cmd_args.startswith("translat")) and (not cmd_args.startswith("addlinkexplanation")) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
+            if (not cmd_args.split(" ")[0] in no_char_check) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
                 return
             elif cmd_args.startswith("addlinkexplanation"): #and event.user.id not in self.owner_ids:
