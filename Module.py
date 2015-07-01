@@ -1,5 +1,6 @@
 import importlib
 import types
+from ConsoleCommandHandler import ConsoleCommandHandler
 
 class Command: # An executable command.
     def __init__(self, name, execute, help_data='', privileged=False, owner_only=False, char_check=True,
@@ -24,7 +25,7 @@ class Module: # Contains a list of Commands.
         matches = self.find_commands(name)
         if matches:
             command = matches[0]
-            if (not command.privileged and not command.owner_only) or msg is None \
+            if (not command.privileged and not command.owner_only) or isinstance(msg, ConsoleCommandHandler) \
                     or (command.privileged and event.user.id in self.bot.privileged_user_ids) \
                     or (command.owner_only and event.user.id in self.bot.owner_ids):
                 return command.execute(self.bot, args, msg, event)

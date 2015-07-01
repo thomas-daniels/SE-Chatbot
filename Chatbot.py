@@ -11,6 +11,7 @@ import pickle
 from Config import Config
 import ModuleManifest
 from Module import MetaModule
+from ConsoleCommandHandler import ConsoleCommandHandler
 
 
 class Chatbot:
@@ -105,11 +106,10 @@ class Chatbot:
                 continue
             if inputted.startswith("$") and len(inputted) > 2:
                 command_in = inputted[2:]
-                command_out = self.command(command_in, None, None)
+                cmd_handler = ConsoleCommandHandler(self, inputted[1] == "+")
+                command_out = self.command(command_in, cmd_handler, None)
                 if command_out != False and command_out is not None:
-                    print command_out
-                    if inputted[1] == "+":
-                        self.room.send_message("%s" % command_out)
+                    cmd_handler.reply(command_out)
             else:
                 self.room.send_message(inputted)
     
