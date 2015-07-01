@@ -208,8 +208,8 @@ class Chatbot:
         cmd_name = cmd_args[0].lower()
         args = cmd_args[1:]
         if self.requires_special_arg_parsing(cmd_name):
-            cmd_args = self.do_special_arg_parsing(cmd_name, cmd)
-            if cmd_args is False:
+            args = self.do_special_arg_parsing(cmd_name, cmd)
+            if args is False:
                 return "Argument parsing failed."
         r = self.modules.command(cmd_name, args, msg, event)
         if r is not False:

@@ -143,7 +143,7 @@ def trans_arg_parsing(full_cmd):
     to_translate = " ".join(args[2:])
     args = args[:2]
     args.append(to_translate)
-    return [cmd_args[0]] + args
+    return args
 
 
 def transcs_arg_parsing(full_cmd):
@@ -152,7 +152,7 @@ def transcs_arg_parsing(full_cmd):
     to_translate = " ".join(args[3:])
     args = args[:3]
     args.append(to_translate)
-    return [cmd_args[0]] + args
+    return args
 
 
 commands = [
