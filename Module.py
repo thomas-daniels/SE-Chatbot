@@ -1,9 +1,10 @@
 class Command: # An executable command.
-    def __init__(self, name, execute, help_data='', privileged=False):
+    def __init__(self, name, execute, help_data='', privileged=False, owner_only=False):
         self.name = name
         self.execute = execute
         self.help_data = help_data or "Command exists, but no help entry found."
         self.privileged = privileged
+        self.owner_only = owner_only
         
     
 
@@ -16,7 +17,9 @@ class Module: # Contains a list of Commands.
         matches = self.find_commands(name)
         if matches:
             command = matches[0]
-            if not command.privileged or msg is None or event.user.id in self.bot.owner_ids:
+            if (not command.privileged and not command.owner_only) or msg is None \
+                    or (command.privileged and event.user.id in self.bot.privileged_user_ids) \
+                    or (command.owner_only and event.user.id in self.bot.owner_ids):
                 return command.execute(args, msg, event)
             else:
                 return "You don't have the privilege to execute this command."
