@@ -11,14 +11,7 @@ def command_utc(cmd, bot, args, msg, event):
 
 
 def command_listcommands(cmd, bot, args, msg, event):
-    command_keys = bot.commands.keys()
-    if bot.in_shadows_den:
-        command_keys += bot.shadows_den_specific_commands.keys()
-    module_commands = bot.modules.list_commands()
-    for mod_cmd in module_commands:
-        command_keys.append(mod_cmd.name)
-    command_keys.sort()
-    return "Commands: %s" % (", ".join(command_keys),)
+    return "Commands: %s" % (bot.modules.list_commands())
 
 
 def command_help(cmd, bot, args, msg, event):

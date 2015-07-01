@@ -117,7 +117,7 @@ class Chatbot:
 
         on_loads = self.modules.get_on_load_methods()
         for on_load in on_loads:
-            on_load()
+            on_load(self)
 
         while self.running:
             inputted = raw_input("<< ")

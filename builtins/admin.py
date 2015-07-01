@@ -87,3 +87,12 @@ commands = [
     Command('unban', command_unban, "Owner-only command. Unbans a banned user. Syntax: `>>unban user_id`", False, True),
     Command('delete', command_delete, "Only for privileged users. Deletes a message of the bot. Syntax: `>>delete msg_id` or `<reply> !delete!`", True, True)
 ]
+
+def test_deco(func):
+    def print_deco(*args, **kwargs):
+        # print "we're in there alright."
+        return func(*args, **kwargs)
+    return print_deco
+
+def on_bot_load(bot):
+    bot.command = test_deco(bot.command)
