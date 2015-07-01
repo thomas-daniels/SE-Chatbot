@@ -1,18 +1,12 @@
 from ChatExchange.chatexchange.client import Client
 from ChatExchange.chatexchange.events import MessagePosted
-from ChatExchange.chatexchange.messages import Message
 import getpass
 import re
-from GetAssociatedWord import GetAssociatedWord
 from HTMLParser import HTMLParser
-import thread
-import time
-import random
 import logging.handlers
 import os
 import os.path
 import sys
-from SpellManager import SpellManager
 import pickle
 from Config import Config
 import ModuleManifest
@@ -30,53 +24,18 @@ class Chatbot:
         self.chatbot_name = ""
         self.enabled = True
         self.running = True
-        self.waiting_time = -1
-        self.latest_word_id = -1
-        self.current_word_to_reply_to = ""
-        self.latest_words = []
-        self.in_shadows_den = False
         self.translation_languages = ["auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
                                       "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
                                       "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu"]
         self.end_lang = None
         self.translation_chain_going_on = False
         self.translation_switch_going_on = False
-        self.spell_manager = SpellManager()
-        self.links = []
-        self.link_explanations = []
         self.banned = {}
         self.site = ""
         self.msg_id_no_reply_found = -1
         self.owner_ids = []
         self.privileged_user_ids = []
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
-        self.commands = {}
-        self.shadows_den_specific_commands = {
-            'time': self.command_time,
-            'viewspells': self.command_viewspells,
-            'link': self.command_link,
-            'removelink': self.command_removelink,
-            'addlinkexplanation': self.command_addlinkexplanation,
-            'explainlink': self.command_explainlink,
-            'removelinkexplanation': self.command_removelinkexplanation,
-            'reply': self.command_reply,
-            'showtime': self.command_showtime,
-            'islink': self.command_islink,
-            'latestword': self.command_latestword,
-            'lastword': self.command_latestword,
-            'setlatestword': self.command_setlatestword,
-            'continue': self.command_continue,
-            'retry': self.command_retry,
-            'rmword': self.command_rmword,
-            'showlatest10': self.command_showlatest10
-        }
-        self.owner_commands = {
-            'award': self.command_award,
-            'emptyqueue': self.command_emptyqueue,
-            'removespell': self.command_removespell
-        }
-        self.privileged_commands = {
-        }
 
     def main(self, config_data, additional_general_config):
         if "owners" in Config.General:
@@ -94,19 +53,6 @@ class Chatbot:
         else:
             sys.exit("Error: no chatbot name found. Please update Config.py.")
         # self.setup_logging() # if you want to have logging, un-comment this line
-        self.spell_manager.init()
-        if "in_shadows_den" in config_data:
-            self.in_shadows_den = config_data["in_shadows_den"]
-            print("In Shadow's Den: %s" % self.in_shadows_den)
-        else:
-            in_den = raw_input("Does the bot run in Shadow's Den? (y/n) ").lower()
-            if in_den == "y":
-                self.in_shadows_den = True
-            elif in_den == "n":
-                self.in_shadows_den = False
-            else:
-                self.in_shadows_den = False
-                print("Invalid input; assumed 'no'")
         if "site" in config_data:
             self.site = config_data["site"]
             print("Site: %s" % self.site)
@@ -137,39 +83,19 @@ class Chatbot:
             password = additional_general_config["password"]
         else:
             password = getpass.getpass("Password: ")
-        
-        if os.path.isfile("config.txt"): # config.txt is for values that can change at runtime, Config.py is for static data
-            f = open("config.txt", "r")
-            self.waiting_time = int(f.read())
-            f.close()
-        else:
-            f = open("config.txt", "w")
-            f.write("20")
-            f.close()
-            
-        if os.path.isfile("linkedWords.txt"):
-            with open("linkedWords.txt", "r") as f:
-                self.links = pickle.load(f)
+
         if os.path.isfile("bannedUsers.txt"):
             with open("bannedUsers.txt", "r") as f:
                 self.banned = pickle.load(f)
-        if os.path.isfile("linkExplanations.txt"):
-            with open("linkExplanations.txt", "r") as f:
-                self.link_explanations = pickle.load(f)
 
         self.client = Client(self.site)
         self.client.login(email, password)
-        
-        self.spell_manager.c = self.client
-        self.spell_manager.bot_user_id = self.client.get_me().id
     
         self.room = self.client.get_room(room_number)
         self.room.join()
-        bot_message = "Bot started with waiting time set to %i seconds." % self.waiting_time if self.in_shadows_den else "Bot started."
+        bot_message = "Bot started."
         self.room.send_message(bot_message)
         self.room.watch_socket(self.on_event)
-            
-        thread.start_new_thread(self.scheduled_empty_queue, ())
         
         while self.running:
             inputted = raw_input("<< ")
@@ -201,49 +127,11 @@ class Chatbot:
             "%(asctime)s: %(levelname)s: %(threadName)s: %(message)s"
         ))
         wrapper_logger.addHandler(wrapper_handler)
-                    
-    def scheduled_empty_queue(self):
-        while self.running:
-            time.sleep(15 * 60)
-            awarded = self.spell_manager.empty_queue()
-            for s in awarded:
-                if self.room is not None and s != "This spell was already awarded."\
-                        and s is not False:
-                    self.room.send_message(s)
-                else:
-                    print s
-            
-    def reply_word(self, message, wait, orig_word):
-        if orig_word in self.latest_words:
-            message.reply("That word is already said in the latest 10 words. "
-                          "Please use another. (In case I'm mistaken, "
-                          "run `>>rmword %s` and then `>>reply %s`)"
-                          % (orig_word, message.id))
-            return
-        self.current_word_to_reply_to = orig_word
-        if wait and self.waiting_time > 0:
-            time.sleep(self.waiting_time)
-        if self.current_word_to_reply_to != orig_word:
-            return
-        word_tuple = self.find_associated_word(orig_word, message)
-        word = word_tuple[0]
-        word_found = word_tuple[1]
-        if word is None and not word_found:
-            self.room.send_message("No associated word found for %s." % orig_word)
-            self.msg_id_no_reply_found = message.id
-        elif word is None and word_found:
-            self.room.send_message("Associated words found for %s, but all of them have been posted in the latest 10 messages." % orig_word)
-            self.msg_id_no_reply_found = -1
-        else:
-            self.msg_id_no_reply_found = -1
-            message.reply(word)
 
     def on_event(self, event, client):
         watchers = self.modules.get_event_watchers()
         for w in watchers:
             w(event, client, self)
-        if self.in_shadows_den and self.enabled:
-            self.spell_manager.check_spells(event)
         should_return = False
         if not self.enabled:
             should_return = True
@@ -264,20 +152,13 @@ class Chatbot:
         content = h.unescape(message.content_source)
 
         if event.user.id == self.client.get_me().id:
-            if self.in_shadows_den and re.compile(r"^:\d+ [a-zA-Z0-9-]+$").search(content):
-                self.current_word_to_reply_to = content.split(" ")[1]
-                self.latest_word_id = message.id
             return
 
         content = re.sub(r"^>>\s+", ">>", content)
-        if not content.startswith(">>"):
-            content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content) # strip smilies
-            content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
-            content = re.sub(r"\(.+?\)", "", content)
         content = re.sub(r"\s+", " ", content)
         content = content.strip()
         parts = content.split(" ")
-        if (not parts[0].startswith(">>")) and (len(parts) != 2 or not parts[0].startswith(":")) and (event.user.id != -2):
+        if not parts[0].startswith(">>") and (len(parts) != 2 or not parts[0].startswith(":")):
             return
         
         if len(parts) == 2 and parts[1] == "!delete!" and parts[0].startswith(":"):
@@ -287,30 +168,12 @@ class Chatbot:
                     self.client.get_message(msg_id_to_delete).delete()
             except:
                 pass
-
-        if self.in_shadows_den and parts[0].startswith(":") and re.compile("^:([0-9]+)$").search(parts[0]):
-            c = parts[1]
-            if re.compile("[^a-zA-Z0-9-]").search(c):
-                return
-            self.latest_word_id = message.id
-            thread.start_new_thread(self.reply_word, (message, True, c))
-            return
         
         if parts[0].startswith(">>"):
             cmd_args = content[2:]
             if (not cmd_args.split(" ")[0] in no_char_check) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
                 return
-            elif cmd_args.startswith("addlinkexplanation"): #and event.user.id not in self.owner_ids:
-                parts = cmd_args.split(" ")
-                if len(parts) != 4:
-                    message.reply("3 arguments expected")
-                    return
-                arg_one = cmd_args.split(" ")[1]
-                arg_two = cmd_args.split(" ")[2]
-                if re.compile("[^a-zA-Z0-9 _-]").search(arg_one) or re.compile("[^a-zA-Z0-9 _-]").search(arg_two):
-                    message.reply("Argument one and two contain invalid characters.")
-                    return
             output = self.command(cmd_args, message, event)
             if output != False and output is not None:
                 if len(output) > 500:
@@ -318,34 +181,6 @@ class Chatbot:
                     self.room.send_message(output[:500])
                 else:
                     message.reply(output)
-            
-    def find_associated_word(self, word, message):
-            latest_words_no_save = self.latest_words[:]
-            latest_words_no_save.append(word.lower())
-            # Create a temp list. Adding the word to the list of the class
-            # should only happen if an associated word is found.
-            get_word = GetAssociatedWord(word, latest_words_no_save)
-            word_to_reply = get_word[0]
-            word_found = get_word[1]
-            if word_to_reply is None:
-                found_links = self.find_links(word)
-                valid_found_links = []
-                if len(found_links) > 0:
-                    word_found = True
-                for link in found_links:
-                    if not link in self.latest_words:
-                        valid_found_links.append(link)
-                if len(valid_found_links) > 0:
-                    word_to_reply = random.choice(valid_found_links)
-            if word_to_reply is not None:
-                self.add_word_to_latest_words(word)
-                self.add_word_to_latest_words(word_to_reply)
-            return (word_to_reply, word_found)
-            
-    def add_word_to_latest_words(self, word):
-        self.latest_words.insert(0, word.lower())
-        if len(self.latest_words) > 10:
-            self.latest_words.pop()
 
     def command(self, cmd, msg, event):
         cmd_args = cmd.split(' ')
@@ -359,279 +194,8 @@ class Chatbot:
             to_translate = " ".join(args[2:])
             args = args[:2]
             args.append(to_translate)
-        commands_to_use = self.commands.copy()
-        if self.in_shadows_den:
-            commands_to_use.update(self.shadows_den_specific_commands)
-        if cmd_name in commands_to_use:
-            return commands_to_use[cmd_name](args, msg, event)
-
-        elif cmd_name in self.owner_commands:
-            if msg is None or event.user.id in self.owner_ids:
-                return self.owner_commands[cmd_name](args, msg, event)
-            else:
-                return "You don't have the privilege to execute this command."
-        elif cmd_name in self.privileged_commands:
-            if msg is None or event.user.id in self.privileged_user_ids or event.user.id in self.owner_ids:
-                return self.privileged_commands[cmd_name](args, msg, event)
-            else:
-                return "You don't have the privilege to execute this command."
+        r = self.modules.command(cmd_name, args, msg, event)
+        if r is not False:
+            return r
         else:
-            r = self.modules.command(cmd_name, args, msg, event)
-            if r is not False:
-                return r
-            else:
-                return "Command not found."
-    
-    def command_time(self, args, msg, event):
-        if len(args) > 0:
-            try:
-                new_time = int(args[0])
-                if new_time > 600:
-                    return "Waiting time cannot be greater than 10 minutes (= 600 seconds)."
-                if new_time > -1:
-                    self.waiting_time = new_time
-                    f = open("config.txt", "w")
-                    f.write(str(self.waiting_time))
-                    f.close()
-                    return "Waiting time set to %s %s." % (args[0], ("seconds" if new_time != 1 else "second"))
-                else:
-                    return "Given argument has to be a positive integer."
-            except ValueError:
-                return "Given argument is not a valid integer."
-        else:
-            return "Command does not have enough arguments."
-
-    def command_latestword(self, args, msg, event):
-        lwi = self.latest_word_id
-        if lwi != -1:
-            return "http://chat.meta.stackexchange.com/transcript/message/%s#%s" % (lwi, lwi)
-        else:
-            return "I don't know."
-
-    def command_setlatestword(self, args, msg, event):
-        if len(args) != 1:
-            return "1 argument expected, %i given" % (len(args),)
-        try:
-            new_lwi = int(args[0])
-            self.latest_word_id = new_lwi
-            return "Latest word set."
-        except ValueError:
-            return "Given argument is not an integer."
-
-    def command_showlatest10(self, args, msg, event):
-        l = len(self.latest_words)
-        return "Latest %s %s: %s" % (l, "words" if l != 1 else "word",
-                                        ", ".join(self.latest_words))
-
-    def command_rmword(self, args, msg, event):
-        if len(args) != 1:
-            return "1 argument expected, %i given" % (len(args),)
-        word = args[0]
-        if word in self.latest_words:
-            self.latest_words = filter(lambda l: l != word, self.latest_words)
-            return "Word removed from latest words."
-        else:
-            return "Word not in the list of latest words."
-
-    def command_showtime(self, args, msg, event):
-        return "Waiting time: %i seconds." % self.waiting_time
-    
-    def command_award(self, args, msg, event):
-        if len(args) < 3:
-            return "Not enough arguments."
-        try:
-            spell_id = int(args[0])
-            user_id = int(args[1])
-        except ValueError:
-            return "Not a valid id."
-        if args[2] == "-n":
-            add_to_queue = False
-        elif args[2] == "-q":
-            add_to_queue = True
-        else:
-            return "Invalid arguments."
-        return self.spell_manager.award(spell_id, user_id, add_to_queue)
-    
-    def command_removespell(self, args, msg, event):
-        self.spell_manager.remove(int(args[1]), int(args[0]))
-        return "Spell removed (un-awarded)."
-        
-    def command_viewspells(self, args, msg, event):
-        if len(args) < 1:
-            return "Not enough arguments."
-        try:
-            user_id = int(args[0])
-        except ValueError:
-            return "Invalid arguments."
-        try:
-            spells = self.spell_manager.view_spells(user_id)
-            return spells
-        except:
-            return "An error occurred."
-    
-    def command_emptyqueue(self, args, msg, event):
-        awarded = self.spell_manager.empty_queue()
-        for s in awarded:
-            if self.room is not None:
-                self.room.send_message(s)
-            else:
-                print s
-
-    def command_delete(self, args, msg, event):
-        if len(args) == 0:
-            return "Not enough arguments."
-        try:
-            message_id = int(args[0])
-        except:
-            return "Invalid arguments."
-        message_to_delete = Message(message_id, self.client)
-        try:
-            message_to_delete.delete()
-        except:
-            pass
-
-    def command_link(self, args, msg, event):
-        if len(args) != 2:
-            return "2 arguments expected, %i given." % len(args)
-        if self.links_contain((args[0].replace("_", " "), args[1].replace("_", " "))):
-            return "Link is already added."
-        self.links.append((args[0].replace("_", " "), args[1].replace("_", " ")))
-        with open("linkedWords.txt", "w") as f:
-            pickle.dump(self.links, f)
-        return "Link added."
-
-    def command_islink(self, args, msg, event):
-        if len(args) != 2:
-            return "2 arguments expected, %i given" % len(args)
-        if self.links_contain((args[0].replace("_", " "), args[1].replace("_", " "))):
-            return "Yes, that's a manually added link."
-        else:
-            return "No, that's not a link."
-
-    def removelinkexplanation(self, link):
-        to_remove = []
-        ret = False
-        for exp in self.link_explanations:
-            l = exp[0]
-            if (l[0] == link[0] and l[1] == link[1]) or (l[0] == link[1] and l[1] == link[0]):
-                to_remove.append(exp)
-                ret = True
-        for r in to_remove:
-            self.link_explanations.remove(r)
-        with open("linkExplanations.txt", "w") as f:
-            pickle.dump(self.link_explanations, f)
-        return ret
-
-    def command_addlinkexplanation(self, args, msg, event):
-        if len(args) != 3:
-            return "3 arguments expected, %i given" % len(args)
-        w1 = args[0].replace("_", " ").lower()
-        w2 = args[1].replace("_", " ").lower()
-        self.removelinkexplanation((w1, w2))  # remove any older explanations
-        if not self.links_contain((w1, w2)):
-            return "That link does not exist."
-        if re.compile(r"[^a-zA-Z0-9_%*/:.#()\[\]?&=-]").search(args[2]):
-            return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#()[]-`."
-        self.link_explanations.append(((w1, w2), args[2]))
-        with open("linkExplanations.txt", "w") as f:
-            pickle.dump(self.link_explanations, f)
-        return "Explanation added."
-
-    def command_explainlink(self, args, msg, event):
-        if len(args) != 2:
-            return "2 arguments expected, %i given" % len(args)
-        w1 = args[0].replace("_", " ").lower()
-        w2 = args[1].replace("_", " ").lower()
-        if not self.links_contain((w1, w2)):
-            return "Words not linked."
-        for exp in self.link_explanations:
-            link = exp[0]
-            explanation = exp[1]
-            if (link[0] == w1 and link[1] == w2) or (link[1] == w1 and link[0] == w2):
-                return explanation
-        return "No explanation found."
-
-    def command_removelinkexplanation(self, args, msg, event):
-        if len(args) != 2:
-            return "2 argumens expected, %i given" % len(args)
-        w1 = args[0].replace("_", " ").lower()
-        w2 = args[1].replace("_", " ").lower()
-        if self.removelinkexplanation((w1, w2)):
-            return "Explanation removed."
-        else:
-            return "No explanation found to remove."
-
-    def command_reply(self, args, msg, event):
-        if len(args) < 1:
-            return "Not enough arguments."
-        try:
-            msg_id_to_reply_to = int(args[0])
-        except ValueError:
-            if args[0] == "recent":
-                msg_id_to_reply_to = self.msg_id_no_reply_found
-            else:
-                return "Invalid arguments."
-            if msg_id_to_reply_to == -1:
-                return "'recent' has a value of -1, which is not a valid message ID. Please provide an explicit ID."
-        msg_to_reply_to = Message(msg_id_to_reply_to, self.client)
-        content = msg_to_reply_to.content_source
-        content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content) # strip smilies
-        content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
-        content = re.sub(r"\(.+?\)", "", content)
-        content = re.sub(r"\s+", " ", content)
-        content = content.strip()
-        parts = content.split(" ")
-        msg_does_not_qualify = "Message does not qualify as a message that belongs to the word association game."
-        if len(parts) != 2:
-            return msg_does_not_qualify
-        if not re.compile("^:([0-9]+)$").search(parts[0]):
-            return msg_does_not_qualify
-        if re.compile("[^a-zA-Z0-9-]").search(parts[1]):
-            return "Word contains invalid characters."
-        self.reply_word(msg_to_reply_to, False, parts[1])
-        return None
-
-    def command_continue(self, args, msg, event):
-        if len(args) != 2:
-            return "2 arguments expected, %i given." % (len(args),)
-        self.command_link(args, None, None)
-        return self.command_reply([ "recent" ], None, None)
-
-    def command_retry(self, args, msg, event):
-        return self.command_reply([ "recent" ], None, None)
-
-    def command_removelink(self, args, msg, event):
-        if len(args) < 2:
-            return "Not enough arguments."
-        w1 = args[0].replace("_", " ").lower()
-        w2 = args[1].replace("_", " ").lower()
-        self.removelinkexplanation((w1, w2))
-        return self.remove_link(args[0].replace("_", " "), args[1].replace("_", " "))
-
-    def links_contain(self, item):
-        for link in self.links:
-            lowercase_link = (link[0].lower(), link[1].lower())
-            if item[0].lower() in lowercase_link and item[1].lower() in lowercase_link:
-                return True
-        return False
-
-    def find_links(self, item):
-        results = []
-        for link in self.links:
-            lowercase_link = (link[0].lower(), link[1].lower())
-            lowercase_item = item.lower()
-            if lowercase_item in lowercase_link:
-                i = lowercase_link.index(lowercase_item)
-                associated_index = 0 if i == 1 else 1
-                results.append(link[associated_index])
-        return results
-
-    def remove_link(self, item0, item1):
-        for i, link in enumerate(self.links):
-            lowercase_link = (link[0].lower(), link[1].lower())
-            if item0.lower() in lowercase_link and item1.lower() in lowercase_link:
-                self.links.pop(i)
-                with open("linkedWords.txt", "w") as f:
-                    pickle.dump(self.links, f)
-                return "Link removed."
-        return "No link found."
+            return "Command not found."
