@@ -35,6 +35,9 @@ class Chatbot:
         self.owner_ids = []
         self.privileged_user_ids = []
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
+        duplicates = self.get_duplicate_commands()
+        if duplicates:
+            print 'WARNING: there are commands with the same name: ' + str(duplicates)
 
     def main(self, config_data, additional_general_config):
         if "owners" in Config.General:
@@ -109,7 +112,19 @@ class Chatbot:
                         self.room.send_message("%s" % command_out)
             else:
                 self.room.send_message(inputted)
-
+    
+    def get_duplicate_commands(self):
+        checked_cmds = []
+        dupe_cmds = []
+        all_cmds = self.modules.list_commands()
+        for command in all_cmds:
+            if not command.name in checked_cmds:
+                checked_cmds.append(command.name)
+            else:
+                if not command.name in dupe_cmds:
+                    dupe_cmds.append(command.name)
+        return dupe_cmds
+    
     def setup_logging(self): # logging method taken from ChatExchange/examples/chat.py
         logger = logging.getLogger(__name__)
         logging.basicConfig(level=logging.INFO)
