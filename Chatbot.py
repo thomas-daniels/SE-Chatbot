@@ -59,7 +59,6 @@ class Chatbot:
             'randomint': Commands.command_randomint,
             'randomchoice': Commands.command_randomchoice,
             'shuffle': Commands.command_shuffle,
-            'listcommands': self.command_listcommands,
             'xkcdrandomnumber': Commands.command_xkcdrandomnumber,
             'xkcd': Commands.command_xkcd,
         }
@@ -549,13 +548,6 @@ class Chatbot:
         with open("bannedUsers.txt", "w") as f:
             pickle.dump(self.banned, f)
         return "User @%s has been unbanned." % user_name
-    
-    def command_listcommands(self, args, msg, event):
-        command_keys = self.commands.keys()
-        if self.in_shadows_den:
-            command_keys += self.shadows_den_specific_commands.keys()
-        command_keys.sort()
-        return "Commands: %s" % (", ".join(command_keys),)
 
     def command_delete(self, args, msg, event):
         if len(args) == 0:

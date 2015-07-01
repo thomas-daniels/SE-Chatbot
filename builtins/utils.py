@@ -11,6 +11,17 @@ def command_utc(cmd, bot, args, msg, event):
     return datetime.utcnow().ctime()
 
 
+def command_listcommands(cmd, bot, args, msg, event):
+    command_keys = bot.commands.keys()
+    if bot.in_shadows_den:
+        command_keys += bot.shadows_den_specific_commands.keys()
+    module_commands = bot.modules.list_commands()
+    for mod_cmd in module_commands:
+        command_keys.append(mod_cmd.name)
+    command_keys.sort()
+    return "Commands: %s" % (", ".join(command_keys),)
+
+
 def command_help(cmd, bot, args, msg, event):
     if len(args) == 0:
         return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (bot.chatbot_name, bot.owner_name)
@@ -25,4 +36,5 @@ def command_help(cmd, bot, args, msg, event):
 
 commands = [Command('alive', command_alive, "", False, False),
             Command('utc', command_utc, "", False, False),
+            Command('listcommands', command_listcommands, "", False, False),
             Command('help', command_help, "", False, False)]
