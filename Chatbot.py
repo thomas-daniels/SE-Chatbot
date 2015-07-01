@@ -1,4 +1,5 @@
 from ChatExchange.chatexchange.client import Client
+from ChatExchange.chatexchange.browser import LoginError
 from ChatExchange.chatexchange.events import MessagePosted
 import getpass
 import re
@@ -80,19 +81,33 @@ class Chatbot:
             email = additional_general_config["email"]
         else:
             email = raw_input("Email address: ")
-        if "password" in Config.General:  # I would not recommend to store the password in Config.py
-            password = Config.General["password"]
-        elif "password" in additional_general_config:
-            password = additional_general_config["password"]
-        else:
-            password = getpass.getpass("Password: ")
 
         if os.path.isfile("bannedUsers.txt"):
             with open("bannedUsers.txt", "r") as f:
                 self.banned = pickle.load(f)
 
         self.client = Client(self.site)
-        self.client.login(email, password)
+        
+        try:    
+            if "password" in Config.General:  # I would not recommend to store the password in Config.py
+                password = Config.General["password"]
+                self.client.login(email, password)
+            elif "password" in additional_general_config:
+                password = additional_general_config["password"]
+                self.client.login(email, password)
+            else:
+                for attempts in range(3):
+                    try:
+                        password = getpass.getpass("Password: ")
+                        self.client.login(email, password)
+                        break
+                    except LoginError:
+                        if attempts < 2:
+                            print "Incorrect password."
+                        else:
+                            raise
+        except LoginError:
+            sys.exit("Incorrect password, shutting down.")
 
         self.room = self.client.get_room(room_number)
         self.room.join()
