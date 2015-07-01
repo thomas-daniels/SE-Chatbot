@@ -60,11 +60,8 @@ class Chatbot:
             'randomchoice': Commands.command_randomchoice,
             'shuffle': Commands.command_shuffle,
             'listcommands': self.command_listcommands,
-            'help': self.command_help,
             'xkcdrandomnumber': Commands.command_xkcdrandomnumber,
             'xkcd': Commands.command_xkcd,
-            'alive': Commands.command_alive,
-            'utc': Commands.command_utc
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
@@ -396,7 +393,11 @@ class Chatbot:
             else:
                 return "You don't have the privilege to execute this command."
         else:
-            return "Command not found."
+            r = self.modules.command(cmd_name, args, msg, event)
+            if r is not False:
+                return r
+            else:
+                return "Command not found."
     
     def command_time(self, args, msg, event):
         if len(args) > 0:
@@ -555,18 +556,6 @@ class Chatbot:
             command_keys += self.shadows_den_specific_commands.keys()
         command_keys.sort()
         return "Commands: %s" % (", ".join(command_keys),)
-
-    def command_help(self, args, msg, event):
-        if len(args) == 0:
-            return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (self.chatbot_name, self.owner_name)
-        command_to_look_up = args[0]
-        if command_to_look_up in CommandHelp:
-            return CommandHelp[command_to_look_up]
-        elif command_to_look_up in self.commands or command_to_look_up in self.shadows_den_specific_commands or \
-             command_to_look_up in self.owner_commands or command_to_look_up in self.privileged_commands:
-            return "Command exists, but no help entry found."
-        else:
-            return "The command you want to look up, does not exist."
 
     def command_delete(self, args, msg, event):
         if len(args) == 0:

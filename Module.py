@@ -1,3 +1,5 @@
+import importlib
+
 class Command: # An executable command.
     def __init__(self, name, execute, help_data='', privileged=False, owner_only=False):
         self.name = name
@@ -20,7 +22,7 @@ class Module: # Contains a list of Commands.
             if (not command.privileged and not command.owner_only) or msg is None \
                     or (command.privileged and event.user.id in self.bot.privileged_user_ids) \
                     or (command.owner_only and event.user.id in self.bot.owner_ids):
-                return command.execute(args, msg, event)
+                return command.execute(self.bot, args, msg, event)
             else:
                 return "You don't have the privilege to execute this command."
         else:    
@@ -68,7 +70,7 @@ class MetaModule: # Contains a list of Modules.
 
     def load_module(self, file_):
         try:
-            module_file = __import__(file_)
+            module_file = importlib.import_module(file_)
         except ImportError:
             raise ModuleDoesNotExistException("Module: '" + file_ + "' could not be found.")
         try:
@@ -77,14 +79,14 @@ class MetaModule: # Contains a list of Modules.
                 return MetaModule(mdls, self.bot)
             else:
                 raise MalformedModuleException("Module: '" + file_ + "', 'modules' is not a list.")
-        except NameError:
+        except AttributeError:
             try:
                 cmds = module_file.commands
                 if type(cmds) is list:
                     return Module(cmds, self.bot)
                 else:
                     raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
-            except NameError:
+            except AttributeError:
                 raise MalformedModuleException("Module: '" + file_ + "' does not contain a variable called either 'modules' or 'commands'.")
     
     def list_commands(self):

@@ -1,12 +1,6 @@
 # contains commands which do not depend on any variables in the WordAssociationChatbot class
 import random
 import sys
-from datetime import datetime
-
-
-def command_alive(args, msg, event):
-    return "Yes, I'm alive."
-
 
 def command_random(args, msg, event):
     return str(random.random())
@@ -48,11 +42,6 @@ def command_shuffle(args, msg, event):
     list_to_shuffle = list(args)
     random.shuffle(list_to_shuffle)
     return " ".join(list_to_shuffle)
-
-
-def command_utc(args, msg, event):
-    return datetime.utcnow().ctime()
-
 
 def command_xkcdrandomnumber(args, msg, event):
     return "[4 // Chosen by fair dice roll. Guaranteed to be random.](http://xkcd.com/221/)"
