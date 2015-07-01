@@ -16,10 +16,11 @@ class Command:  # An executable command.
 
 
 class Module:  # Contains a list of Commands.
-    def __init__(self, commands, bot, on_event):
+    def __init__(self, commands, bot, on_event, on_bot_load):
         self.bot = bot
         self.commands = commands
         self.on_event = on_event
+        self.on_bot_load = on_bot_load
 
     def command(self, name, args, msg, event):
         matches = self.find_commands(name)
@@ -97,8 +98,12 @@ class MetaModule:  # Contains a list of Modules.
                     on_event = module_file.on_event
                 except AttributeError:
                     on_event = None
+                try:
+                    on_bot_load = module_file.on_bot_load
+                except AttributeError:
+                    on_bot_load = None
                 if type(cmds) is list:
-                    return Module(cmds, self.bot, on_event)
+                    return Module(cmds, self.bot, on_event, on_bot_load)
                 else:
                     raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
             except AttributeError:
@@ -118,6 +123,15 @@ class MetaModule:  # Contains a list of Modules.
             elif m.on_event is not None:
                 watchers.append(m.on_event)
         return watchers
+
+    def get_on_load_methods(self):
+        on_loads = []
+        for m in self.modules:
+            if isinstance(m, MetaModule):
+                on_loads.extend(m.get_on_load_methods())
+            elif m.on_bot_load is not None:
+                on_loads.append(m.on_bot_load)
+        return on_loads
 
 
 class ModuleDoesNotExistException(Exception):

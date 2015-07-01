@@ -100,6 +100,10 @@ class Chatbot:
         self.room.send_message(bot_message)
         self.room.watch_socket(self.on_event)
 
+        on_loads = self.modules.get_on_load_methods()
+        for on_load in on_loads:
+            on_load()
+
         while self.running:
             inputted = raw_input("<< ")
             if inputted.strip() == "":
