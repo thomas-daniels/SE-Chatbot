@@ -1,16 +1,14 @@
 # FOX 9000, a chat bot for the Stack Exchange chat rooms. #
 
-A chat bot for the Stack Exchange chat rooms. Mainly for the chat.meta.stackexchange.com chat room Shadow's Den, but can also be used in other rooms.
+A chat bot for the Stack Exchange chat rooms.
 
 The bot is licensed under [CPOL (The Code Project Open License) v1.02](http://www.codeproject.com/info/cpol10.aspx). You can find a copy of this license in `LICENSE.htm`.
 
 ### Setup ###
 
-Before you can use the bot, you need to install some dependencies such as ChatExchange and BeautifulSoup4. You can install them by running `setup.sh`.
+Before you can use the bot, you need to install some dependencies such as ChatExchange and BeautifulSoup4. You can install them by running `setup.sh` on Linux (requires `pip` to be installed) or `setup.bat` (requires `git` and `pip`, in `C:\<YourPythonFolder>\Scripts\` to be added to your PATH).
 
-You'll also need to rename `ConfigTemplate.py` to `Config.py` and `SecretSpellsTemplate.py` to `SecretSpells.py`. Spells are a Shadow's Den feature, but as they are secret, I only post a template here, not the real spells.
-
-You will also need to add some required configuration data in `Config.py`. The comments in that file tell you which values you can add and how to add them.
+You'll also need to copy `templates/ConfigTemplate.py` to `Config.py`. You will also need to add some required configuration data in `Config.py`. The comments in that file tell you which values you can add and how to add them.
 
 ### Running ###
 To run the bot, you have to use Python 2.7. When you run it, it will prompt you for necessary information that you have not provided in Config.py. If you wish to use a specific configuration, run the bot with the argument `-c configuration_name`. You can also use `-s site_name`, `-r room_number`, `-e email_address` and `-p password`. The last four items will always override data stored in a configuration, if set.
@@ -26,3 +24,7 @@ You can execute commands from the bot by providing input on the command line. `$
 ### Commands in a chat room ###
 
 Commands in a chat room are executed like `>>command optional arguments`. To get a list of all commands, run `>>listcommands`. To get help on a specific command, run `>>help command`.
+
+### Modules ###
+
+You can extend the bot by adding your own modules, which you can group into meta-modules. See the templates in the templates/ folder for help on how to create a module.
