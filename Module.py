@@ -1,6 +1,3 @@
-import Settings
-    
-    
 class Command: # An executable command.
     def __init__(self, name, execute, help_data='', privileged=False):
         self.name = name
@@ -11,14 +8,15 @@ class Command: # An executable command.
     
 
 class Module: # Contains a list of Commands.
-    def __init__(self, commands):
+    def __init__(self, commands, bot):
+        self.bot = bot
         self.commands = commands
         
     def command(self, name, args, msg, event):
         matches = self.find_commands(name)
         if matches:
             command = matches[0]
-            if not command.privileged or msg is None or event.user.id in Settings.owner_ids:
+            if not command.privileged or msg is None or event.user.id in self.bot.owner_ids:
                 return command.execute(args, msg, event)
             else:
                 return "You don't have the privilege to execute this command."
@@ -43,8 +41,9 @@ class Module: # Contains a list of Commands.
 
 
 class MetaModule: # Contains a list of Modules.
-    def __init__(self, modules):
+    def __init__(self, modules, bot):
         self.modules = []
+        self.bot = bot
         for module in modules:
             self.modules.append(MetaModule.load_module(module))
         
