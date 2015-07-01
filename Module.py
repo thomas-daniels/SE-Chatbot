@@ -48,7 +48,7 @@ class MetaModule: # Contains a list of Modules.
         self.modules = []
         self.bot = bot
         for module in modules:
-            self.modules.append(MetaModule.load_module(module))
+            self.modules.append(MetaModule.load_module(self, module))
         
     def command(self, name, args, msg, event):
         response = False
