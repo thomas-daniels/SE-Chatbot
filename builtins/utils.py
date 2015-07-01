@@ -1,6 +1,5 @@
 from Module import Command
 from datetime import datetime
-from CommandHelp import CommandHelp
 
 
 def command_alive(cmd, bot, args, msg, event):
