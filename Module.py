@@ -66,23 +66,22 @@ class MetaModule: # Contains a list of Modules.
                 break
         return response
 
-    @staticmethod
-    def load_module(file_):
+    def load_module(self, file_):
         try:
             module_file = __import__(file_)
         except ImportError:
             raise ModuleDoesNotExistException("Module: '" + file_ + "' could not be found.")
         try:
             mdls = module_file.modules
-            if type(cmds) is list:
-                return MetaModule(mdls, bot)
+            if type(mdls) is list:
+                return MetaModule(mdls, self.bot)
             else:
                 raise MalformedModuleException("Module: '" + file_ + "', 'modules' is not a list.")
         except NameError:
             try:
                 cmds = module_file.commands
                 if type(cmds) is list:
-                    return Module(cmds, bot)
+                    return Module(cmds, self.bot)
                 else:
                     raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
             except NameError:
