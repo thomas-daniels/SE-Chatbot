@@ -19,6 +19,8 @@ import pickle
 from CommandHelp import CommandHelp
 from Config import Config
 import Commands
+import ModuleManifest
+from Module import MetaModule
 
 
 class Chatbot:
@@ -50,6 +52,7 @@ class Chatbot:
         self.msg_id_no_reply_found = -1
         self.owner_ids = []
         self.privileged_user_ids = []
+        self.modules = MetaModule(ModuleManifest.module_file_names, self)
         self.commands = {
             'translate': self.command_translate,
             'random': Commands.command_random,
