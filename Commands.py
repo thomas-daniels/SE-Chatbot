@@ -42,16 +42,3 @@ def command_shuffle(args, msg, event):
     list_to_shuffle = list(args)
     random.shuffle(list_to_shuffle)
     return " ".join(list_to_shuffle)
-
-def command_xkcdrandomnumber(args, msg, event):
-    return "[4 // Chosen by fair dice roll. Guaranteed to be random.](http://xkcd.com/221/)"
-
-
-def command_xkcd(args, msg, event):
-    if len(args) < 1:
-        return "Not enough arguments."
-    try:
-        id_ = int(args[0])
-    except:
-        return "Invalid arguments."
-    return "http://xkcd.com/%i/" % id_

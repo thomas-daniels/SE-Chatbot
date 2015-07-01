@@ -59,8 +59,6 @@ class Chatbot:
             'randomint': Commands.command_randomint,
             'randomchoice': Commands.command_randomchoice,
             'shuffle': Commands.command_shuffle,
-            'xkcdrandomnumber': Commands.command_xkcdrandomnumber,
-            'xkcd': Commands.command_xkcd,
         }
         self.shadows_den_specific_commands = {
             'time': self.command_time,
