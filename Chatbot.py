@@ -33,7 +33,6 @@ class Chatbot:
         self.translation_switch_going_on = False
         self.banned = {}
         self.site = ""
-        self.msg_id_no_reply_found = -1
         self.owner_ids = []
         self.privileged_user_ids = []
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
