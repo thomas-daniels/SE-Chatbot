@@ -11,7 +11,6 @@ import pickle
 from Config import Config
 import ModuleManifest
 from Module import MetaModule
-from nocharcheck import no_char_check
 
 
 class Chatbot:
@@ -128,6 +127,13 @@ class Chatbot:
         ))
         wrapper_logger.addHandler(wrapper_handler)
 
+    def requires_char_check(self, cmd_name):
+        cmd_list = self.modules.list_commands()
+        for cmd in cmd_list:
+            if cmd.name == cmd_name:
+                return cmd.char_check
+        return True
+
     def on_event(self, event, client):
         watchers = self.modules.get_event_watchers()
         for w in watchers:
@@ -171,7 +177,8 @@ class Chatbot:
         
         if parts[0].startswith(">>"):
             cmd_args = content[2:]
-            if (not cmd_args.split(" ")[0] in no_char_check) and event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
+            if self.requires_char_check(cmd_args.split(" ")[0]) and \
+                    event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
                 return
             output = self.command(cmd_args, message, event)
