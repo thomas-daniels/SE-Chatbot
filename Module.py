@@ -39,7 +39,7 @@ class Module: # Contains a list of Commands.
     def list_commands(self):
         cmd_list = []
         for command in self.commands:
-            cmd_list.append(command.name)
+            cmd_list.append(command)
         return cmd_list
 
 
