@@ -54,5 +54,3 @@ class InvalidDirectoryException(Exception):
     
 class DuplicateDirectoryException(Exception):
     pass
-
-_create_if_not_exists(data_dir)

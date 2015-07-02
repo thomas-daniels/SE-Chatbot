@@ -39,6 +39,7 @@ class Chatbot:
         self.save_subdirs = [ 'main' ]
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
         SaveIO._set_subdirs(self.save_subdirs)
+        SaveIO._create_if_not_exists(SaveIO.data_dir)
         del self.save_subdirs
         duplicates = self.get_duplicate_commands()
         if duplicates:
