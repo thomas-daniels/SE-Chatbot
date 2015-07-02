@@ -5,8 +5,7 @@ import getpass
 import re
 from HTMLParser import HTMLParser
 import logging.handlers
-import os
-import os.path
+import didyoumean
 import sys
 from Config import Config
 import ModuleManifest
@@ -250,4 +249,8 @@ class Chatbot:
         if r is not False:
             return r
         else:
-            return "Command not found."
+            dym = didyoumean.did_you_mean(cmd_name, [command.name for command in self.modules.list_commands()])
+            if dym is None:
+                return "Command not found."
+            else:
+                return "Command not found. Did you mean: `%s`?" % dym
