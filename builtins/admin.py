@@ -9,6 +9,7 @@ save_subdir = 'admin'
 
 
 def command_stop(cmd, bot, args, msg, event):
+    bot.bot_stopping()
     bot.enabled = False
     bot.running = False
     if msg is not None:
