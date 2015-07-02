@@ -11,7 +11,7 @@ def command_utc(cmd, bot, args, msg, event):
 
 
 def command_listcommands(cmd, bot, args, msg, event):
-    return "Commands: %s" % ( [ command.name for command in bot.modules.list_commands() ] )
+    return "Commands: %s" % (', '.join([command.name for command in bot.modules.list_commands()]))
 
 
 def command_help(cmd, bot, args, msg, event):
