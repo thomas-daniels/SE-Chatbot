@@ -38,7 +38,7 @@ class Chatbot:
         self.privileged_user_ids = []
         self.save_subdirs = [ 'main' ]
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
-        SaveIO.set_subdirs(self.save_subdirs)
+        SaveIO._set_subdirs(self.save_subdirs)
         del self.save_subdirs
         duplicates = self.get_duplicate_commands()
         if duplicates:
