@@ -5,9 +5,9 @@ _allowed_subdirs = []
 
 data_dir = "botdata/"
 
-def save(obj, module, name):
+def save(obj, subdir, name):
     global _allowed_subdirs
-    module_dir = os.path.join(data_dir, module)
+    module_dir = os.path.join(data_dir, subdir)
     if module_dir not in _allowed_subdirs:
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
     _create_if_not_exists(module_dir)
@@ -19,9 +19,9 @@ def save(obj, module, name):
             print "Error while saving data '%s'. Data has not been saved." % (name)
 
             
-def load(module, name):
+def load(subdir, name):
     global _allowed_subdirs
-    module_dir = os.path.join(data_dir, module)
+    module_dir = os.path.join(data_dir, subdir)
     if module_dir not in _allowed_subdirs:
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
     file_ = os.path.join(module_dir, name + ".p")
