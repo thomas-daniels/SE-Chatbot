@@ -1,7 +1,7 @@
 from Module import Command
 import time
 import os
-import pickle
+import SaveIO
 from ChatExchange.chatexchange.messages import Message
 
 save_subdir = 'admin'
