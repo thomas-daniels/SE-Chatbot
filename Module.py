@@ -30,7 +30,7 @@ class Module:  # Contains a list of Commands.
         if matches:
             command = matches[0]
             if (not command.privileged and not command.owner_only) or isinstance(msg, ConsoleCommandHandler) \
-                    or (command.privileged and event.user.id in self.bot.privileged_user_ids) \
+                    or (command.privileged and (event.user.id in self.bot.privileged_user_ids or event.user.id in self.bot.owner_ids)) \
                     or (command.owner_only and event.user.id in self.bot.owner_ids):
                 return command.execute(self.bot, args, msg, event)
             else:
