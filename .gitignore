@@ -3,7 +3,6 @@ Config.py
 earnedSpells.txt
 .project
 .pydevproject
-*.p
 *.pyc
 client.log
 client.log.*

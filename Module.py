@@ -19,11 +19,12 @@ class Command:  # An executable command.
 
 
 class Module:  # Contains a list of Commands.
-    def __init__(self, commands, bot, on_event, on_bot_load):
+    def __init__(self, commands, bot, on_event, on_bot_load, on_bot_stop):
         self.bot = bot
         self.commands = commands
         self.on_event = on_event
         self.on_bot_load = on_bot_load
+        self.on_bot_stop = on_bot_stop
 
     def command(self, name, args, msg, event):
         matches = self.find_commands(name)
@@ -110,6 +111,10 @@ class MetaModule:  # Contains a list of Modules.
                 except AttributeError:
                     on_bot_load = None
                 try:
+                    on_bot_stop = module_file.on_bot_stop
+                except AttributeError:
+                    on_bot_stop = None
+                try:
                     save_subdir = module_file.save_subdir
                     if isinstance(save_subdir, basestring):
                         self.bot.save_subdirs.append(save_subdir)
@@ -118,7 +123,7 @@ class MetaModule:  # Contains a list of Modules.
                 except AttributeError:
                     pass
                 if type(cmds) is list:
-                    return Module(cmds, self.bot, on_event, on_bot_load)
+                    return Module(cmds, self.bot, on_event, on_bot_load, on_bot_stop)
                 else:
                     raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
             except AttributeError:
@@ -147,6 +152,15 @@ class MetaModule:  # Contains a list of Modules.
             elif m.on_bot_load is not None:
                 on_loads.append(m.on_bot_load)
         return on_loads
+
+    def get_on_stop_methods(self):
+        on_stops = []
+        for m in self.modules:
+            if isinstance(m, MetaModule):
+                on_stops.extend(m.get_on_stop_methods())
+            elif m.on_bot_stop is not None:
+                on_stops.append(m.on_bot_stop)
+        return on_stops
 
 
 class ModuleDoesNotExistException(Exception):

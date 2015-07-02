@@ -240,3 +240,8 @@ class Chatbot:
             return r
         else:
             return "Command not found."
+
+    def bot_stopping(self):
+        on_stops = self.modules.get_on_stop_methods()
+        for on_stop in on_stops:
+            on_stop(self)
