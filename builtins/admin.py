@@ -4,6 +4,8 @@ import os
 import pickle
 from ChatExchange.chatexchange.messages import Message
 
+save_subdir = 'admin'
+
 
 def command_stop(cmd, bot, args, msg, event):
     bot.enabled = False
@@ -42,7 +44,7 @@ def command_ban(cmd, bot, args, msg, event):
             command_banned_users[command] = [ ]
         if banned_user not in command_banned_users[command]:
             command_banned_users[command].append(banned_user)
-            saved_banned_users(bot)
+            SaveIO.save(command_banned_users, save_subdir, 'command_banned_users')
             return "User @%s has been banned from using >>%s." % (user_name, command)
         else:
             return "Already banned."
@@ -52,7 +54,7 @@ def command_ban(cmd, bot, args, msg, event):
         bot.banned[bot.site].append(banned_user)
     else:
         return "Already banned."
-    saved_banned_users(bot)
+    SaveIO.save(bot.banned, 'main', 'banned_users')
     return "User @%s has been banned." % user_name
 
 
@@ -71,7 +73,7 @@ def command_unban(cmd, bot, args, msg, event):
             command_banned_users[command].remove(banned_user)
             if len(command_banned_users[command])==0:
                 del command_banned_users[command]
-            saved_banned_users(bot)
+            SaveIO.save(command_banned_users, save_subdir, 'command_banned_users')
             return "User @%s has been unbanned from using >>%s." % (user_name, command)
         else:
             return "Not banned"
@@ -81,7 +83,7 @@ def command_unban(cmd, bot, args, msg, event):
         if banned_user not in bot.banned[bot.site]:
             return "Not banned."
         bot.banned[bot.site].remove(banned_user)
-        saved_banned_users(bot)
+        SaveIO.save(bot.banned, 'main', 'banned_users')
         return "User @%s has been unbanned." % user_name
 
 
@@ -109,11 +111,6 @@ commands = [
 
 command_banned_users = { }
 
-def saved_banned_users(bot):
-    global command_banned_users
-    with open("bannedUsers.txt", "w") as f:
-            pickle.dump({ "all_banned": bot.banned, "command_banned": command_banned_users}, f)
-
 def ban_deco(func):
     def check_banned(cmd, msg, event, *args, **kwargs):
         cmd_args = cmd.split(' ')
@@ -127,8 +124,4 @@ def ban_deco(func):
 def on_bot_load(bot):
     global command_banned_users
     bot.command = ban_deco(bot.command)
-    if os.path.isfile("bannedUsers.txt"):
-        with open("bannedUsers.txt", "r") as f:
-            dump = pickle.load(f)
-            if 'command_banned' in dump:
-                command_banned_users = dump['command_banned']
+    command_banned_users = SaveIO.load(save_subdir, 'command_banned_users')

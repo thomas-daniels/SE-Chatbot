@@ -8,7 +8,6 @@ import logging.handlers
 import os
 import os.path
 import sys
-import pickle
 from Config import Config
 import ModuleManifest
 from Module import MetaModule
@@ -85,11 +84,7 @@ class Chatbot:
         else:
             email = raw_input("Email address: ")
 
-        if os.path.isfile("bannedUsers.txt"):
-            with open("bannedUsers.txt", "r") as f:
-                dump = pickle.load(f)
-                if 'all_banned' in dump:
-                    self.banned = dump['all_banned']
+        self.banned = SaveIO.load('main', 'banned_users')
 
         self.client = Client(self.site)
         
