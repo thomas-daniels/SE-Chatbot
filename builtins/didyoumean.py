@@ -20,3 +20,22 @@ def did_you_mean(given, cmd_name_list):
         return None
     else:
         return highest_ranked[0]
+
+
+def on_bot_load(bot):
+    orig_method = bot.command
+
+    def command_with_didyoumean(cmd, msg, event):
+        result = orig_method(cmd, msg, event)
+        if result == "Command not found.":
+            dym = did_you_mean(cmd.split(' ')[0].lower(), [command.name for command in bot.modules.list_commands()])
+            if dym is None:
+                return "Command not found."
+            else:
+                return "Command not found. Did you mean: `%s`?" % dym
+        else:
+            return result
+
+    bot.command = command_with_didyoumean
+
+commands = []

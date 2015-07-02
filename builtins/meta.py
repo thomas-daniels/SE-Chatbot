@@ -3,5 +3,6 @@ modules = [
     'xkcd',
     'random_',
     'translate',
-    'admin'
+    'admin',
+    'didyoumean'
 ]
