@@ -34,10 +34,11 @@ def load(module, name):
 def _set_subdirs(dir_list):
     _allowed_subdirs = []
     for i in range len(dir_list):
-        if dir_list[i] in _allowed_subdirs:
-            raise DuplicateDirectoryException("Duplicate name '" + dir_list[i] + "'")
-        _create_if_not_exists(dir_list[i])
-        _allowed_subdirs.append(dir_list[i]
+		dir = os.path.abspath(os.path.join(root_dir, dir_list[i]))
+        if dir in _allowed_subdirs:
+            raise DuplicateDirectoryException("Duplicate name '" + dir + "'")
+        _create_if_not_exists(dir)
+        _allowed_subdirs.append(dir)
         
 def _create_if_not_exists(dir_path):
     if not os.path.exists(dir_path):
