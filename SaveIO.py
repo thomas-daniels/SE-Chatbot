@@ -33,7 +33,7 @@ def load(module, name):
         
 def _set_subdirs(dir_list):
     _allowed_subdirs = []
-    for i in range len(dir_list):
+    for i in range(len(dir_list)):
         dir = os.path.abspath(os.path.join(root_dir, dir_list[i]))
         if dir in _allowed_subdirs:
             raise DuplicateDirectoryException("Duplicate name '" + dir + "'")
