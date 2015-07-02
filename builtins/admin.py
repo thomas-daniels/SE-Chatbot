@@ -3,6 +3,7 @@ import time
 import os
 import SaveIO
 from ChatExchange.chatexchange.messages import Message
+from ChatExchange.chatexchange.events import MessagePosted
 
 save_subdir = 'admin'
 
@@ -30,6 +31,8 @@ def command_enable(cmd, bot, args, msg, event):
 
 
 def command_ban(cmd, bot, args, msg, event):
+    global command_banned_users
+    global banned_users
     try:
         banned_user = int(args[0])
     except ValueError:
@@ -48,17 +51,19 @@ def command_ban(cmd, bot, args, msg, event):
             return "User @%s has been banned from using >>%s." % (user_name, command)
         else:
             return "Already banned."
-    if bot.site not in bot.banned:
-        bot.banned[bot.site] = []
-    if banned_user not in bot.banned[bot.site]:
-        bot.banned[bot.site].append(banned_user)
+    if bot.site not in banned_users:
+        banned_users[bot.site] = []
+    if banned_user not in banned_users[bot.site]:
+        banned_users[bot.site].append(banned_user)
     else:
         return "Already banned."
-    SaveIO.save(bot.banned, 'main', 'banned_users')
+    SaveIO.save(banned_users, save_subdir, 'banned_users')
     return "User @%s has been banned." % user_name
 
 
 def command_unban(cmd, bot, args, msg, event):
+    global banned_users
+    global command_banned_users
     try:
         banned_user = int(args[0])
     except ValueError:
@@ -78,12 +83,12 @@ def command_unban(cmd, bot, args, msg, event):
         else:
             return "Not banned"
     else:
-        if bot.site not in bot.banned:
+        if bot.site not in banned_users:
             return "Not banned."
-        if banned_user not in bot.banned[bot.site]:
+        if banned_user not in banned_users[bot.site]:
             return "Not banned."
-        bot.banned[bot.site].remove(banned_user)
-        SaveIO.save(bot.banned, 'main', 'banned_users')
+        banned_users[bot.site].remove(banned_user)
+        SaveIO.save(banned_users, save_subdir, 'banned_users')
         return "User @%s has been unbanned." % user_name
 
 
@@ -110,8 +115,10 @@ commands = [
 ]
 
 command_banned_users = { }
+banned_users = { }
 
-def ban_deco(func):
+def command_ban_deco(func):
+    global command_banned_users
     def check_banned(cmd, msg, event, *args, **kwargs):
         cmd_args = cmd.split(' ')
         cmd_name = cmd_args[0].lower()
@@ -121,7 +128,20 @@ def ban_deco(func):
             return "You have been banned from using that command."
     return check_banned
 
+def ban_deco(func, bot):
+    global banned_users
+    def check_banned(event, client, *args, **kwargs):
+        if isinstance(event, MessagePosted) and bot.site in banned_users \
+                and event.user.id in banned_users[bot.site]:
+            return
+        else:
+            return func(event, client, *args, **kwargs)
+    return check_banned
+
 def on_bot_load(bot):
     global command_banned_users
-    bot.command = ban_deco(bot.command)
+    global banned_users
+    bot.command = command_ban_deco(bot.command)
+    bot.on_event = ban_deco(bot.on_event, bot)
     command_banned_users = SaveIO.load(save_subdir, 'command_banned_users')
+    banned_users = SaveIO.load(save_subdir, 'banned_users')

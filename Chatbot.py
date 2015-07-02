@@ -25,7 +25,6 @@ class Chatbot:
         self.chatbot_name = ""
         self.enabled = True
         self.running = True
-        self.banned = {}
         self.site = ""
         self.owner_ids = []
         self.privileged_user_ids = []
@@ -79,8 +78,6 @@ class Chatbot:
         else:
             email = raw_input("Email address: ")
 
-        self.banned = SaveIO.load('main', 'banned_users')
-
         self.client = Client(self.site)
         
         try:    
@@ -108,11 +105,12 @@ class Chatbot:
         self.room.join()
         bot_message = "Bot started."
         self.room.send_message(bot_message)
-        self.room.watch_socket(self.on_event)
 
         on_loads = self.modules.get_on_load_methods()
         for on_load in on_loads:
             on_load(self)
+            
+        self.room.watch_socket(self.on_event)
 
         while self.running:
             inputted = raw_input("<< ")
@@ -189,9 +187,6 @@ class Chatbot:
         if not self.running:
             should_return = True
         if not isinstance(event, MessagePosted):
-            should_return = True
-        if isinstance(event, MessagePosted) and self.site in self.banned \
-                and event.user.id in self.banned[self.site]:
             should_return = True
         if should_return:
             return
