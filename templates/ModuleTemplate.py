@@ -3,6 +3,11 @@
 # Add necessary import to this file, including:
 # from Module import Command
 
+# import SaveIO # For if you want to save and load objects for this module.
+# save_subdir = '<subdir_name>' # Define a save subdirectory for this Module, must be unique in the project.
+# SaveIO.save(<object>, save_subdir, <filename>)  # Saves an object, filename does not need an extension.
+# SaveIO.load(save_subdir, <filename>)  # Loads and returns an object, filename does not need an extension.
+
 # Logic for the commands goes here.
 #
 # def <command exec name>(cmd, bot, args, msg, event): # cmd refers to the Command you assign this function to
