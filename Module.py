@@ -1,6 +1,9 @@
 import importlib
 import types
 from ConsoleCommandHandler import ConsoleCommandHandler
+import sys
+import os
+import traceback
 
 
 class Command:  # An executable command.
@@ -83,8 +86,12 @@ class MetaModule:  # Contains a list of Modules.
         file_ = self.path + file_
         try:
             module_file = importlib.import_module(file_)
-        except ImportError:
-            raise ModuleDoesNotExistException("Module: '" + file_ + "' could not be found.")
+        except ImportError, e:
+            msg = "Error at importing " + file_ + os.linesep
+            msg += "ImportError: " + e.message
+            msg += os.linesep
+            msg += traceback.format_exc()
+            raise ModuleDoesNotExistException(msg)
         try:
             mdls = module_file.modules
             if type(mdls) is list:
