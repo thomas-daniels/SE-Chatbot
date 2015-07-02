@@ -13,6 +13,7 @@ from Config import Config
 import ModuleManifest
 from Module import MetaModule
 from ConsoleCommandHandler import ConsoleCommandHandler
+import SaveIO
 
 
 class Chatbot:
@@ -35,7 +36,10 @@ class Chatbot:
         self.site = ""
         self.owner_ids = []
         self.privileged_user_ids = []
+        self.save_subdirs = [ 'main' ]
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
+        SaveIO.set_subdirs(self.save_subdirs)
+        del self.save_subdirs
         duplicates = self.get_duplicate_commands()
         if duplicates:
             print 'WARNING: there are commands with the same name: ' + str(duplicates)

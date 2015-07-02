@@ -109,6 +109,14 @@ class MetaModule:  # Contains a list of Modules.
                     on_bot_load = module_file.on_bot_load
                 except AttributeError:
                     on_bot_load = None
+                try:
+                    save_subdir = module_file.save_subdir
+                    if isinstance(save_subdir, basestring):
+                        self.bot.save_subdirs.append(save_subdir)
+                    else:
+                        raise MalformedModuleException("Module: '%s', 'save_subdir' is not a string." % file_)
+                except AttributeError:
+                    pass
                 if type(cmds) is list:
                     return Module(cmds, self.bot, on_event, on_bot_load)
                 else:
