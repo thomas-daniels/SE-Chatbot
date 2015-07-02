@@ -8,6 +8,12 @@
 # SaveIO.save(<object>, save_subdir, <filename>)  # Saves an object, filename does not need an extension.
 # SaveIO.load(save_subdir, <filename>)  # Loads and returns an object, filename does not need an extension.
 
+# def on_bot_load(bot): # This will get called when the bot loads (after your module has been loaded in), use to perform additional setup for this module.
+#     pass
+
+# def on_event(event, client, bot): # This will get called on any event (messages, new user entering the room, etc.)
+#     pass
+
 # Logic for the commands goes here.
 #
 # def <command exec name>(cmd, bot, args, msg, event): # cmd refers to the Command you assign this function to
