@@ -26,6 +26,8 @@ def load(module, name):
     if module_dir not in _allowed_subdirs:
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
     file = os.path.abspath(os.path.join(module_dir, name + ".p"))
+	if not os.path.exists(file) or os.stat(file).st_size == 0:
+		_create_empty_pickle_file(file)
     with open(file, "r") as f:
         return pickle.load(f)
         
@@ -43,6 +45,10 @@ def _create_if_not_exists(dir_path):
             os.makedirs(dir_path)
         except:
             print "Could not create directory %s." % (dir_path)
+			
+def _create_empty_pickle_file(filepath):
+	with open(filepath, "w+") as f:
+		f.write("(dp0\n.")
             
 class InvalidDirectoryException(Exception):
     pass
