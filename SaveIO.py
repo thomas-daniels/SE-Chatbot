@@ -23,20 +23,20 @@ def load(module, name):
     module_dir = os.path.abspath(os.path.join(data_dir, module))
     if module_dir not in _allowed_subdirs:
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
-    file = os.path.abspath(os.path.join(module_dir, name + ".p"))
-    if not os.path.exists(file) or os.stat(file).st_size == 0:
-        _create_empty_pickle_file(file)
-    with open(file, "r") as f:
+    file_ = os.path.abspath(os.path.join(module_dir, name + ".p"))
+    if not os.path.exists(file_) or os.stat(file_).st_size == 0:
+        _create_empty_pickle_file(file_)
+    with open(file_, "r") as f:
         return pickle.load(f)
         
 def _set_subdirs(dir_list):
     _allowed_subdirs = []
     for i in range(len(dir_list)):
-        dir = os.path.abspath(os.path.join(root_dir, dir_list[i]))
-        if dir in _allowed_subdirs:
-            raise DuplicateDirectoryException("Duplicate name '" + dir + "'")
-        _create_if_not_exists(dir)
-        _allowed_subdirs.append(dir)
+        dir_ = os.path.abspath(os.path.join(root_dir, dir_list[i]))
+        if dir_ in _allowed_subdirs:
+            raise DuplicateDirectoryException("Duplicate name '" + dir_ + "'")
+        _create_if_not_exists(dir_)
+        _allowed_subdirs.append(dir_)
         
 def _create_if_not_exists(dir_path):
     if not os.path.exists(dir_path):
