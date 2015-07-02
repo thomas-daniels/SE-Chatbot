@@ -8,6 +8,7 @@ root_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 data_dir = os.path.abspath(os.path.join(root_dir, "botdata"))
 
 def save(obj, module, name):
+    global _allowed_subdirs
     module_dir = os.path.abspath(os.path.join(data_dir, module))
     if module_dir not in _allowed_subdirs:
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
@@ -20,6 +21,7 @@ def save(obj, module, name):
             print "Error while saving data '%s'. Data has not been saved." % (name)
             
 def load(module, name):
+    global _allowed_subdirs
     module_dir = os.path.abspath(os.path.join(data_dir, module))
     if module_dir not in _allowed_subdirs:
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
@@ -30,6 +32,7 @@ def load(module, name):
         return pickle.load(f)
         
 def _set_subdirs(dir_list):
+    global _allowed_subdirs
     _allowed_subdirs = []
     for i in range(len(dir_list)):
         dir_ = os.path.abspath(os.path.join(root_dir, dir_list[i]))
