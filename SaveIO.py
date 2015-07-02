@@ -7,8 +7,6 @@ current_dir = base = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 root_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 data_dir = os.path.abspath(os.path.join(root_dir, "botdata"))
 
-_create_if_not_exists(data_dir)
-
 def save(obj, module, name):
     module_dir = os.path.abspath(os.path.join(data_dir, module))
     if module_dir not in _allowed_subdirs:
@@ -56,3 +54,5 @@ class InvalidDirectoryException(Exception):
     
 class DuplicateDirectoryException(Exception):
     pass
+
+_create_if_not_exists(data_dir)
