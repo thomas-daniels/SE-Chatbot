@@ -24,13 +24,6 @@ class Chatbot:
         self.chatbot_name = ""
         self.enabled = True
         self.running = True
-        self.translation_languages = ["auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
-                                      "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
-                                      "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu"]
-        self.end_lang = None
-        self.translation_chain_going_on = False
-        self.translation_switch_going_on = False
-        self.banned = {}
         self.site = ""
         self.owner_ids = []
         self.privileged_user_ids = []
@@ -84,8 +77,6 @@ class Chatbot:
         else:
             email = raw_input("Email address: ")
 
-        self.banned = SaveIO.load('main', 'banned_users')
-
         self.client = Client(self.site)
         
         try:    
@@ -113,11 +104,12 @@ class Chatbot:
         self.room.join()
         bot_message = "Bot started."
         self.room.send_message(bot_message)
-        self.room.watch_socket(self.on_event)
 
         on_loads = self.modules.get_on_load_methods()
         for on_load in on_loads:
             on_load(self)
+            
+        self.room.watch_socket(self.on_event)
 
         while self.running:
             inputted = raw_input("<< ")
@@ -194,9 +186,6 @@ class Chatbot:
         if not self.running:
             should_return = True
         if not isinstance(event, MessagePosted):
-            should_return = True
-        if isinstance(event, MessagePosted) and self.site in self.banned \
-                and event.user.id in self.banned[self.site]:
             should_return = True
         if should_return:
             return
