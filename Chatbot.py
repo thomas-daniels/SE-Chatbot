@@ -83,7 +83,9 @@ class Chatbot:
 
         if os.path.isfile("bannedUsers.txt"):
             with open("bannedUsers.txt", "r") as f:
-                self.banned = pickle.load(f)
+                dump = pickle.load(f)
+                if 'all_banned' in dump:
+                    self.banned = dump['all_banned']
 
         self.client = Client(self.site)
         
