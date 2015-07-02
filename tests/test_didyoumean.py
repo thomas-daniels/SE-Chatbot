@@ -1,5 +1,6 @@
 import pytest
-from didyoumean import did_you_mean, unique_sorted
+
+from builtins.didyoumean import did_you_mean, unique_sorted
 
 
 @pytest.mark.parametrize("given, expected", [

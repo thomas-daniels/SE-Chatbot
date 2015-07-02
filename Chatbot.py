@@ -1,12 +1,13 @@
-from ChatExchange.chatexchange.client import Client
-from ChatExchange.chatexchange.browser import LoginError
-from ChatExchange.chatexchange.events import MessagePosted
 import getpass
 import re
 from HTMLParser import HTMLParser
 import logging.handlers
-import didyoumean
 import sys
+
+from ChatExchange.chatexchange.client import Client
+from ChatExchange.chatexchange.browser import LoginError
+from ChatExchange.chatexchange.events import MessagePosted
+from builtins import didyoumean
 from Config import Config
 import ModuleManifest
 from Module import MetaModule
@@ -238,8 +239,4 @@ class Chatbot:
         if r is not False:
             return r
         else:
-            dym = didyoumean.did_you_mean(cmd_name, [command.name for command in self.modules.list_commands()])
-            if dym is None:
-                return "Command not found."
-            else:
-                return "Command not found. Did you mean: `%s`?" % dym
+            return "Command not found."
