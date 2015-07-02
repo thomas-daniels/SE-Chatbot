@@ -11,6 +11,9 @@
 # def on_bot_load(bot): # This will get called when the bot loads (after your module has been loaded in), use to perform additional setup for this module.
 #     pass
 
+# def on_bot_stop(bot): # This will get called when the bot is stopping.
+#     pass
+
 # def on_event(event, client, bot): # This will get called on any event (messages, new user entering the room, etc.)
 #     pass
 
