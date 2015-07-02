@@ -4,8 +4,17 @@ import random
 import urllib
 from Module import Command
 
+translation_languages = ["auto", "en", "fr", "nl", "de", "he", "ru", "el", "pt", "es", "fi", "af", "sq", "ar", "hy", "az", "eu", "be", "bn", "bs", "bg", "ca", "ceb", "zh-CN", "hr", "cs", "da",
+                         "eo", "et", "tl", "gl", "ka", "gu", "ht", "ha", "hi", "hmn", "hu", "is", "ig", "id", "ga", "it", "ja", "jw", "kn", "km", "ko", "lo", "la", "lv", "lt", "mk", "ms"
+                         "mt", "mi", "mr", "mn", "ne", "no", "fa", "pl", "pa", "ro", "sr", "sk", "sl", "so", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "vi", "cy", "yi", "yo", "zu"]
+end_lang = None
+translation_chain_going_on = False
+translation_switch_going_on = False
+
 
 def command_translationchain(cmd, bot, args, msg, event):
+    global translation_languages
+    global translation_chain_going_on
     if event.user.id not in bot.owner_ids:
         return "The `translationchain` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
     if len(args) < 4:
@@ -16,10 +25,10 @@ def command_translationchain(cmd, bot, args, msg, event):
         return "Invalid arguments."
     if translation_count < 1:
         return "Invalid arguments."
-    if not bot.translation_chain_going_on:
-        if not args[1] in bot.translation_languages or not args[2] in bot.translation_languages:
+    if not translation_chain_going_on:
+        if not args[1] in translation_languages or not args[2] in translation_languages:
             return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
-        bot.translation_chain_going_on = True
+        translation_chain_going_on = True
         thread.start_new_thread(translationchain, (bot, args[3], args[1], args[2], translation_count))
         return "Translation chain started. Translation made by [Google Translate](https://translate.google.com). Some messages in the chain might not be posted due to a reason I don't know."
     else:
@@ -27,9 +36,11 @@ def command_translationchain(cmd, bot, args, msg, event):
 
 
 def command_translationswitch(cmd, bot, args, msg, event):
+    global translation_switch_going_on
+    global translation_languages
     if event.user.id not in bot.owner_ids:
         return "The `translationswitch` command is a command that posts many messages and it does not post all messages, and causes that some messages that have to be posted after the chain might not be posted, so it is an owner-only command now."
-    if bot.translation_switch_going_on:
+    if translation_switch_going_on:
         return "There is already a translation switch going on."
     if len(args) < 4:
         return "Not enough arguments."
@@ -41,29 +52,32 @@ def command_translationswitch(cmd, bot, args, msg, event):
         return "Invalid arguments."
     if (translation_count % 2) == 1:
         return "Translation count has to be an even number."
-    if not args[1] in bot.translation_languages or not args[2] in bot.translation_languages:
+    if not args[1] in translation_languages or not args[2] in translation_languages:
         return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
-    bot.translation_switch_going_on = True
+    translation_switch_going_on = True
     thread.start_new_thread(translationswitch, (bot, args[3], args[1], args[2], translation_count))
     return "Translation switch started. Translation made by [Google Translate](https://translate.google.com). Some messages in the switch might not be posted due to a reason I don't know."
 
 
 def command_translate(cmd, bot, args, msg, event):
+    global translation_languages
     if len(args) < 3:
         return "Not enough arguments."
     if args[0] == args[1]:
         return "There's no point in having the same input language as output language."
-    if not args[0] in bot.translation_languages or not args[1] in bot.translation_languages:
+    if not args[0] in translation_languages or not args[1] in translation_languages:
         return "Language not in list. If the language is supported, ping ProgramFOX and he will add it."
     return translate(args[2], args[0], args[1])
 
 
 def translationchain(bot, text, start_lang, end_lang, translation_count):
+    global translation_languages
+    global translation_chain_going_on
     i = 0
     curr_lang = start_lang
     next_lang = None
     curr_text = text
-    choices = list(bot.translation_languages)
+    choices = list(translation_languages)
     if start_lang == end_lang:
         choices.remove(start_lang)
     else:
@@ -82,10 +96,11 @@ def translationchain(bot, text, start_lang, end_lang, translation_count):
         i += 1
     final_result = translate(curr_text, next_lang, end_lang)
     bot.room.send_message("Final translation result (%s-%s): %s" % (next_lang, end_lang, final_result))
-    bot.translation_chain_going_on = False
+    translation_chain_going_on = False
 
 
 def translationswitch(bot, text, lang1, lang2, translation_count):
+    global translation_switch_going_on
     i = 1
     curr_text = text
     while i <= translation_count:
@@ -97,7 +112,7 @@ def translationswitch(bot, text, lang1, lang2, translation_count):
         msg_text = "Translate %s-%s: %s" if i != translation_count else "Final result (%s-%s): %s"
         bot.room.send_message(msg_text % (lang_order + (curr_text,)))
         i += 1
-    bot.translation_switch_going_on = False
+    translation_switch_going_on = False
 
 
 def translate(text, start_lang, end_lang):
