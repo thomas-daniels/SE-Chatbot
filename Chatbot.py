@@ -28,6 +28,7 @@ class Chatbot:
         self.site = ""
         self.owner_ids = []
         self.privileged_user_ids = []
+        self.prefix = ">>"
         self.save_subdirs = [ 'main' ]
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
         SaveIO._set_subdirs(self.save_subdirs)
@@ -198,11 +199,11 @@ class Chatbot:
         if event.user.id == self.client.get_me().id:
             return
 
-        content = re.sub(r"^>>\s+", ">>", content)
+        content = re.sub(r"^%s\s+" % self.prefix, self.prefix, content)
         content = re.sub(r"\s+", " ", content)
         content = content.strip()
         parts = content.split(" ")
-        if not parts[0].startswith(">>") and (len(parts) != 2 or not parts[0].startswith(":")):
+        if not parts[0].startswith(self.prefix) and (len(parts) != 2 or not parts[0].startswith(":")):
             return
 
         if len(parts) == 2 and parts[1] == "!delete!" and parts[0].startswith(":"):
@@ -213,8 +214,8 @@ class Chatbot:
             except:
                 pass
 
-        if parts[0].startswith(">>"):
-            cmd_args = content[2:]
+        if parts[0].startswith(self.prefix):
+            cmd_args = content[len(self.prefix):]
             if self.requires_char_check(cmd_args.split(" ")[0]) and \
                     event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
