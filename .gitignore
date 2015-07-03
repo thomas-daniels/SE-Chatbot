@@ -1,16 +1,10 @@
-SecretSpells.py
 Config.py
-earnedSpells.txt
 .project
 .pydevproject
 *.pyc
 client.log
 client.log.*
-config.txt
-linkedWords.txt
-bannedUsers.txt
 .settings/
 .idea/
 errorLogs.txt
-linkExplanations.txt
 botdata/
