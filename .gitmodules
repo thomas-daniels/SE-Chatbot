@@ -1,3 +1,6 @@
 [submodule "ChatExchange"]
 	path = ChatExchange
 	url = https://github.com/Manishearth/ChatExchange.git
+[submodule "builtins"]
+	path = builtins
+	url = https://github.com/ProgramFOX/SE-Chatbot-Builtins.git
