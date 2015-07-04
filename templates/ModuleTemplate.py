@@ -29,7 +29,14 @@
 
 
 commands = [  # A list of all Commands in this Module.
-    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False) ),
-    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None) ),
     # ...
 ]
+
+# (*) <char check> = the bot only allows a specific set of characters
+# and if any character is used in a command outside this set, the bot would give you an error message.
+# Setting this parameter to False avoids this char check.
+
+# (**) <special arg parsing method> = Some commands require a non-default argument parsing method.
+# Pass it there when necessary. It must return the array of arguments.
