@@ -23,7 +23,7 @@ def command_stop(cmd, bot, args, msg, event):
 
 def command_disable(cmd, bot, args, msg, event):
     bot.enabled = False
-    return "Bot disabled, run >>enable to enable it again."
+    return "Bot disabled, run $PREFIXenable to enable it again."
 
 
 def command_enable(cmd, bot, args, msg, event):
@@ -49,7 +49,7 @@ def command_ban(cmd, bot, args, msg, event):
         if banned_user not in command_banned_users[command]:
             command_banned_users[command].append(banned_user)
             SaveIO.save(command_banned_users, save_subdir, 'command_banned_users')
-            return "User @%s has been banned from using >>%s." % (user_name, command)
+            return "User @%s has been banned from using $PREFIX%s." % (user_name, command)
         else:
             return "Already banned."
     if bot.site not in banned_users:
@@ -80,7 +80,7 @@ def command_unban(cmd, bot, args, msg, event):
             if len(command_banned_users[command])==0:
                 del command_banned_users[command]
             SaveIO.save(command_banned_users, save_subdir, 'command_banned_users')
-            return "User @%s has been unbanned from using >>%s." % (user_name, command)
+            return "User @%s has been unbanned from using $PREFIX%s." % (user_name, command)
         else:
             return "Not banned"
     else:
@@ -107,12 +107,12 @@ def command_delete(cmd, bot, args, msg, event):
         pass
 
 commands = [
-    Command('stop', command_stop, "Owner-only command. Stops the bot. Syntax: `>>stop`", False, True),
-    Command('disable', command_disable, "Owner-only command. Disables the bot. Syntax: `>>disable`", False, True),
-    Command('enable', command_enable, "Owner-only command. Enables the bot when it is disabled. Syntax: `>>enable`", False, True),
-    Command('ban', command_ban, "Owner-only command. Bans a user from using the bot. Syntax: `>>ban user_id [command]`", False, True),
-    Command('unban', command_unban, "Owner-only command. Unbans a banned user. Syntax: `>>unban user_id` [command]", False, True),
-    Command('delete', command_delete, "Only for privileged users. Deletes a message of the bot. Syntax: `>>delete msg_id` or `<reply> !delete!`", True, True)
+    Command('stop', command_stop, "Owner-only command. Stops the bot. Syntax: `$PREFIXstop`", False, True),
+    Command('disable', command_disable, "Owner-only command. Disables the bot. Syntax: `$PREFIXdisable`", False, True),
+    Command('enable', command_enable, "Owner-only command. Enables the bot when it is disabled. Syntax: `$PREFIXenable`", False, True),
+    Command('ban', command_ban, "Owner-only command. Bans a user from using the bot. Syntax: `$PREFIXban user_id [command]`", False, True),
+    Command('unban', command_unban, "Owner-only command. Unbans a banned user. Syntax: `$PREFIXunban user_id` [command]", False, True),
+    Command('delete', command_delete, "Only for privileged users. Deletes a message of the bot. Syntax: `$PREFIXdelete msg_id` or `<reply> !delete!`", True, True)
 ]
 
 command_banned_users = { }

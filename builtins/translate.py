@@ -171,7 +171,7 @@ def transcs_arg_parsing(full_cmd):
 
 
 commands = [
-    Command('translate', command_translate, "Translates text using [Google Translate](https://translate.google.com). Syntax: `>>translate input_lang output_lang Text to translate.`. `input_lang` and `output_lang` are language codes such as `en`, `fr` and `auto`.", False, False, False, trans_arg_parsing),
-    Command('translationchain', command_translationchain, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com). Syntax: `>>translationchain steps_number input_lang output_lang Text to translate.`", False, True, False, transcs_arg_parsing),
-    Command('translationswitch', command_translationswitch, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com), consisting of two languages. Syntax: `>>translationswitch steps_number lang1 lang2 Text to translate.`", False, True, False, transcs_arg_parsing)
+    Command('translate', command_translate, "Translates text using [Google Translate](https://translate.google.com). Syntax: `$PREFIXtranslate input_lang output_lang Text to translate.`. `input_lang` and `output_lang` are language codes such as `en`, `fr` and `auto`.", False, False, False, trans_arg_parsing),
+    Command('translationchain', command_translationchain, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com). Syntax: `$PREFIXtranslationchain steps_number input_lang output_lang Text to translate.`", False, True, False, transcs_arg_parsing),
+    Command('translationswitch', command_translationswitch, "Owner-only command. Creates a chain of translations using [Google Translate](https://translate.google.com), consisting of two languages. Syntax: `$PREFIXtranslationswitch steps_number lang1 lang2 Text to translate.`", False, True, False, transcs_arg_parsing)
 ]

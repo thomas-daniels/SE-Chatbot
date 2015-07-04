@@ -1,5 +1,6 @@
 from Module import Command
 from datetime import datetime
+import re
 
 
 def command_alive(cmd, bot, args, msg, event):
@@ -16,10 +17,11 @@ def command_listcommands(cmd, bot, args, msg, event):
 
 def command_help(cmd, bot, args, msg, event):
     if len(args) == 0:
-        return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `>>listcommands`, or you can run `>>help command` to learn more about a specific command." % (bot.chatbot_name, bot.owner_name)
-    return bot.modules.get_help(args[0]) or "The command you want to look up, does not exist."
+        return "I'm %s, %s's chatbot. You can find the source code [on GitHub](https://github.com/ProgramFOX/SE-Chatbot). You can get a list of all commands by running `$PREFIXlistcommands`, or you can run `$PREFIXhelp command` to learn more about a specific command." % (bot.chatbot_name, bot.owner_name)
+    else:
+        return bot.modules.get_help(args[0]) or "The command you want to look up, does not exist."
 
-commands = [Command('alive', command_alive, "A command to see whether the bot is there. Syntax: `>>alive`", False, False),
-            Command('utc', command_utc, "Shows the current UTC time. Syntax: `>>utc`", False, False),
-            Command('listcommands', command_listcommands, "Returns a list of all commands. Syntax: `>>listcommands`", False, False),
-            Command('help', command_help, "Shows information about the chat bot, or about a specific command. Syntax: `>>help [ command ]`", False, False)]
+commands = [Command('alive', command_alive, "A command to see whether the bot is there. Syntax: `$PREFIXalive`", False, False),
+            Command('utc', command_utc, "Shows the current UTC time. Syntax: `$PREFIXutc`", False, False),
+            Command('listcommands', command_listcommands, "Returns a list of all commands. Syntax: `$PREFIXlistcommands`", False, False),
+            Command('help', command_help, "Shows information about the chat bot, or about a specific command. Syntax: `$PREFIXhelp [ command ]`", False, False)]

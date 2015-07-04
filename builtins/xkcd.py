@@ -15,6 +15,6 @@ def command_xkcd(cmd, bot, args, msg, event):
     return "http://xkcd.com/%i/" % id_
 
 commands = [
-    Command('xkcdrandomnumber', command_xkcdrandomnumber, "Returns a random number, based on an xkcd comic. Syntax: `>>xkcdrandomnumber`", False, False),
-    Command('xkcd', command_xkcd, "Shows the specified xkcd comic. Syntax: `>>xkcd comic_id`", False, False)
+    Command('xkcdrandomnumber', command_xkcdrandomnumber, "Returns a random number, based on an xkcd comic. Syntax: `$PREFIXxkcdrandomnumber`", False, False),
+    Command('xkcd', command_xkcd, "Shows the specified xkcd comic. Syntax: `$PREFIXxkcd comic_id`", False, False)
 ]

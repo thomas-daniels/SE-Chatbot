@@ -45,8 +45,8 @@ def command_shuffle(cmd, bot, args, msg, event):
     return " ".join(list_to_shuffle)
 
 commands = [
-    Command('random', command_random, "Returns a random floating-point number. Syntax: `>>random`", False, False),
-    Command('randomint', command_randomint, "Returns a random integer. Syntax: `>>randomint [ [ min ] max ]`", False, False),
-    Command('randomchoice', command_randomchoice, "Randomly chooses an item from a given list. Syntax: `>>randomchoice listitem1 listitem2 listitem3 ...`", False, False),
-    Command('shuffle', command_shuffle, "Shuffles a list of given items. Syntax: `>>shuffle listitem1 listitem2 listitem3 ...`", False, False)
+    Command('random', command_random, "Returns a random floating-point number. Syntax: `$PREFIXrandom`", False, False),
+    Command('randomint', command_randomint, "Returns a random integer. Syntax: `$PREFIXrandomint [ [ min ] max ]`", False, False),
+    Command('randomchoice', command_randomchoice, "Randomly chooses an item from a given list. Syntax: `$PREFIXrandomchoice listitem1 listitem2 listitem3 ...`", False, False),
+    Command('shuffle', command_shuffle, "Shuffles a list of given items. Syntax: `$PREFIXshuffle listitem1 listitem2 listitem3 ...`", False, False)
 ]

@@ -4,5 +4,6 @@ modules = [
     'random_',
     'translate',
     'admin',
-    'didyoumean'
+    'didyoumean',
+    'parameters'
 ]

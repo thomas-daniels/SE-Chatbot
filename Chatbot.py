@@ -28,7 +28,6 @@ class Chatbot:
         self.site = ""
         self.owner_ids = []
         self.privileged_user_ids = []
-        self.prefix = ">>"
         self.save_subdirs = [ 'main' ]
         self.modules = MetaModule(ModuleManifest.module_file_names, self)
         SaveIO._set_subdirs(self.save_subdirs)
@@ -54,6 +53,7 @@ class Chatbot:
         else:
             sys.exit("Error: no chatbot name found. Please update Config.py.")
         # self.setup_logging() # if you want to have logging, un-comment this line
+        
         if "site" in config_data:
             self.site = config_data["site"]
             print("Site: %s" % self.site)
@@ -72,13 +72,18 @@ class Chatbot:
             print("Room number: %i" % room_number)
         else:
             room_number = int(raw_input("Room number: "))
+        if "prefix" in config_data:
+            self.prefix = config_data["prefix"]
+        else:
+            self.prefix = '>>'
+        print("Prefix: %s" % self.prefix)
         if "email" in Config.General:
             email = Config.General["email"]
         elif "email" in additional_general_config:
             email = additional_general_config["email"]
         else:
             email = raw_input("Email address: ")
-
+        
         self.client = Client(self.site)
         
         try:    

@@ -10,8 +10,9 @@ class Config:
 
     Configurations = {  # Optional, add configurations here
         # "ConfigurationNameHere": {
-        #    "site": "Site name here (without the `chat.` prefix",
-        #    "room": room id here,
+        #    "site": "<Site name> (without the `chat.` prefix)",
+        #    "room": <room id>,
+        #    "prefix": "<command prefix>" # Optional, standard: ">>"
         #    "privileged_users": same syntax as "owners" above. This configuration value is for users who can run privileged commands (such as `delete`).
         # }
     }
