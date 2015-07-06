@@ -204,10 +204,10 @@ class Chatbot:
         if event.user.id == self.client.get_me().id:
             return
 
-        content = re.sub(r"^%s\s+" % self.prefix, self.prefix, content)
-        content = re.sub(r"\s+", " ", content)
-        content = content.strip()
-        parts = content.split(" ")
+        stripped_content = re.sub(r"^%s\s+" % self.prefix, self.prefix, content)
+        stripped_content = re.sub(r"\s+", " ", content)
+        stripped_content = content.strip()
+        parts = stripped_content.split(" ")
         if not parts[0].startswith(self.prefix) and (len(parts) != 2 or not parts[0].startswith(":")):
             return
 
@@ -221,6 +221,8 @@ class Chatbot:
 
         if parts[0].startswith(self.prefix):
             cmd_args = content[len(self.prefix):]
+            if self.do_special_arg_parsing(cmd_args.split(" ")[0]):
+                cmd_args = stripped_content[len(self.prefix):]
             if self.requires_char_check(cmd_args.split(" ")[0]) and \
                     event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
                 message.reply("Command contains invalid characters.")
