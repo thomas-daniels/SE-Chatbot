@@ -5,7 +5,8 @@ class Config:
         # "owners" is a required configuration value
         # "chatbot_name": "[Chatbot name here]", # Required
         # "email": "[Email of chatbot account]", # Optional
-        # "password": "[Password of chatbot account]" # Optional, and NOT RECOMMENDED
+        # "password": "[Password of chatbot account]", # Optional, and NOT RECOMMENDED
+        # "github": "[github repository link]" # Optional, https://github.com/ProgramFOX/SE-Chatbot as standard
     }
 
     Configurations = {  # Optional, add configurations here
