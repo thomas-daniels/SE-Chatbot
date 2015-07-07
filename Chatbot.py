@@ -7,7 +7,7 @@ import sys
 from ChatExchange.chatexchange.client import Client
 from ChatExchange.chatexchange.browser import LoginError
 from ChatExchange.chatexchange.events import MessagePosted
-from fixedfont import fixed_font_to_normal
+from fixedfont import fixed_font_to_normal, is_fixed_font
 from Config import Config
 import ModuleManifest
 from Module import MetaModule
@@ -204,8 +204,8 @@ class Chatbot:
         if event.user.id == self.client.get_me().id:
             return
 
-        fixed_font = False
-        if content.startswith("    "):
+        fixed_font = is_fixed_font(content)
+        if fixed_font:
             fixed_font = True
             content = fixed_font_to_normal(content)
         content = re.sub(r"^%s\s+" % self.prefix, self.prefix, content)
