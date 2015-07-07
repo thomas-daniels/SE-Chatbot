@@ -205,6 +205,7 @@ class Chatbot:
             return
 
         content = re.sub(r"^%s\s+" % self.prefix, self.prefix, content)
+        content = re.sub("(^[^ ]+)(\r?\n)", r"\1 ", content)
         stripped_content = re.sub(r"\s+", " ", content)
         stripped_content = stripped_content.strip()
         parts = stripped_content.split(" ")
