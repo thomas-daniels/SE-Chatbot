@@ -204,8 +204,8 @@ class Chatbot:
         if event.user.id == self.client.get_me().id:
             return
 
-        stripped_content = re.sub(r"^%s\s+" % self.prefix, self.prefix, content)
-        stripped_content = re.sub(r"\s+", " ", stripped_content)
+        content = re.sub(r"^%s\s+" % self.prefix, self.prefix, content)
+        stripped_content = re.sub(r"\s+", " ", content)
         stripped_content = stripped_content.strip()
         parts = stripped_content.split(" ")
         if not parts[0].startswith(self.prefix) and (len(parts) != 2 or not parts[0].startswith(":")):
