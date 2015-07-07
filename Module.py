@@ -19,12 +19,13 @@ class Command:  # An executable command.
 
 
 class Module:  # Contains a list of Commands.
-    def __init__(self, commands, bot, on_event, on_bot_load, on_bot_stop):
+    def __init__(self, commands, bot, on_event, on_bot_load, on_bot_stop, module_name):
         self.bot = bot
         self.commands = commands
         self.on_event = on_event
         self.on_bot_load = on_bot_load
         self.on_bot_stop = on_bot_stop
+        self.module_name = module_name
 
     def command(self, name, args, msg, event):
         matches = self.find_commands(name)
@@ -57,9 +58,10 @@ class Module:  # Contains a list of Commands.
 
 
 class MetaModule:  # Contains a list of Modules.
-    def __init__(self, modules, bot, path=''):
+    def __init__(self, modules, bot, module_name, path=''):
         self.modules = []
         self.bot = bot
+        self.module_name = module_name
         if path and not path[-1] == '.':
             self.path = path + '.'
         else:
@@ -95,8 +97,14 @@ class MetaModule:  # Contains a list of Modules.
             raise ModuleDoesNotExistException(msg)
         try:
             mdls = module_file.modules
+            try:
+                module_name = module_file.module_name
+            except AttributeError:
+                module_name = file_
+            if not isinstance(module_name, basestring):
+                raise MalformedModuleException("Module: '%s', 'module_name' is not a string." % file_)
             if type(mdls) is list:
-                return MetaModule(mdls, self.bot, file_[:file_.rfind('.')])
+                return MetaModule(mdls, self.bot, module_name, file_[:file_.rfind('.')])
             else:
                 raise MalformedModuleException("Module: '" + file_ + "', 'modules' is not a list.")
         except AttributeError:
@@ -115,6 +123,12 @@ class MetaModule:  # Contains a list of Modules.
                 except AttributeError:
                     on_bot_stop = None
                 try:
+                    module_name = module_file.module_name
+                except AttributeError:
+                    module_name = file_
+                if not isinstance(module_name, basestring):
+                    raise MalformedModuleException("Module: '%s', 'module_name' is not a string." % file_)
+                try:
                     save_subdir = module_file.save_subdir
                     if isinstance(save_subdir, basestring):
                         self.bot.save_subdirs.append(save_subdir)
@@ -123,7 +137,7 @@ class MetaModule:  # Contains a list of Modules.
                 except AttributeError:
                     pass
                 if type(cmds) is list:
-                    return Module(cmds, self.bot, on_event, on_bot_load, on_bot_stop)
+                    return Module(cmds, self.bot, on_event, on_bot_load, on_bot_stop, module_name)
                 else:
                     raise MalformedModuleException("Module: '" + file_ + "', 'commands' is not a list.")
             except AttributeError:
@@ -161,6 +175,18 @@ class MetaModule:  # Contains a list of Modules.
             elif m.on_bot_stop is not None:
                 on_stops.append(m.on_bot_stop)
         return on_stops
+
+    def find_module_by_name(self, name):
+        if self.module_name == name:
+            return self
+        for m in self.modules:
+            if m.module_name == name:
+                return m
+            if isinstance(m, MetaModule):
+                m1 = m.find_module_by_name(name)
+                if m1 is not None:
+                    return m1
+        return None
 
 
 class ModuleDoesNotExistException(Exception):

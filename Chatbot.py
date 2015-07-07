@@ -29,7 +29,7 @@ class Chatbot:
         self.owner_ids = []
         self.privileged_user_ids = []
         self.save_subdirs = [ 'main' ]
-        self.modules = MetaModule(ModuleManifest.module_file_names, self)
+        self.modules = MetaModule(ModuleManifest.module_file_names, self, 'all')
         SaveIO._set_subdirs(self.save_subdirs)
         SaveIO._create_if_not_exists(SaveIO.data_dir)
         del self.save_subdirs
