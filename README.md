@@ -1,4 +1,4 @@
-# FOX 9000, a chat bot for the Stack Exchange chat rooms. #
+# SE-Chatbot, a chat bot for the Stack Exchange chat rooms. #
 
 A chat bot for the Stack Exchange chat rooms.
 
