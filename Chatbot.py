@@ -44,6 +44,10 @@ class Chatbot:
             sys.exit("Error: no owners found. Please update Config.py.")
         if "privileged_users" in config_data:
             self.privileged_users = config_data["privileged_users"]
+        if "github" in Config.General:
+            self.github = Config.General["github"]
+        else:
+            self.github = "https://github.com/ProgramFOX/SE-Chatbot"
         if "owner_name" in Config.General:
             self.owner_name = Config.General["owner_name"]
         else:
