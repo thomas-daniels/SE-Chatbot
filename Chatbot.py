@@ -31,12 +31,16 @@ class Chatbot:
         self.privileged_user_ids = []
         self.save_subdirs = [ 'main' ]
         self.modules = MetaModule(ModuleManifest.module_file_names, self, 'all')
-        SaveIO._set_subdirs(self.save_subdirs)
-        SaveIO._create_if_not_exists(SaveIO.data_dir)
+        try:
+            SaveIO.set_subdirs(self.save_subdirs)
+        except DuplicateDirectoryException, e:
+            if "-q" not in sys.argv:
+                print "[Chatbot] WARNING: there are modules with the same save directory: " + str(e)
+        SaveIO.create_if_not_exists(SaveIO.data_dir)
         del self.save_subdirs
         duplicates = self.get_duplicate_commands()
-        if duplicates:
-            print 'WARNING: there are commands with the same name: ' + str(duplicates)
+        if duplicates and "-q" not in sys.argv:
+            print '[Chatbot] WARNING: there are commands with the same name: ' + str(duplicates)
 
     def main(self, config_data, additional_general_config):
         if "owners" in Config.General:
