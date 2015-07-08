@@ -6,7 +6,8 @@ import sys
 
 from ChatExchange.chatexchange.client import Client
 from ChatExchange.chatexchange.browser import LoginError
-from ChatExchange.chatexchange.events import MessagePosted
+from ChatExchange.chatexchange.events import MessagePosted, MessageEdited
+from ChatExchange.chatexchange.messages import Message
 from fixedfont import fixed_font_to_normal, is_fixed_font
 from Config import Config
 import ModuleManifest
@@ -186,27 +187,21 @@ class Chatbot:
         return False
 
     def on_event(self, event, client):
+        if not (isinstance(event, MessagePosted) or isinstance(event, MessageEdited)) \
+            or (not self.enabled and event.user.id not in self_owner_ids) \
+            or not self.running:
+            return
+        
         watchers = self.modules.get_event_watchers()
         for w in watchers:
             w(event, client, self)
-        should_return = False
-        if not self.enabled:
-            should_return = True
-        if isinstance(event, MessagePosted) and (not self.enabled) and event.user.id in self.owner_ids and event.message.content.startswith("&gt;&gt;"):
-            should_return = False
-        if not self.running:
-            should_return = True
-        if not isinstance(event, MessagePosted):
-            should_return = True
-        if should_return:
+
+        if event.user.id == self.client.get_me().id:
             return
 
         message = event.message
         h = HTMLParser()
-        content = h.unescape(message.content_source)
-
-        if event.user.id == self.client.get_me().id:
-            return
+        content = h.unescape(Message(event.message.id, client).content_source)
 
         fixed_font = is_fixed_font(content)
         if fixed_font:
