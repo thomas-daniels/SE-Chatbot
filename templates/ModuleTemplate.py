@@ -40,3 +40,5 @@ commands = [  # A list of all Commands in this Module.
 
 # (**) <special arg parsing method> = Some commands require a non-default argument parsing method.
 # Pass it there when necessary. It must return the array of arguments.
+
+# module_name = "<name used to address this module>"

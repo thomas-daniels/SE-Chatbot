@@ -5,3 +5,5 @@ modules = [  # A list of all (Meta)Modules in this MetaModule.
     # '<module name>'
     # ...
 ]
+
+# module_name = "<name used to address this module>"
