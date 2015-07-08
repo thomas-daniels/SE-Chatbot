@@ -7,7 +7,6 @@ class Config:
         # "email": "[Email of chatbot account]", # Optional
         # "password": "[Password of chatbot account]", # Optional, and NOT RECOMMENDED
         # "github": "[github repository link]", # Optional, https://github.com/ProgramFOX/SE-Chatbot as standard
-        # "yandex_api_key: "API key" # Optional, API key for Yandex for the translation module
     }
 
     Configurations = {  # Optional, add configurations here
