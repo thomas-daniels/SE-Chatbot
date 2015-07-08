@@ -1,4 +1,5 @@
 import os
+import sys
 import pickle
 
 _allowed_subdirs = []
@@ -10,7 +11,7 @@ def save(obj, subdir, name, filetype="p"):
     module_dir = os.path.join(data_dir, subdir)
     if module_dir not in _allowed_subdirs:
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
-    _create_if_not_exists(module_dir)
+    create_if_not_exists(module_dir)
     file_ = os.path.join(module_dir, name + "." + filetype)
     with open(file_, "w+") as f:
         if filetype == "p":
@@ -34,7 +35,7 @@ def load(subdir, name, filetype="p"):
     file_ = os.path.join(module_dir, name + "." + filetype)
     if not os.path.exists(file_) or os.stat(file_).st_size == 0:
         if "-q" not in sys.argv:
-            print "[SaveIO] WARNING: Attempt to load non-existent file. An empty file has been created."
+            print "[SaveIO] INFO: Attempt to load non-existent file. An empty file has been created."
         if filetype == "p":
             _create_empty_pickle_file(file_)
         else:
@@ -54,7 +55,7 @@ def set_subdirs(dir_list):
         dir_ = os.path.join(data_dir, dir_list[i])
         if dir_ in _allowed_subdirs:
             raise DuplicateDirectoryException(dir_)
-        _create_if_not_exists(dir_)
+        create_if_not_exists(dir_)
         _allowed_subdirs.append(dir_)
 
         

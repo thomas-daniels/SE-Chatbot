@@ -14,6 +14,7 @@ import ModuleManifest
 from Module import MetaModule
 from ConsoleCommandHandler import ConsoleCommandHandler
 import SaveIO
+from SaveIO import DuplicateDirectoryException
 
 
 class Chatbot:
