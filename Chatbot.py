@@ -187,14 +187,16 @@ class Chatbot:
         return False
 
     def on_event(self, event, client):
-        if not (isinstance(event, MessagePosted) or isinstance(event, MessageEdited)) \
-            or (not self.enabled and event.user.id not in self_owner_ids) \
+        if  (not self.enabled and event.user.id not in self_owner_ids) \
             or not self.running:
             return
         
         watchers = self.modules.get_event_watchers()
         for w in watchers:
             w(event, client, self)
+        
+        if not (isinstance(event, MessagePosted) or isinstance(event, MessageEdited)):
+            return
 
         if event.user.id == self.client.get_me().id:
             return
