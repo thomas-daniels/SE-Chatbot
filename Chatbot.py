@@ -237,17 +237,20 @@ class Chatbot:
             cmd_args = stripped_content[len(self.prefix):]
             if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
                 cmd_args = content[len(self.prefix):]
-            if self.requires_char_check(cmd_args.split(" ")[0]) and \
-                    event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
-                message.reply("Command contains invalid characters.")
-                return
-            output = self.command(cmd_args, message, event)
+            output = self.get_output(cmd_args, message, event)
             if output is not False and output is not None:
                 if len(output) > 500:
                     message.reply("Output would be longer than 500 characters (the limit), so only the first 500 characters are posted now.")
                     self.room.send_message(output[:500])
                 else:
                     message.reply(output)
+
+    def get_output(self, cmd_args, message, event):
+            if self.requires_char_check(cmd_args.split(" ")[0]) and \
+                    event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
+               return "Command contains invalid characters."
+            return self.command(cmd_args, message, event)
+
 
     def command(self, cmd, msg, event):
         cmd_args = cmd.split(' ')
