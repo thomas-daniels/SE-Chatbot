@@ -45,7 +45,7 @@ def load(subdir, name, filetype="p"):
         if filetype == "p":
             return pickle.load(f)
         else:
-            return f.readall()
+            return f.read()
 
         
 def set_subdirs(dir_list):
