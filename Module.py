@@ -1,7 +1,6 @@
 import importlib
 import types
 from ConsoleCommandHandler import ConsoleCommandHandler
-import sys
 import os
 import traceback
 
@@ -26,8 +25,11 @@ class Module:  # Contains a list of Commands.
         self.on_bot_load = on_bot_load
         self.on_bot_stop = on_bot_stop
         self.module_name = module_name
+        self.enabled = True
 
     def command(self, name, args, msg, event):
+        if not self.enabled:
+            return False
         matches = self.find_commands(name)
         if matches:
             command = matches[0]
@@ -51,6 +53,8 @@ class Module:  # Contains a list of Commands.
         return filter(lambda x: x.name == name, self.commands)
 
     def list_commands(self):
+        if not self.enabled:
+            return []
         cmd_list = []
         for command in self.commands:
             cmd_list.append(command)
@@ -62,6 +66,7 @@ class MetaModule:  # Contains a list of Modules.
         self.modules = []
         self.bot = bot
         self.module_name = module_name
+        self.enabled = True
         if path and not path[-1] == '.':
             self.path = path + '.'
         else:
@@ -70,6 +75,8 @@ class MetaModule:  # Contains a list of Modules.
             self.modules.append(self.load_module(module))
 
     def command(self, name, args, msg, event):
+        if not self.enabled:
+            return False
         response = False
         for module in self.modules:
             response = module.command(name, args, msg, event)
@@ -78,8 +85,12 @@ class MetaModule:  # Contains a list of Modules.
         return response
 
     def get_help(self, name):
+        if not self.enabled:
+            return False
         response = False
         for module in self.modules:
+            if not module.enabled:
+                continue
             response = module.get_help(name)
             if response:
                 break
@@ -144,12 +155,16 @@ class MetaModule:  # Contains a list of Modules.
                 raise MalformedModuleException("Module: '" + file_ + "' does not contain a variable called either 'modules' or 'commands'.")
 
     def list_commands(self):
+        if not self.enabled:
+            return []
         cmd_list = []
         for module in self.modules:
             cmd_list.extend(module.list_commands())
         return cmd_list
 
     def get_event_watchers(self):
+        if not self.enabled:
+            return []
         watchers = []
         for m in self.modules:
             if isinstance(m, MetaModule):
@@ -159,6 +174,8 @@ class MetaModule:  # Contains a list of Modules.
         return watchers
 
     def get_on_load_methods(self):
+        if not self.enabled:
+            return []
         on_loads = []
         for m in self.modules:
             if isinstance(m, MetaModule):
@@ -168,6 +185,8 @@ class MetaModule:  # Contains a list of Modules.
         return on_loads
 
     def get_on_stop_methods(self):
+        if not self.enabled:
+            return []
         on_stops = []
         for m in self.modules:
             if isinstance(m, MetaModule):
@@ -177,6 +196,8 @@ class MetaModule:  # Contains a list of Modules.
         return on_stops
 
     def find_module_by_name(self, name):
+        if not self.enabled:
+            return None
         if self.module_name == name:
             return self
         for m in self.modules:
@@ -187,6 +208,38 @@ class MetaModule:  # Contains a list of Modules.
                 if m1 is not None:
                     return m1
         return None
+
+    def disable_module(self, name):
+        if not self.enabled:
+            return False
+        if self.module_name == name:
+            self.enabled = False
+            return True
+        for m in self.modules:
+            if m.module_name == name:
+                m.enabled = False
+                return True
+            if isinstance(m, MetaModule):
+                m1 = m.disable_module(name)
+                if m1:
+                    return True
+        return False
+
+    def enable_module(self, name):
+        if self.module_name == name:
+            self.enabled = True
+            return True
+        if not self.enabled:
+            return False
+        for m in self.modules:
+            if m.module_name == name:
+                m.enabled = True
+                return True
+            if isinstance(m, MetaModule):
+                m1 = m.enable_module(name)
+                if m1:
+                    return True
+        return False
 
 
 class ModuleDoesNotExistException(Exception):
