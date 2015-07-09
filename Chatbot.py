@@ -246,10 +246,10 @@ class Chatbot:
                     message.reply(output)
 
     def get_output(self, cmd_args, message, event):
-            if self.requires_char_check(cmd_args.split(" ")[0]) and \
-                    event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
-               return "Command contains invalid characters."
-            return self.command(cmd_args, message, event)
+        if self.requires_char_check(cmd_args.split(" ")[0]) and \
+                event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
+           return "Command contains invalid characters."
+        return self.command(cmd_args, message, event)
 
 
     def command(self, cmd, msg, event):
