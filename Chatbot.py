@@ -225,14 +225,6 @@ class Chatbot:
         if not parts[0].startswith(self.prefix) and (len(parts) != 2 or not parts[0].startswith(":")):
             return
 
-        if len(parts) == 2 and parts[1] == "!delete!" and parts[0].startswith(":"):
-            try:
-                if event.user.id in self.privileged_user_ids or event.user.id in self.owner_ids:
-                    msg_id_to_delete = int(parts[0][1:])
-                    self.client.get_message(msg_id_to_delete).delete()
-            except:
-                pass
-
         if parts[0].startswith(self.prefix):
             cmd_args = stripped_content[len(self.prefix):]
             if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
