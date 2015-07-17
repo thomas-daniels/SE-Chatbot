@@ -5,6 +5,7 @@ dependencies:
   post:
     - git submodule update --init
     - pip install pytest
+    - pip install requests --upgrade
 test:
   override:
     - python -m pytest tests
