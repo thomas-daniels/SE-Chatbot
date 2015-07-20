@@ -30,7 +30,7 @@ class Chatbot:
         self.site = ""
         self.owner_ids = []
         self.privileged_user_ids = []
-        self.save_subdirs = [ 'main' ]
+        self.save_subdirs = ['main']
         self.modules = MetaModule(ModuleManifest.module_file_names, self, 'all')
         try:
             SaveIO.set_subdirs(self.save_subdirs)
@@ -63,7 +63,7 @@ class Chatbot:
         else:
             sys.exit("Error: no chatbot name found. Please update Config.py.")
         # self.setup_logging() # if you want to have logging, un-comment this line
-        
+
         if "site" in config_data:
             self.site = config_data["site"]
             print("Site: %s" % self.site)
@@ -93,10 +93,10 @@ class Chatbot:
             email = additional_general_config["email"]
         else:
             email = raw_input("Email address: ")
-        
+
         self.client = Client(self.site)
-        
-        try:    
+
+        try:
             if "password" in Config.General:  # I would not recommend to store the password in Config.py
                 password = Config.General["password"]
                 self.client.login(email, password)
@@ -125,7 +125,7 @@ class Chatbot:
         on_loads = self.modules.get_on_load_methods()
         for on_load in on_loads:
             on_load(self)
-            
+
         self.room.watch_socket(self.on_event)
 
         while self.running:
@@ -192,10 +192,10 @@ class Chatbot:
         return False
 
     def on_event(self, event, client):
-        if  (not self.enabled and event.user.id not in self.owner_ids) \
-            or not self.running:
+        if (not self.enabled and event.user.id not in self.owner_ids) \
+                or not self.running:
             return
-        
+
         watchers = self.modules.get_event_watchers()
         for w in watchers:
             w(event, client, self)
@@ -240,9 +240,8 @@ class Chatbot:
     def get_output(self, cmd_args, message, event):
         if self.requires_char_check(cmd_args.split(" ")[0]) and \
                 event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
-           return "Command contains invalid characters."
+            return "Command contains invalid characters."
         return self.command(cmd_args, message, event)
-
 
     def command(self, cmd, msg, event):
         cmd_args = cmd.split(' ')

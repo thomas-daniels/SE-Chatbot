@@ -6,6 +6,7 @@ _allowed_subdirs = []
 
 data_dir = "botdata/"
 
+
 def save(obj, subdir, name, filetype="p"):
     global _allowed_subdirs
     module_dir = os.path.join(data_dir, subdir)
@@ -26,7 +27,7 @@ def save(obj, subdir, name, filetype="p"):
             else:
                 f.write(obj)
 
-            
+
 def load(subdir, name, filetype="p"):
     global _allowed_subdirs
     module_dir = os.path.join(data_dir, subdir)
@@ -47,7 +48,7 @@ def load(subdir, name, filetype="p"):
         else:
             return f.read()
 
-        
+
 def set_subdirs(dir_list):
     global _allowed_subdirs
     _allowed_subdirs = []
@@ -58,24 +59,24 @@ def set_subdirs(dir_list):
         create_if_not_exists(dir_)
         _allowed_subdirs.append(dir_)
 
-        
+
 def create_if_not_exists(dir_path):
     if not os.path.exists(dir_path):
         try:
             os.makedirs(dir_path)
         except:
             if "-q" not in sys.argv:
-                print "[SaveIO] WARNING: Could not create directory %s." % (dir_path)
+                print "[SaveIO] WARNING: Could not create directory %s." % dir_path
 
-            
+
 def _create_empty_pickle_file(filepath):
     with open(filepath, "w+") as f:
         f.write("(dp0\n.")
 
-            
+
 class InvalidDirectoryException(Exception):
     pass
 
-    
+
 class DuplicateDirectoryException(Exception):
     pass
