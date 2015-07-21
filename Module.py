@@ -50,7 +50,7 @@ class Module:  # Contains a list of Commands.
             return ''
 
     def find_commands(self, name):
-        return filter(lambda x: x.name == name, self.commands)
+        return list(filter(lambda x: x.name == name, self.commands))
 
     def list_commands(self):
         if not self.enabled:

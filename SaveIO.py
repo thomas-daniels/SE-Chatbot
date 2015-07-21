@@ -14,14 +14,15 @@ def save(obj, subdir, name, filetype="p"):
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
     create_if_not_exists(module_dir)
     file_ = os.path.join(module_dir, name + "." + filetype)
-    with open(file_, "w+") as f:
-        if filetype == "p":
+    if filetype == "p":
+        with open(file_, "wb") as f:
             try:
                 pickle.dump(obj, f)
             except:
                 if "-q" not in sys.argv:
                     print("[SaveIO] WARNING: Error while saving data '%s'. Data has not been saved." % name)
-        else:
+    else:
+        with open(file_, "wt") as f:
             if not isinstance(obj, str):
                 raise TypeError("Only strings may be saved in non-pickle files.")
             else:
@@ -42,10 +43,11 @@ def load(subdir, name, filetype="p"):
         else:
             with open(file_, "w+") as f:
                 f.close()
-    with open(file_, "r") as f:
-        if filetype == "p":
+    if filetype == "p":
+        with open(file_, "rb") as f:
             return pickle.load(f)
-        else:
+    else:
+        with open(file_, "rt") as f:
             return f.read()
 
 
