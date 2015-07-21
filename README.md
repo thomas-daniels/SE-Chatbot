@@ -6,12 +6,12 @@ The bot is licensed under [CPOL (The Code Project Open License) v1.02](http://ww
 
 ### Setup ###
 
-Before you can use the bot, you need to install some dependencies such as ChatExchange and BeautifulSoup4. You can install them by running `setup.sh` on Linux (requires `pip` to be installed) or `setup.bat` (requires `git` and `pip`, in `C:\<YourPythonFolder>\Scripts\` to be added to your PATH).
+Before you can use the bot, you need to install some dependencies such as [ChatExchange3](https://github.com/ByteCommander/ChatExchange3) (the Python 3 port of [ChatExchange](https://github.com/Manishearth/ChatExchange) and BeautifulSoup4. You can install them by running `setup.sh` on Linux (requires `pip` to be installed) or `setup.bat` (requires `git` and `pip`, in `C:\<YourPythonFolder>\Scripts\` to be added to your PATH).
 
 You'll also need to copy `templates/ConfigTemplate.py` to `Config.py`. You will also need to add some required configuration data in `Config.py`. The comments in that file tell you which values you can add and how to add them.
 
 ### Running ###
-To run the bot, you have to use Python 2.7. When you run it, it will prompt you for necessary information that you have not provided in Config.py. If you wish to use a specific configuration, run the bot with the argument `-c configuration_name`. You can also use `-s site_name`, `-r room_number`, `-e email_address` and `-p password`. The last four items will always override data stored in a configuration, if set.
+To run the bot, you have to use Python 3. When you run it, it will prompt you for necessary information that you have not provided in Config.py. If you wish to use a specific configuration, run the bot with the argument `-c configuration_name`. You can also use `-s site_name`, `-r room_number`, `-e email_address` and `-p password`. The last four items will always override data stored in a configuration, if set.
 
 ### Logging ###
 

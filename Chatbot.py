@@ -1,13 +1,13 @@
 import getpass
 import re
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 import logging.handlers
 import sys
 
-from ChatExchange.chatexchange.client import Client
-from ChatExchange.chatexchange.browser import LoginError
-from ChatExchange.chatexchange.events import MessagePosted, MessageEdited
-from ChatExchange.chatexchange.messages import Message
+from ChatExchange3.chatexchange3.client import Client
+from ChatExchange3.chatexchange3.browser import LoginError
+from ChatExchange3.chatexchange3.events import MessagePosted, MessageEdited
+from ChatExchange3.chatexchange3.messages import Message
 from fixedfont import fixed_font_to_normal, is_fixed_font
 from Config import Config
 import ModuleManifest
@@ -34,14 +34,14 @@ class Chatbot:
         self.modules = MetaModule(ModuleManifest.module_file_names, self, 'all')
         try:
             SaveIO.set_subdirs(self.save_subdirs)
-        except DuplicateDirectoryException, e:
+        except DuplicateDirectoryException as e:
             if "-q" not in sys.argv:
-                print "[Chatbot] WARNING: there are modules with the same save directory: " + str(e)
+                print("[Chatbot] WARNING: there are modules with the same save directory: " + str(e))
         SaveIO.create_if_not_exists(SaveIO.data_dir)
         del self.save_subdirs
         duplicates = self.get_duplicate_commands()
         if duplicates and "-q" not in sys.argv:
-            print '[Chatbot] WARNING: there are commands with the same name: ' + str(duplicates)
+            print('[Chatbot] WARNING: there are commands with the same name: ' + str(duplicates))
 
     def main(self, config_data, additional_general_config):
         if "owners" in Config.General:
@@ -68,7 +68,7 @@ class Chatbot:
             self.site = config_data["site"]
             print("Site: %s" % self.site)
         else:
-            self.site = raw_input("Site: ")
+            self.site = input("Site: ")
         for o in self.owners:
             if self.site in o:
                 self.owner_ids.append(o[self.site])
@@ -81,7 +81,7 @@ class Chatbot:
             room_number = config_data["room"]
             print("Room number: %i" % room_number)
         else:
-            room_number = int(raw_input("Room number: "))
+            room_number = int(input("Room number: "))
         if "prefix" in config_data:
             self.prefix = config_data["prefix"]
         else:
@@ -92,7 +92,7 @@ class Chatbot:
         elif "email" in additional_general_config:
             email = additional_general_config["email"]
         else:
-            email = raw_input("Email address: ")
+            email = input("Email address: ")
 
         self.client = Client(self.site)
 
@@ -111,7 +111,7 @@ class Chatbot:
                         break
                     except LoginError:
                         if attempts < 2:
-                            print "Incorrect password."
+                            print("Incorrect password.")
                         else:
                             raise
         except LoginError:
@@ -129,7 +129,7 @@ class Chatbot:
         self.room.watch_socket(self.on_event)
 
         while self.running:
-            inputted = raw_input("<< ")
+            inputted = input("<< ")
             if inputted.strip() == "":
                 continue
             if inputted.startswith("$") and len(inputted) > 2:
