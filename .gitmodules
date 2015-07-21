@@ -1,5 +1,5 @@
-[submodule "builtins"]
-	path = builtins
+[submodule "botbuiltins"]
+	path = botbuiltins
 	url = https://github.com/ProgramFOX/SE-Chatbot-Builtins.git
 [submodule "ChatExchange3"]
 	path = ChatExchange3
