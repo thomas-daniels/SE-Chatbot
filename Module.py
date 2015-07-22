@@ -80,7 +80,7 @@ class MetaModule:  # Contains a list of Modules.
         response = False
         for module in self.modules:
             response = module.command(name, args, msg, event)
-            if response:
+            if response is not False:
                 break
         return response
 
@@ -92,7 +92,7 @@ class MetaModule:  # Contains a list of Modules.
             if not module.enabled:
                 continue
             response = module.get_help(name)
-            if response is not False:
+            if response:
                 break
         return response
 
