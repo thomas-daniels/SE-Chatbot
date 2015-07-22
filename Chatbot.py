@@ -224,17 +224,16 @@ class Chatbot:
         if not parts[0].startswith(self.prefix):
             return
 
-        if parts[0].startswith(self.prefix):
-            cmd_args = stripped_content[len(self.prefix):]
-            if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
-                cmd_args = content[len(self.prefix):]
-            output = self.get_output(cmd_args, message, event)
-            if output is not False and output is not None:
-                if len(output) > 500:
-                    message.reply("Output would be longer than 500 characters (the limit), so only the first 500 characters are posted now.")
-                    self.room.send_message(output[:500])
-                else:
-                    message.reply(output)
+        cmd_args = stripped_content[len(self.prefix):]
+        if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
+            cmd_args = content[len(self.prefix):]
+        output = self.get_output(cmd_args, message, event)
+        if output is not False and output is not None:
+            if len(output) > 500:
+                message.reply("Output would be longer than 500 characters (the limit), so only the first 500 characters are posted now.")
+                self.room.send_message(output[:500])
+            else:
+                message.reply(output)
 
     def get_output(self, cmd_args, message, event):
         if self.requires_char_check(cmd_args.split(" ")[0]) and \
