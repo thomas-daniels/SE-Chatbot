@@ -221,10 +221,10 @@ class Chatbot:
         else:
             stripped_content = content
         parts = stripped_content.split(" ")
-        if not parts[0].startswith(self.prefix.encode('utf-8')):
+        if not parts[0].startswith(self.prefix):
             return
 
-        if parts[0].startswith(self.prefix.encode('utf-8')):
+        if parts[0].startswith(self.prefix):
             cmd_args = stripped_content[len(self.prefix):]
             if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
                 cmd_args = content[len(self.prefix):]
