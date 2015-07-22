@@ -6,7 +6,7 @@ class ConsoleCommandHandler:
     def reply(self, text):
         if self.post_to_chat:
             self.bot.room.send_message(text)
-        print(text.encode('ascii', 'ignore'))
+        print(text.encode('ascii', 'ignore').decode('ascii'))
 
     def send_message(self, text):
         self.reply(text)

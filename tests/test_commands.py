@@ -1,5 +1,5 @@
-from builtins.utils import *
-from builtins.xkcd import *
+from botbuiltins.utils import *
+from botbuiltins.xkcd import *
 import pytest
 
 

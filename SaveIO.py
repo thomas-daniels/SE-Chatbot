@@ -14,15 +14,16 @@ def save(obj, subdir, name, filetype="p"):
         raise InvalidDirectoryException("The subdirectory given is not a module's allowed subdirectory.")
     create_if_not_exists(module_dir)
     file_ = os.path.join(module_dir, name + "." + filetype)
-    with open(file_, "w+") as f:
-        if filetype == "p":
+    if filetype == "p":
+        with open(file_, "wb") as f:
             try:
                 pickle.dump(obj, f)
             except:
                 if "-q" not in sys.argv:
-                    print "[SaveIO] WARNING: Error while saving data '%s'. Data has not been saved." % (name)
-        else:
-            if not isinstance(obj, basestring):
+                    print("[SaveIO] WARNING: Error while saving data '%s'. Data has not been saved." % name)
+    else:
+        with open(file_, "wt") as f:
+            if not isinstance(obj, str):
                 raise TypeError("Only strings may be saved in non-pickle files.")
             else:
                 f.write(obj)
@@ -36,16 +37,17 @@ def load(subdir, name, filetype="p"):
     file_ = os.path.join(module_dir, name + "." + filetype)
     if not os.path.exists(file_) or os.stat(file_).st_size == 0:
         if "-q" not in sys.argv:
-            print "[SaveIO] INFO: Attempt to load non-existent file. An empty file has been created."
+            print("[SaveIO] INFO: Attempt to load non-existent file. An empty file has been created.")
         if filetype == "p":
             _create_empty_pickle_file(file_)
         else:
             with open(file_, "w+") as f:
                 f.close()
-    with open(file_, "r") as f:
-        if filetype == "p":
+    if filetype == "p":
+        with open(file_, "rb") as f:
             return pickle.load(f)
-        else:
+    else:
+        with open(file_, "rt") as f:
             return f.read()
 
 
@@ -66,7 +68,7 @@ def create_if_not_exists(dir_path):
             os.makedirs(dir_path)
         except:
             if "-q" not in sys.argv:
-                print "[SaveIO] WARNING: Could not create directory %s." % dir_path
+                print("[SaveIO] WARNING: Could not create directory %s." % dir_path)
 
 
 def _create_empty_pickle_file(filepath):

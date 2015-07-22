@@ -50,7 +50,7 @@ class Module:  # Contains a list of Commands.
             return ''
 
     def find_commands(self, name):
-        return filter(lambda x: x.name == name, self.commands)
+        return list(filter(lambda x: x.name == name, self.commands))
 
     def list_commands(self):
         if not self.enabled:
@@ -80,7 +80,7 @@ class MetaModule:  # Contains a list of Modules.
         response = False
         for module in self.modules:
             response = module.command(name, args, msg, event)
-            if response:
+            if response is not False:
                 break
         return response
 
@@ -100,9 +100,9 @@ class MetaModule:  # Contains a list of Modules.
         file_ = self.path + file_
         try:
             module_file = importlib.import_module(file_)
-        except ImportError, e:
+        except ImportError as e:
             msg = "Error at importing " + file_ + os.linesep
-            msg += "ImportError: " + e.message
+            msg += "ImportError: " + e.msg
             msg += os.linesep
             msg += traceback.format_exc()
             raise ModuleDoesNotExistException(msg)
@@ -112,7 +112,7 @@ class MetaModule:  # Contains a list of Modules.
                 module_name = module_file.module_name
             except AttributeError:
                 module_name = file_
-            if not isinstance(module_name, basestring):
+            if not isinstance(module_name, str):
                 raise MalformedModuleException("Module: '%s', 'module_name' is not a string." % file_)
             if type(mdls) is list:
                 return MetaModule(mdls, self.bot, module_name, file_[:file_.rfind('.')])
@@ -137,11 +137,11 @@ class MetaModule:  # Contains a list of Modules.
                     module_name = module_file.module_name
                 except AttributeError:
                     module_name = file_
-                if not isinstance(module_name, basestring):
+                if not isinstance(module_name, str):
                     raise MalformedModuleException("Module: '%s', 'module_name' is not a string." % file_)
                 try:
                     save_subdir = module_file.save_subdir
-                    if isinstance(save_subdir, basestring):
+                    if isinstance(save_subdir, str):
                         self.bot.save_subdirs.append(save_subdir)
                     else:
                         raise MalformedModuleException("Module: '%s', 'save_subdir' is not a string." % file_)
