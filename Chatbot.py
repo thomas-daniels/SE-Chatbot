@@ -1,6 +1,6 @@
 import getpass
 import re
-from html.parser import HTMLParser
+import html
 import logging.handlers
 import sys
 
@@ -207,8 +207,7 @@ class Chatbot:
             return
 
         message = event.message
-        h = HTMLParser()
-        content = h.unescape(Message(event.message.id, client).content_source)
+        content = html.unescape(Message(event.message.id, client).content_source)
 
         fixed_font = is_fixed_font(content)
         if fixed_font:
@@ -222,10 +221,10 @@ class Chatbot:
         else:
             stripped_content = content
         parts = stripped_content.split(" ")
-        if not parts[0].startswith(self.prefix) and (len(parts) != 2 or not parts[0].startswith(":")):
+        if not parts[0].startswith(self.prefix.encode('utf-8')):
             return
 
-        if parts[0].startswith(self.prefix):
+        if parts[0].startswith(self.prefix.encode('utf-8')):
             cmd_args = stripped_content[len(self.prefix):]
             if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
                 cmd_args = content[len(self.prefix):]
