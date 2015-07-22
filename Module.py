@@ -92,7 +92,7 @@ class MetaModule:  # Contains a list of Modules.
             if not module.enabled:
                 continue
             response = module.get_help(name)
-            if response:
+            if response is not False:
                 break
         return response
 
