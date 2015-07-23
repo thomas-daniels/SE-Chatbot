@@ -105,7 +105,7 @@ class MetaModule:  # Contains a list of Modules.
             msg += "ImportError: " + e.msg
             msg += os.linesep
             msg += traceback.format_exc()
-            raise ModuleDoesNotExistException(msg)
+            raise ModuleLoadError(msg)
         try:
             mdls = module_file.modules
             try:
@@ -242,7 +242,7 @@ class MetaModule:  # Contains a list of Modules.
         return False
 
 
-class ModuleDoesNotExistException(Exception):
+class ModuleLoadError(Exception):
     pass
 
 
