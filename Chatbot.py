@@ -207,7 +207,7 @@ class Chatbot:
             return
 
         message = event.message
-        content = html.unescape(Message(event.message.id, client).content_source)
+        content = Message(event.message.id, client).content_source
 
         fixed_font = is_fixed_font(content)
         if fixed_font:
