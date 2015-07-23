@@ -11,7 +11,7 @@ Before you can use the bot, you need to install some dependencies such as [ChatE
 You'll also need to copy `templates/ConfigTemplate.py` to `Config.py`. You will also need to add some required configuration data in `Config.py`. The comments in that file tell you which values you can add and how to add them.
 
 ### Running ###
-To run the bot, you have to use Python 3. When you run it, it will prompt you for necessary information that you have not provided in Config.py. If you wish to use a specific configuration, run the bot with the argument `-c configuration_name`. You can also use `-s site_name`, `-r room_number`, `-e email_address` and `-p password`. The last four items will always override data stored in a configuration, if set.
+To run the bot, you have to use Python 3.4 or above. When you run it, it will prompt you for necessary information that you have not provided in Config.py. If you wish to use a specific configuration, run the bot with the argument `-c configuration_name`. You can also use `-s site_name`, `-r room_number`, `-e email_address` and `-p password`. The last four items will always override data stored in a configuration, if set.
 
 ### Logging ###
 
