@@ -1,10 +1,10 @@
 machine:
   python:
-    version: 2.7.7
+    version: 3.4
 dependencies:
   post:
     - git submodule update --init
-    - pip install pytest
+    - pip install pytest bs4 websocket-client
     - pip install requests --upgrade
 test:
   override:
