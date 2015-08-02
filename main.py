@@ -42,7 +42,7 @@ if "-p" in sys.argv:
 if "-f" in sys.argv:
     prefix_index = sys.argv.index("-f") + 1
     if args_length <= prefix_index:
-        sys.exit("Error: no password provided after the -p argument.")
+        sys.exit("Error: no prefix provided after the -f argument.")
     additional_general_config["prefix"] = sys.argv[prefix_index]
 if "-m" in sys.argv:
     message_index = sys.argv.index("-m") + 1
