@@ -19,7 +19,7 @@ do
         python3 main.py "$@" -m "Bot restarted after crash."
     fi
 
-    ec = $?
+    ec=$?
 
     if [ "$ec" -eq "0" ]
     then
