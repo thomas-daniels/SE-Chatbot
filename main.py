@@ -44,5 +44,10 @@ if "-f" in sys.argv:
     if args_length <= prefix_index:
         sys.exit("Error: no password provided after the -p argument.")
     additional_general_config["prefix"] = sys.argv[prefix_index]
+if "-m" in sys.argv:
+    message_index = sys.argv.index("-m") + 1
+    if args_length <= message_index:
+        sys.exit("Error: no message provided after the -m argument.")
+    additional_general_config["message"] = sys.argv[message_index]
 
 bot.main(config_data, additional_general_config)

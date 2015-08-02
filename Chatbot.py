@@ -119,7 +119,10 @@ class Chatbot:
 
         self.room = self.client.get_room(room_number)
         self.room.join()
-        bot_message = "Bot started."
+        if "message" not in additional_general_config:
+            bot_message = "Bot started."
+        else:
+            bot_message = additional_general_config["message"]
         self.room.send_message(bot_message)
 
         on_loads = self.modules.get_on_load_methods()
