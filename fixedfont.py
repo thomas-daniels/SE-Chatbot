@@ -10,6 +10,10 @@ def fixed_font_to_normal(text):
 
 
 def is_fixed_font(text):
+    if '\n' not in text:
+        return False
+    # ^ While single-line messages can be fixed font, the websocket doesn't
+    # send them to us with the four spaces.
     text = text.replace('\r\n', '\n')
     lines = text.splitlines()
     first_line = True
