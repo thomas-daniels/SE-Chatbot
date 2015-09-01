@@ -14,8 +14,8 @@ class Command:  # An executable command.
         self.privileged = privileged
         self.owner_only = owner_only
         self.char_check = char_check
-        self.special_arg_parsing = special_arg_parsing
         self.aliases = aliases
+        self.special_arg_parsing = special_arg_parsing
 
 
 class Module:  # Contains a list of Commands.
