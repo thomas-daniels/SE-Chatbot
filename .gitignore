@@ -8,3 +8,4 @@ client.log.*
 .idea/
 errorLogs.txt
 botdata/
+points.py
