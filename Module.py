@@ -52,7 +52,7 @@ class Module:  # Contains a list of Commands.
     def find_commands(self, name):
         for command in self.commands:
             if command.name == name: return command
-            elif name in command.aliases: return command
+            elif command.aliases is not None and name in command.aliases: return command
         return None
 
     def list_commands(self):
