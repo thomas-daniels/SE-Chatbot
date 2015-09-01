@@ -29,8 +29,8 @@
 
 
 commands = [  # A list of all Commands in this Module.
-    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None) ),
-    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None), <aliases> (= None) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None), <aliases> (= None) ),
     # ...
 ]
 

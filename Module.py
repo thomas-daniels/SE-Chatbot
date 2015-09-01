@@ -7,7 +7,7 @@ import traceback
 
 class Command:  # An executable command.
     def __init__(self, name, execute, help_data='', privileged=False, owner_only=False, char_check=True,
-                 special_arg_parsing=None):
+                 special_arg_parsing=None, aliases=None):
         self.name = name
         self.execute = types.MethodType(execute, self)
         self.help_data = help_data or "Command exists, but no help entry found."
@@ -15,6 +15,7 @@ class Command:  # An executable command.
         self.owner_only = owner_only
         self.char_check = char_check
         self.special_arg_parsing = special_arg_parsing
+        self.aliases = aliases
 
 
 class Module:  # Contains a list of Commands.
@@ -30,9 +31,8 @@ class Module:  # Contains a list of Commands.
     def command(self, name, args, msg, event):
         if not self.enabled:
             return False
-        matches = self.find_commands(name)
-        if matches:
-            command = matches[0]
+        command = self.find_commands(name)
+        if command:
             if (not command.privileged and not command.owner_only) or isinstance(msg, ConsoleCommandHandler) \
                     or (command.privileged and (event.user.id in self.bot.privileged_user_ids or event.user.id in self.bot.owner_ids)) \
                     or (command.owner_only and event.user.id in self.bot.owner_ids):
@@ -43,14 +43,17 @@ class Module:  # Contains a list of Commands.
             return False
 
     def get_help(self, name):
-        matches = self.find_commands(name)
-        if matches:
-            return matches[0].help_data
+        match = self.find_commands(name)
+        if match:
+            return match.help_data
         else:
             return ''
 
     def find_commands(self, name):
-        return [x for x in self.commands if x.name == name]
+        for command in self.commands:
+            if command.name == name: return command
+            elif name in command.aliases: return command
+        return None
 
     def list_commands(self):
         if not self.enabled:
