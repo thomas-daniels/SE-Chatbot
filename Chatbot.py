@@ -232,11 +232,12 @@ class Chatbot:
             cmd_args = content[len(self.prefix):]
         output = self.get_output(cmd_args, message, event)
         if output is not False and output is not None:
-            if len(output) > 500:
-                message.reply("Output would be longer than 500 characters (the limit), so only the first 500 characters are posted now.")
-                self.room.send_message(output[:500])
+            output_with_reply = ":%i %s" % (message.id, output)
+            if len(output_with_reply) > 500 and "\n" not in output_with_reply:
+                message.reply("Output would be longer than 500 characters (the limit for single-line messages), so only the first 500 characters are posted now.")
+                self.room.send_message(output_with_reply[:500])
             else:
-                message.reply(output)
+                self.room.send_message(output_with_reply, False)
 
     def get_output(self, cmd_args, message, event):
         if self.requires_char_check(cmd_args.split(" ")[0]) and \
