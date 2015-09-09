@@ -1,5 +1,7 @@
 # SE-Chatbot, a chat bot for the Stack Exchange chat rooms. #
 
+[![Codacy Badge](https://api.codacy.com/project/badge/97adf407ede44aafafdb692e45d28c1e)](https://www.codacy.com/app/programfox/SE-Chatbot)
+
 A chat bot for the Stack Exchange chat rooms.
 
 The bot is licensed under [CPOL (The Code Project Open License) v1.02](http://www.codeproject.com/info/cpol10.aspx). You can find a copy of this license in `LICENSE.htm`.
