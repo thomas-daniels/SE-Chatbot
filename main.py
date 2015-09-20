@@ -48,6 +48,9 @@ if "-m" in sys.argv:
     message_index = sys.argv.index("-m") + 1
     if args_length <= message_index:
         sys.exit("Error: no message provided after the -m argument.")
-    additional_general_config["message"] = sys.argv[message_index]
+    if sys.argv[message_index] == "None":
+        additional_general_config["message"] = None
+    else:
+        additional_general_config["message"] = sys.argv[message_index]
 
 bot.main(config_data, additional_general_config)

@@ -123,7 +123,8 @@ class Chatbot:
             bot_message = "Bot started."
         else:
             bot_message = additional_general_config["message"]
-        self.room.send_message(bot_message)
+        if bot_message is not None:
+            self.room.send_message(bot_message)
 
         on_loads = self.modules.get_on_load_methods()
         for on_load in on_loads:
