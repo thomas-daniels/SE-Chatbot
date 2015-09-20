@@ -173,12 +173,23 @@ class Chatbot:
         ))
         wrapper_logger.addHandler(wrapper_handler)
 
-    def requires_char_check(self, cmd_name):
+    def check_existence_and_chars(self, cmd_name, content):
         cmd_list = self.modules.list_commands()
+        allowed = -1
+        disallowed = -1
         for cmd in cmd_list:
             if cmd.name == cmd_name:
-                return cmd.char_check
-        return True
+                allowed = cmd.allowed_chars
+                disallowed = cmd.disallowed_chars
+                break
+        if allowed == -1:
+            return False, False
+        for c in content:
+            if disallowed is not None and c in disallowed:
+                return True, False
+            if allowed is not None and c not in allowed:
+                return True, False
+        return True, True
 
     def requires_special_arg_parsing(self, cmd_name):
         cmd_list = self.modules.list_commands()
@@ -230,7 +241,7 @@ class Chatbot:
         cmd_args = stripped_content[len(self.prefix):]
         if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
             cmd_args = content[len(self.prefix):]
-        output = self.get_output(cmd_args, message, event)
+        output = self.command(cmd_args, message, event)
         if output is not False and output is not None:
             output_with_reply = ":%i %s" % (message.id, output)
             if len(output_with_reply) > 500 and "\n" not in output_with_reply:
@@ -239,25 +250,20 @@ class Chatbot:
             else:
                 self.room.send_message(output_with_reply, False)
 
-    def get_output(self, cmd_args, message, event):
-        if self.requires_char_check(cmd_args.split(" ")[0]) and \
-                event.user.id not in self.owner_ids and re.compile("[^a-zA-Z0-9 _-]").search(cmd_args):
-            return "Command contains invalid characters."
-        return self.command(cmd_args, message, event)
-
     def command(self, cmd, msg, event):
         cmd_args = cmd.split(' ')
         cmd_name = cmd_args[0].lower()
         args = cmd_args[1:]
+        exists, allowed = self.check_existence_and_chars(cmd_name, ' '.join(args))
+        if not exists:
+            return "Command not found."
+        if not allowed:
+            return "Command contains invalid characters."
         if self.requires_special_arg_parsing(cmd_name):
             args = self.do_special_arg_parsing(cmd_name, cmd)
             if args is False:
                 return "Argument parsing failed."
-        r = self.modules.command(cmd_name, args, msg, event)
-        if r is not False:
-            return r
-        else:
-            return "Command not found."
+        return self.modules.command(cmd_name, args, msg, event)
 
     def bot_stopping(self):
         on_stops = self.modules.get_on_stop_methods()

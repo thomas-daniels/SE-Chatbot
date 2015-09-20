@@ -29,16 +29,18 @@
 
 
 commands = [  # A list of all Commands in this Module.
-    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None), <aliases> (= None) ),
-    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <char check>(*) (= True), <special arg parsing method>(**) (= None), <aliases> (= None) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <special arg parsing method>(*) (= None), <aliases> (= None), <allowed chars> (= string.printable), <disallowed chars> (= None) (**) ),
+    # Command( '<command name>', <command exec name>, '<help text>' (optional), <needs privilege> (= False), <owner only> (= False), <special arg parsing method>(*) (= None), <aliases> (= None), <allowed chars> (= string.printable), <disallowed chars> (= None) (**) ),
     # ...
 ]
 
-# (*) <char check> = the bot only allows a specific set of characters
-# and if any character is used in a command outside this set, the bot would give you an error message.
-# Setting this parameter to False avoids this char check.
-
-# (**) <special arg parsing method> = Some commands require a non-default argument parsing method.
+# (*) <special arg parsing method> = Some commands require a non-default argument parsing method.
 # Pass it there when necessary. It must return the array of arguments.
+
+# (**) Allowed and disallowed chars
+# You can choose to allow/disallow a specific set of characters in the command's arguments.
+# By default, the allowed chars is string.printable (see https://docs.python.org/3/library/string.html#string-constants for string constants).
+# If a char is both allowed and disallowed, disallowed has higher importance.
+# If allowed_chars is None, all chars are allowed (unless those specified in disallowed_chars).
 
 # module_name = "<name used to address this module>"

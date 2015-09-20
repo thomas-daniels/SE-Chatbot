@@ -3,19 +3,25 @@ import types
 from ConsoleCommandHandler import ConsoleCommandHandler
 import os
 import traceback
+import string
 
 
 class Command:  # An executable command.
-    def __init__(self, name, execute, help_data='', privileged=False, owner_only=False, char_check=True,
-                 special_arg_parsing=None, aliases=None):
+    def __init__(self, name, execute, help_data='', privileged=False, owner_only=False,
+                 special_arg_parsing=None, aliases=None, allowed_chars=string.printable, disallowed_chars=""):
         self.name = name
         self.execute = types.MethodType(execute, self)
         self.help_data = help_data or "Command exists, but no help entry found."
         self.privileged = privileged
         self.owner_only = owner_only
-        self.char_check = char_check
         self.aliases = aliases
         self.special_arg_parsing = special_arg_parsing
+        if allowed_chars is not None and " " not in allowed_chars:
+            allowed_chars += " "
+        # Space should always be allowed for multiple arguments.
+        # If you really want to disallow spaces, add one to disallowed_chars.
+        self.allowed_chars = allowed_chars
+        self.disallowed_chars = disallowed_chars
 
 
 class Module:  # Contains a list of Commands.
