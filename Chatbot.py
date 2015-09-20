@@ -47,7 +47,7 @@ class Chatbot:
         if "owners" in Config.General:
             self.owners = Config.General["owners"]
         else:
-            sys.exit("Error: no owners found. Please update Config.py.")
+            sys.exit("[Chatbot] FATAL: no owners found. Please update Config.py.")
         if "privileged_users" in config_data:
             self.privileged_users = config_data["privileged_users"]
         if "github" in Config.General:
@@ -57,11 +57,11 @@ class Chatbot:
         if "owner_name" in Config.General:
             self.owner_name = Config.General["owner_name"]
         else:
-            sys.exit("Error: no owner name found. Please update Config.py.")
+            sys.exit("[Chatbot] FATAL: no owner name found. Please update Config.py.")
         if "chatbot_name" in Config.General:
             self.chatbot_name = Config.General["chatbot_name"]
         else:
-            sys.exit("Error: no chatbot name found. Please update Config.py.")
+            sys.exit("[Chatbot] FATAL: no chatbot name found. Please update Config.py.")
         # self.setup_logging() # if you want to have logging, un-comment this line
 
         if "site" in config_data:
@@ -73,7 +73,7 @@ class Chatbot:
             if self.site in o:
                 self.owner_ids.append(o[self.site])
         if len(self.owner_ids) < 1:
-            sys.exit("Error: no owners found for this site: %s." % self.site)
+            sys.exit("[Chatbot] FATAL: no owners found for this site: %s." % self.site)
         for p in self.privileged_users:
             if self.site in p:
                 self.privileged_user_ids.append(p[self.site])
