@@ -95,6 +95,11 @@ class Chatbot:
 
         self.client = Client(self.site)
 
+        # Setting the timeout down to 5 fixes random SSL errors when terminating.
+        # The bot's timeout on exit is 5; the request timeout is 30 by default. Requests overrun the
+        # bot timeout, get force-closed, and cause errors.
+        self.client._br.request_timeout = 5.0
+
         try:
             if "password" in Config.General:  # I would not recommend to store the password in Config.py
                 password = Config.General["password"]
