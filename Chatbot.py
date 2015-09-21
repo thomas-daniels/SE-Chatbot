@@ -114,7 +114,7 @@ class Chatbot:
                         else:
                             raise
         except LoginError:
-            sys.exit("Incorrect password, shutting down.")
+            sys.exit("[Chatbot] FATAL: Incorrect password, shutting down.")
 
         self.room = self.client.get_room(room_number)
         self.room.join()
