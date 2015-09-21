@@ -1,6 +1,5 @@
 import getpass
 import re
-import html
 import logging.handlers
 import sys
 
