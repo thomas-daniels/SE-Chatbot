@@ -183,7 +183,7 @@ class Chatbot:
         allowed = -1
         disallowed = -1
         for cmd in cmd_list:
-            if cmd.name == cmd_name:
+            if cmd.name == cmd_name or (cmd.aliases is not None and cmd_name in cmd.aliases):
                 allowed = cmd.allowed_chars
                 disallowed = cmd.disallowed_chars
                 break
