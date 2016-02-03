@@ -109,9 +109,9 @@ class MetaModule:  # Contains a list of Modules.
         file_ = self.path + file_
         try:
             module_file = importlib.import_module(file_)
-        except ImportError as e:
+        except BaseException as e:
             msg = "Error at importing " + file_ + os.linesep
-            msg += "ImportError: " + e.msg
+            msg += str(e)
             msg += os.linesep
             msg += traceback.format_exc()
             raise ModuleLoadError(msg)
