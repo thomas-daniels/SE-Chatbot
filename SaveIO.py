@@ -43,6 +43,7 @@ def load(subdir, name, filetype="p"):
         else:
             with open(file_, "w+") as f:
                 f.close()
+        return None
     if filetype == "p":
         with open(file_, "rb") as f:
             return pickle.load(f)
