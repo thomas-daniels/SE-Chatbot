@@ -21,7 +21,7 @@ do
         python3 main.py "$@" -m "Bot restarted after crash."
     elif [ "$firststart" -eq "0" ] && [ "$ec" -eq "2" ]
     then
-        python3 main.py "$@" -m "Bot restarted after pulling from the GitHub repository. Running on revision `$(git rev-parse HEAD)`."
+        python3 main.py "$@" -m "Bot restarted after pulling from the GitHub repository. Running on revision \`$(git rev-parse HEAD)\`."
     else
         python3 main.py "$@" -m "Bot restarted after terminating with an unrecognized status code."
     fi
