@@ -37,7 +37,7 @@ do
         git fetch origin master
         git merge origin/master --no-edit
         git submodule update --init --recursive
-        firststart = 0
+        firststart=0
     else
         firststart=0
     fi
