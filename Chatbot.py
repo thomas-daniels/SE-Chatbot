@@ -26,7 +26,7 @@ class Chatbot:
         self.owner_name = ""
         self.chatbot_name = ""
         self.enabled = True
-        self.suspended_until = None
+        self.suspended_until = -1
         self.running = True
         self.site = ""
         self.owner_ids = []
