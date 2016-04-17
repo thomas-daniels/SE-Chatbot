@@ -2,6 +2,7 @@ import getpass
 import re
 import logging.handlers
 import sys
+import time
 
 from ChatExchange6.chatexchange6.client import Client
 from ChatExchange6.chatexchange6.browser import LoginError
@@ -25,6 +26,7 @@ class Chatbot:
         self.owner_name = ""
         self.chatbot_name = ""
         self.enabled = True
+        self.suspended_until = None
         self.running = True
         self.site = ""
         self.owner_ids = []
@@ -211,7 +213,7 @@ class Chatbot:
         return False
 
     def on_event(self, event, client):
-        if (not self.enabled and event.user.id not in self.owner_ids) \
+        if ((not self.enabled or self.suspended_until > time.time()) and event.user.id not in self.owner_ids) \
                 or not self.running:
             return
 
