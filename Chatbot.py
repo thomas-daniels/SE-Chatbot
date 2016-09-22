@@ -144,8 +144,13 @@ class Chatbot:
                 continue
             if inputted.startswith("$") and len(inputted) > 2:
                 command_in = inputted[2:]
-                cmd_handler = ConsoleCommandHandler(self, inputted[1] == "+")
-                command_out = self.command(command_in, cmd_handler, None)
+                cmd_handler = ConsoleCommandHandler(self, inputted[1] == "+", self.prefix + command_in)
+                event_mock = type('MockEvent', (), {})()
+                user_mock = type('', (), {})()
+                user_mock.id = -1
+                event_mock.user = user_mock
+                event_mock.message = cmd_handler
+                command_out = self.command(command_in, cmd_handler, event_mock, len(self.prefix))
                 if command_out is not False and command_out is not None:
                     cmd_handler.reply(command_out)
             else:
@@ -220,15 +225,16 @@ class Chatbot:
         watchers = self.modules.get_event_watchers()
         for w in watchers:
             w(event, client, self)
-
-        if not (isinstance(event, MessagePosted) or isinstance(event, MessageEdited)):
+        
+        if not (isinstance(event, MessagePosted) or isinstance(event, MessageEdited) or str(type(event)).find('Chatbot.MockEvent') > -1):
             return
 
         if event.user.id == self.client.get_me().id:
             return
 
         message = event.message
-        content = Message(event.message.id, client).content_source
+        content_source = message.content_source
+        content = content_source
 
         fixed_font = is_fixed_font(content)
         if fixed_font:
@@ -248,16 +254,16 @@ class Chatbot:
         cmd_args = stripped_content[len(self.prefix):]
         if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
             cmd_args = content[len(self.prefix):]
-        output = self.command(cmd_args, message, event)
+        output = self.command(cmd_args, message, event, content_source.find(self.prefix) + len(self.prefix))
         if output is not False and output is not None:
             output_with_reply = ":%i %s" % (message.id, output)
             if len(output_with_reply) > 500 and "\n" not in output_with_reply:
                 message.reply("Output would be longer than 500 characters (the limit for single-line messages), so only the first 500 characters are posted now.")
-                self.room.send_message(output_with_reply[:500])
+                message.reply(output[:500 - (len(message.id) + 2)])
             else:
-                self.room.send_message(output_with_reply, False)
+                message.reply(output)
 
-    def command(self, cmd, msg, event):
+    def command(self, cmd, msg, event, start):
         cmd_args = cmd.split(' ')
         cmd_name = cmd_args[0].lower()
         args = cmd_args[1:]
