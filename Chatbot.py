@@ -150,7 +150,7 @@ class Chatbot:
                 user_mock.id = -1
                 event_mock.user = user_mock
                 event_mock.message = cmd_handler
-                command_out = self.command(command_in, cmd_handler, event_mock, len(self.prefix))
+                command_out = self.command(command_in, cmd_handler, event_mock, 0)
                 if command_out is not False and command_out is not None:
                     cmd_handler.reply(command_out)
             else:
@@ -254,7 +254,7 @@ class Chatbot:
         cmd_args = stripped_content[len(self.prefix):]
         if self.requires_special_arg_parsing(cmd_args.split(" ")[0]):
             cmd_args = content[len(self.prefix):]
-        output = self.command(cmd_args, message, event, content_source.find(self.prefix) + len(self.prefix))
+        output = self.command(cmd_args, message, event, 0)
         if output is not False and output is not None:
             output_with_reply = ":%i %s" % (message.id, output)
             if len(output_with_reply) > 500 and "\n" not in output_with_reply:
