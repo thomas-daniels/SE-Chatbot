@@ -232,7 +232,7 @@ class Chatbot:
         if event.user.id == self.client.get_me().id:
             return
 
-        message = event.message
+        message = Message(event.message.id, client)
         content_source = message.content_source
         content = content_source
 
