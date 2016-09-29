@@ -264,7 +264,7 @@ class Chatbot:
                 message.reply("Output would be longer than 500 characters (the limit for single-line messages), so only the first 500 characters are posted now.")
                 message.reply(output[:500 - (len(message.id) + 2)])
             else:
-                message.reply(output)
+                message.reply(output, False)
 
     def command(self, cmd, msg, event, start):
         cmd_args = cmd.split(' ')
