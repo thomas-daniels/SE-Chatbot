@@ -4,10 +4,10 @@ import logging.handlers
 import sys
 import time
 
-from ChatExchange6.chatexchange6.client import Client
-from ChatExchange6.chatexchange6.browser import LoginError
-from ChatExchange6.chatexchange6.events import MessagePosted, MessageEdited
-from ChatExchange6.chatexchange6.messages import Message
+from ChatExchange.chatexchange.client import Client
+from ChatExchange.chatexchange.browser import LoginError
+from ChatExchange.chatexchange.events import MessagePosted, MessageEdited
+from ChatExchange.chatexchange.messages import Message
 from fixedfont import fixed_font_to_normal, is_fixed_font
 from Config import Config
 import ModuleManifest
